@@ -2,7 +2,7 @@
 
 Snappy Docs Convert is planned as a fast local document conversion app for Windows-first workflows.
 
-Current phase: Phase 4 PDF image renderer. This branch contains a small .NET core library, local LibreOffice document-to-PDF conversion, Microsoft Office availability detection, guarded Office COM PDF export, Office smoke validation, core dependency guidance, and PDF page image export. UI and installer work are still later phases.
+Current phase: Phase 5A batch conversion pipeline. This branch contains a small .NET core library, local LibreOffice document-to-PDF conversion, Microsoft Office availability detection, guarded Office COM PDF export, Office smoke validation, core dependency guidance, PDF page image export, and a core batch pipeline. UI and installer work are still later phases.
 
 ## Final Goal
 
@@ -79,6 +79,27 @@ Supported output formats:
 
 Default DPI is 200. The renderer validates DPI, warns above 300 DPI, writes sequential page files such as `page-001.png`, and serializes PDFium calls because PDFium is not thread-safe. See `docs/PDF_IMAGE_RENDERER.md`.
 
+## Batch Pipeline
+
+Phase 5A adds a core pipeline for one or many files. It orchestrates existing engines only:
+
+- PDF input can copy/keep PDF output and/or render images.
+- Office/OpenDocument input converts to PDF through Microsoft Office or LibreOffice, then optionally renders images.
+- Targets: `Pdf`, `Images`, `PdfAndImages`.
+
+Output shape:
+
+```text
+output\
+  pdf\
+    source__hash8.pdf
+  images\
+    source__hash8\
+      page-001.png
+```
+
+Presentation inputs use `slide-001.png`; document/PDF inputs use `page-001.png`. See `docs/BATCH_PIPELINE.md`.
+
 To pack a small AI-friendly context bundle:
 
 ```powershell
@@ -89,4 +110,4 @@ The packed output is written to `docs/ai-context/repomix-output.md` and is ignor
 
 ## Next Phase Summary
 
-The next recommended implementation phase is Phase 5: batch pipeline or WPF UI. Wait for owner approval before starting it.
+The next recommended implementation phase is Phase 6: WPF UI. Wait for owner approval before starting it.

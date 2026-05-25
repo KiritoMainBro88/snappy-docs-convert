@@ -1,6 +1,6 @@
 # Architecture Notes
 
-These diagrams show the intended final direction. Phase 2 adds LibreOffice headless document-to-PDF conversion. Phase 2C adds core setup guidance. Phase 3A adds Microsoft Office COM detection and guarded PDF export for local desktop user sessions. Phase 4 adds PDF page rendering to real image files.
+These diagrams show the intended final direction. Phase 2 adds LibreOffice headless document-to-PDF conversion. Phase 2C adds core setup guidance. Phase 3A adds Microsoft Office COM detection and guarded PDF export for local desktop user sessions. Phase 4 adds PDF page rendering to real image files. Phase 5A adds the core batch pipeline.
 
 ## Phase 2 LibreOffice Engine
 
@@ -65,6 +65,28 @@ flowchart LR
 
 PDF rendering uses PDFtoImage, PDFium, and SkiaSharp. Pages render sequentially; no screenshots are used. PDFium calls are serialized because the native renderer is not thread-safe in-process.
 
+## Phase 5A Batch Pipeline
+
+```mermaid
+flowchart TD
+  Job["BatchConversionJob"] --> Plan["BatchOutputPlanner"]
+  Plan --> Each["Process items sequentially"]
+  Each --> Type{"Input type"}
+  Type -->|"PDF"| PdfSource["Use source PDF"]
+  Type -->|"Office / OpenDocument"| Select["ConversionEngineSelector"]
+  Select --> Convert["Office COM or LibreOffice to PDF"]
+  PdfSource --> Target{"Target"}
+  Convert --> Target
+  Target -->|"Pdf"| CopyPdf["Write pdf/source__hash8.pdf"]
+  Target -->|"Images"| Render["Render images/source__hash8/page-001.png"]
+  Target -->|"PdfAndImages"| Both["Write PDF then render images"]
+  CopyPdf --> Result["BatchConversionItemResult"]
+  Render --> Result
+  Both --> Result
+```
+
+Batch processing continues after failed items and reports partial success. Cancellation marks the current/remaining items cancelled where possible. The UI layer will call this pipeline later.
+
 ## Final Desktop Architecture
 
 ```mermaid
@@ -121,6 +143,7 @@ flowchart LR
   P01["Phase 0/1: Local setup"] --> P02["Phase 2: LibreOffice engine"]
   P02 --> P03["Phase 3: Office COM engine"]
   P03 --> P04["Phase 4: PDF image renderer"]
-  P04 --> P05["Phase 5: WPF UI polish"]
-  P05 --> P06["Phase 6: Packaging and release"]
+  P04 --> P05A["Phase 5A: batch pipeline"]
+  P05A --> P05["Phase 6: WPF UI polish"]
+  P05 --> P06["Phase 7: Packaging and release"]
 ```

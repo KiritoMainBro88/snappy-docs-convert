@@ -40,12 +40,23 @@
 - Implemented: add tests for missing/non-PDF input, naming, overwrite policy, DPI/quality validation, cancellation, and tiny PDF rendering.
 - Not implemented: batch/UI folder orchestration for multiple source PDFs.
 
-## Phase 5: WPF UI Polish
+## Phase 5A: Batch Conversion Pipeline
+
+- Implemented: add batch job, item, option, progress, result, output-plan, and target models.
+- Implemented: plan `pdf\<safeBaseName>__<hash8>.pdf` and `images\<safeBaseName>__<hash8>\`.
+- Implemented: choose `slide` prefix for PPT/PPTX/ODP image output and `page` for document/PDF output.
+- Implemented: select Microsoft Office or LibreOffice based on preference and availability.
+- Implemented: orchestrate PDF, Images, and PdfAndImages targets.
+- Implemented: continue after failed items; cancellation cancels current/remaining work where possible.
+- Implemented: keep/delete intermediate PDFs for images-only jobs based on option.
+- Not implemented: UI queue, progress window, or user-facing batch controls.
+
+## Phase 6: WPF UI Polish
 
 - Build the Windows desktop UI around queue, engine status, progress, cancellation, and output browsing.
 - Keep the UI local-first and privacy-preserving.
 
-## Phase 6: Packaging And Release
+## Phase 7: Packaging And Release
 
 - Package the app for Windows.
 - Document prerequisites for Office and LibreOffice modes.
