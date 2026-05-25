@@ -1,4 +1,4 @@
-[CmdletBinding()]
+﻿[CmdletBinding()]
 param(
     [int]$TimeoutSeconds = 180
 )
@@ -153,7 +153,7 @@ try {
     if ($wordAvailable) {
         $wordSmokeRan = $true
         $rtfPath = Join-Path $inputDir "word-smoke.rtf"
-        $rtf = '{\rtf1\ansi\deff0{\fonttbl{\f0 Arial;}}\f0\fs24 Snappy Docs Convert Office smoke.\par}'
+        $rtf = '{\rtf1\ansi\deff0{\fonttbl{\f0 Arial;}}\f0\fs24 kmb file tools Office smoke.\par}'
         Set-Content -LiteralPath $rtfPath -Value $rtf -Encoding ASCII
 
         Write-Host "Word smoke: running RTF to PDF through OfficeComConversionEngine"

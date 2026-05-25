@@ -1,9 +1,9 @@
-$ErrorActionPreference = "Continue"
+﻿$ErrorActionPreference = "Continue"
 
 $repoRoot = Split-Path -Parent $PSScriptRoot
 Set-Location $repoRoot
 
-Write-Host "Snappy Docs Convert - local check"
+Write-Host "kmb file tools - local check"
 Write-Host "Repo: $repoRoot"
 Write-Host ""
 

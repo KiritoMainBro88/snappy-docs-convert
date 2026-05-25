@@ -54,14 +54,41 @@ if ($externalAssets) {
     throw "External CDN/font/script reference found in built website."
 }
 
+$sourceFiles = Get-ChildItem -LiteralPath $siteRoot -File -Recurse -Include *.html,*.ts,*.tsx,*.js,*.css,*.json |
+    Where-Object { $_.FullName -notmatch "\\node_modules\\" -and $_.FullName -notmatch "\\dist\\" }
+
+# Plain "No telemetry" copy is allowed; provider/integration markers are not.
+$providerPatterns = @(
+    "google-analytics",
+    "googletagmanager",
+    "\bgtag\s*\(",
+    "posthog",
+    "plausible",
+    "sentry",
+    "appcenter",
+    "trackEvent",
+    "sendTelemetry",
+    "telemetryEndpoint"
+)
+
+foreach ($pattern in $providerPatterns) {
+    $matches = $sourceFiles | Select-String -Pattern $pattern -CaseSensitive:$false
+    if ($matches) {
+        throw "Analytics/telemetry integration marker found in website source: $pattern"
+    }
+}
+
 $distText = ($builtFiles | ForEach-Object { Get-Content -LiteralPath $_.FullName -Raw }) -join "`n"
 $required = @(
-    "https://github.com/KiritoMainBro88/snappy-docs-convert/releases",
+    "https://github.com/KiritoMainBro88/snappy-docs-convert/releases/tag/v0.1.0-beta.1",
     "https://github.com/KiritoMainBro88/snappy-docs-convert",
+    "https://discord.gg/kZ3U36ncun",
     "No upload",
-    "Không tải lên",
-    "Free local document converter for Windows",
-    "Trình chuyển đổi tài liệu cục bộ miễn phí cho Windows"
+    "No telemetry",
+    "Free and open-source Windows desktop app",
+    "EN/VI",
+    "Dark",
+    "Portable ZIP"
 )
 
 foreach ($text in $required) {
@@ -75,6 +102,7 @@ Write-Host "Website Vite check: build passed"
 Write-Host "Website Vite check: dist/index.html exists"
 Write-Host "Website Vite check: no api/functions folder"
 Write-Host "Website Vite check: no external CDN/font/script references"
-Write-Host "Website Vite check: release/source links exist"
-Write-Host "Website Vite check: EN/VI local-only/no-upload copy exists"
+Write-Host "Website Vite check: no analytics provider integration markers"
+Write-Host "Website Vite check: release/source/Discord links exist"
+Write-Host "Website Vite check: EN/VI local-only/no-upload/theme copy exists"
 Write-Host "Website Vite check: pass"

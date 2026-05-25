@@ -1,4 +1,4 @@
-# Portable Packaging
+﻿# Portable Packaging
 
 Phase 7 creates a portable Windows x64 folder and zip for the WPF MVP. This is not an MSI/MSIX installer.
 
@@ -42,7 +42,7 @@ artifacts\SnappyDocsConvert-setup-win-x64-v0.1.0-beta.1.exe
 
 Installer metadata:
 
-- App name: Snappy Docs Convert
+- App name: kmb file tools
 - Install scope: per-user
 - Start Menu shortcut: yes
 - Optional Desktop shortcut: yes
@@ -110,6 +110,12 @@ powershell -ExecutionPolicy Bypass -File .\scripts\prepare-github-release-notes.
 
 The polished website lives under `website/` and builds to `website\dist\`.
 
+Current production URL:
+
+```text
+https://website-sand-xi-15.vercel.app
+```
+
 ```powershell
 powershell -ExecutionPolicy Bypass -File .\scripts\check-website-vite.ps1
 ```
@@ -127,6 +133,34 @@ vercel --cwd website --prod
 ```
 
 The site links downloads to GitHub Releases. It must remain frontend-only: no backend, no API routes, no telemetry, no analytics, and no file upload flow.
+
+Current public beta release:
+
+```text
+https://github.com/KiritoMainBro88/snappy-docs-convert/releases/tag/v0.1.0-beta.1
+```
+
+Support/Discord:
+
+```text
+https://discord.gg/kZ3U36ncun
+```
+
+The website includes dark mode, English/Vietnamese copy, direct installer/portable download buttons, and placeholders for owner-provided screenshots. Official downloads are free. Because the project uses MIT, documentation should say redistribution is allowed with attribution/license notice; it should warn against misleading paid repackages without claiming resale is prohibited.
+
+Display app name is `kmb file tools`. Current beta package filenames still use `SnappyDocsConvert` for compatibility with published assets.
+
+Demo assets:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File .\scripts\create-demo-inputs.ps1
+powershell -ExecutionPolicy Bypass -File .\scripts\demo-desktop.ps1
+cd website
+npm run demo:website
+cd ..
+```
+
+Generated media stays under ignored `artifacts\demo\`.
 
 ## Manual GUI QA Session
 

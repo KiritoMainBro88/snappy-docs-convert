@@ -18,7 +18,7 @@ Date:
 
 | Step | Expected | Actual | Result | Evidence |
 |---|---|---|---|---|
-| 1. Launch portable exe. | Window opens as `Snappy Docs Convert`; no startup crash. |  | Pending |  |
+| 1. Launch portable exe. | Window opens as `kmb file tools`; no startup crash. |  | Pending |  |
 | 2. Verify engine status cards. | Word, PowerPoint, LibreOffice, and PDF renderer statuses match machine. |  | Pending |  |
 | 3. PDF -> PNG. | PDF renders real `page-001.png` file, size > 0. |  | Pending |  |
 | 4. PDF -> JPEG. | PDF renders real `page-001.jpg` or `.jpeg` file, size > 0. |  | Pending |  |

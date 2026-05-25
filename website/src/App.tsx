@@ -1,34 +1,92 @@
-import { useMemo, useState } from "react";
-import { copy, Language, releaseUrl, releasesUrl, sourceUrl } from "./content";
+import { useEffect, useMemo, useState } from "react";
+import {
+  appName,
+  copy,
+  discordUrl,
+  installerUrl,
+  Language,
+  portableUrl,
+  releaseTagUrl,
+  releasesUrl,
+  ScreenshotCopy,
+  sourceUrl,
+} from "./content";
+
+type Theme = "light" | "dark";
+
+const getInitialTheme = (): Theme => {
+  if (typeof window === "undefined") {
+    return "light";
+  }
+
+  const saved = window.localStorage.getItem("snappy-theme");
+  if (saved === "light" || saved === "dark") {
+    return saved;
+  }
+
+  return window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+};
+
+function ScreenshotCard({ item }: { item: ScreenshotCopy }) {
+  const [imageMissing, setImageMissing] = useState(false);
+
+  return (
+    <article className="screenshot-card">
+      {!imageMissing ? (
+        <img src={item.src} alt={item.title} onError={() => setImageMissing(true)} />
+      ) : (
+        <div className="screenshot-placeholder" aria-label={item.title}>
+          <span>{item.title}</span>
+          <small>PNG placeholder</small>
+        </div>
+      )}
+      <div>
+        <h3>{item.title}</h3>
+        <p>{item.text}</p>
+      </div>
+    </article>
+  );
+}
 
 function App() {
   const [language, setLanguage] = useState<Language>("en");
+  const [theme, setTheme] = useState<Theme>(getInitialTheme);
   const [logoOk, setLogoOk] = useState(true);
   const text = copy[language];
   const currentYear = useMemo(() => new Date().getFullYear(), []);
 
+  useEffect(() => {
+    document.documentElement.dataset.theme = theme;
+    document.documentElement.lang = language;
+    window.localStorage.setItem("snappy-theme", theme);
+  }, [language, theme]);
+
+  const toggleTheme = () => setTheme((current) => (current === "dark" ? "light" : "dark"));
+
   return (
     <div className="site-shell">
-      <header className="hero">
+      <header className="hero" id="top">
         <nav className="topbar" aria-label="Primary navigation">
-          <a className="brand" href="#top" aria-label="Snappy Docs Convert home">
+          <a className="brand" href="#top" aria-label={`${appName} home`}>
             {logoOk ? (
               <img src="/assets/logo.png" alt="" onError={() => setLogoOk(false)} />
             ) : (
               <span className="brand-mark">SD</span>
             )}
-            <span>Snappy Docs Convert</span>
+            <span>{appName}</span>
           </a>
 
           <div className="nav-links">
+            <a href="#download">{text.nav.download}</a>
+            <a href="#local">{text.nav.local}</a>
             <a href="#features">{text.nav.features}</a>
-            <a href="#privacy">{text.nav.privacy}</a>
-            <a href="#how">{text.nav.how}</a>
-            <a href="#limitations">{text.nav.limitations}</a>
+            <a href="#toolbox">{text.nav.toolbox}</a>
+            <a href="#screenshots">{text.nav.screenshots}</a>
+            <a href="#support">{text.nav.support}</a>
           </div>
 
           <div className="nav-actions">
-            <div className="language-toggle" aria-label="Language">
+            <div className="toggle-group" aria-label={text.controls.language}>
               <button
                 type="button"
                 className={language === "en" ? "active" : ""}
@@ -46,49 +104,51 @@ function App() {
                 VI
               </button>
             </div>
-            <a className="small-link" href={sourceUrl}>{text.nav.source}</a>
+            <button className="theme-toggle" type="button" onClick={toggleTheme}>
+              {theme === "dark" ? text.controls.light : text.controls.dark}
+            </button>
           </div>
         </nav>
 
-        <section id="top" className="hero-grid">
+        <section className="hero-grid">
           <div className="hero-copy">
-            <p className="privacy-badge">{text.hero.proof}</p>
+            <p className="eyebrow">{text.hero.eyebrow}</p>
             <h1>{text.hero.title}</h1>
             <p className="hero-lead">{text.hero.subtitle}</p>
+            <p className="privacy-badge">{text.hero.proof}</p>
             <div className="cta-row">
-              <a className="button primary" href={releaseUrl}>
-                {text.hero.primaryCta}
+              <a className="button primary" href={installerUrl}>
+                {text.hero.installerCta}
               </a>
-              <a className="button secondary" href={sourceUrl}>
-                {text.hero.secondaryCta}
+              <a className="button secondary" href={portableUrl}>
+                {text.hero.portableCta}
+              </a>
+              <a className="button text-button" href={releaseTagUrl}>
+                {text.hero.releaseCta}
               </a>
             </div>
-            <p className="release-note">
-              <a href={releasesUrl}>{text.nav.download}</a> · {text.hero.releaseNote}
-            </p>
+            <p className="release-note">{text.hero.releaseNote}</p>
           </div>
 
-          <div className="product-card" aria-label="Snappy Docs Convert product summary">
-            <div className="window-bar">
+          <div className="product-panel" aria-label={`${appName} preview`}>
+            <div className="product-panel-head">
               <span />
               <span />
               <span />
             </div>
-            <div className="tool-preview">
+            <div className="product-panel-body">
+              <img src="/assets/logo.png" alt="" onError={(event) => (event.currentTarget.style.display = "none")} />
               <div>
-                <strong>PDF + Images</strong>
-                <small>Office / PDF / Images</small>
+                <strong>{appName}</strong>
+                <small>{text.footer.line}</small>
               </div>
-              <div className="status-pill">Local</div>
             </div>
-            <div className="queue-lines">
-              <span />
-              <span />
-              <span />
-            </div>
-            <div className="mini-grid">
-              {text.trust.map((item) => (
-                <div key={item}>{item}</div>
+            <div className="panel-list">
+              {text.stats.map((stat) => (
+                <div key={stat.label}>
+                  <strong>{stat.value}</strong>
+                  <span>{stat.label}</span>
+                </div>
               ))}
             </div>
           </div>
@@ -96,14 +156,50 @@ function App() {
       </header>
 
       <main>
+        <section id="download" className="section download-section">
+          <div>
+            <p className="section-kicker">01 / {text.nav.download}</p>
+            <h2>{text.download.title}</h2>
+            <p>{text.download.text}</p>
+            <p className="muted">{text.download.betaNote}</p>
+          </div>
+          <div className="download-actions" aria-label="Download links">
+            <a className="button primary" href={installerUrl}>
+              {text.download.installer}
+            </a>
+            <a className="button secondary" href={portableUrl}>
+              {text.download.portable}
+            </a>
+            <a className="button secondary" href={releasesUrl}>
+              {text.download.allReleases}
+            </a>
+          </div>
+        </section>
+
+        <section id="local" className="section">
+          <div className="section-heading">
+            <p className="section-kicker">02 / {text.nav.local}</p>
+            <h2>{text.localTitle}</h2>
+          </div>
+          <div className="card-grid three">
+            {text.localCards.map((card) => (
+              <article className="info-card" key={card.title}>
+                <h3>{card.title}</h3>
+                <p>{card.text}</p>
+              </article>
+            ))}
+          </div>
+        </section>
+
         <section id="features" className="section">
           <div className="section-heading">
-            <span>01</span>
+            <p className="section-kicker">03 / {text.nav.features}</p>
             <h2>{text.featuresTitle}</h2>
+            <p>{text.featuresIntro}</p>
           </div>
-          <div className="feature-grid">
+          <div className="card-grid">
             {text.features.map((feature) => (
-              <article className="feature-card" key={feature.title}>
+              <article className="info-card" key={feature.title}>
                 <h3>{feature.title}</h3>
                 <p>{feature.text}</p>
               </article>
@@ -111,13 +207,58 @@ function App() {
           </div>
         </section>
 
-        <section id="privacy" className="section split-section">
+        <section id="toolbox" className="section toolbox-section">
           <div className="section-heading">
-            <span>02</span>
-            <h2>{text.privacyTitle}</h2>
+            <p className="section-kicker">04 / {text.nav.toolbox}</p>
+            <h2>{text.toolboxTitle}</h2>
+            <p>{text.toolboxIntro}</p>
           </div>
-          <div className="privacy-list">
-            {text.privacy.map((item) => (
+          <div className="toolbox-grid">
+            {text.toolbox.map((tool) => (
+              <article key={tool.title}>
+                <span>PDF</span>
+                <h3>{tool.title}</h3>
+                <p>{tool.text}</p>
+              </article>
+            ))}
+          </div>
+        </section>
+
+        <section id="screenshots" className="section">
+          <div className="section-heading">
+            <p className="section-kicker">05 / {text.nav.screenshots}</p>
+            <h2>{text.screenshotsTitle}</h2>
+            <p>{text.screenshotsIntro}</p>
+          </div>
+          <div className="screenshots-grid">
+            {text.screenshots.map((item) => (
+              <ScreenshotCard item={item} key={item.title} />
+            ))}
+          </div>
+        </section>
+
+        <section className="section split-section">
+          <div id="open-source">
+            <p className="section-kicker">06 / {text.nav.source}</p>
+            <h2>{text.openSourceTitle}</h2>
+          </div>
+          <div className="stacked-cards">
+            {text.openSource.map((item) => (
+              <article className="info-card" key={item.title}>
+                <h3>{item.title}</h3>
+                <p>{item.text}</p>
+              </article>
+            ))}
+          </div>
+        </section>
+
+        <section id="roadmap" className="section">
+          <div className="section-heading">
+            <p className="section-kicker">07 / {text.nav.roadmap}</p>
+            <h2>{text.roadmapTitle}</h2>
+          </div>
+          <div className="roadmap-list">
+            {text.roadmap.map((item) => (
               <article key={item.title}>
                 <h3>{item.title}</h3>
                 <p>{item.text}</p>
@@ -126,45 +267,46 @@ function App() {
           </div>
         </section>
 
-        <section id="how" className="section">
+        <section id="faq" className="section faq-section">
           <div className="section-heading">
-            <span>03</span>
-            <h2>{text.howTitle}</h2>
+            <p className="section-kicker">08 / {text.nav.faq}</p>
+            <h2>{text.faqTitle}</h2>
           </div>
-          <div className="steps">
-            {text.how.map((step) => (
-              <article key={step.title}>
-                <h3>{step.title}</h3>
-                <p>{step.text}</p>
+          <div className="faq-list">
+            {text.faq.map((item) => (
+              <article key={item.question}>
+                <h3>{item.question}</h3>
+                <p>{item.answer}</p>
               </article>
             ))}
           </div>
         </section>
 
-        <section id="limitations" className="section limit-section">
+        <section id="support" className="section support-section">
           <div>
-            <div className="section-heading">
-              <span>04</span>
-              <h2>{text.limitationsTitle}</h2>
-            </div>
-            <ul>
-              {text.limitations.map((item) => (
-                <li key={item}>{item}</li>
-              ))}
-            </ul>
+            <p className="section-kicker">09 / {text.nav.support}</p>
+            <h2>{text.supportTitle}</h2>
+            <p>{text.supportText}</p>
           </div>
-          <div className="download-panel">
-            <h3>Snappy Docs Convert</h3>
-            <p>{text.footer.line}</p>
-            <a className="button primary" href={releaseUrl}>{text.footer.download}</a>
-            <a className="button secondary" href={sourceUrl}>{text.footer.source}</a>
+          <div className="support-actions">
+            <a className="button primary" href={discordUrl}>
+              {text.discordCta}
+            </a>
+            <a className="button secondary" href={sourceUrl}>
+              {text.hero.sourceCta}
+            </a>
+            <a className="button secondary" href={releaseTagUrl}>
+              {text.hero.releaseCta}
+            </a>
           </div>
         </section>
       </main>
 
       <footer>
-        <span>© {currentYear} Snappy Docs Convert</span>
+        <span>© {currentYear} {appName}</span>
         <span>{text.footer.line}</span>
+        <span>{text.footer.license}</span>
+        <a href={sourceUrl}>{text.nav.source}</a>
       </footer>
     </div>
   );

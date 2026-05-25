@@ -13,9 +13,25 @@
   - Extract pages
   - Rotate pages
   - Images to PDF
+- Public beta GitHub Release assets:
+  - Portable ZIP
+  - Inno Setup installer EXE
+- Frontend-only website:
+  - Dark mode
+  - English/Vietnamese copy
+  - GitHub Release download links
+  - Discord support link
+  - Screenshot placeholders
+- Demo asset pipeline:
+  - Generated demo inputs
+  - Playwright website screenshots/video
+  - FFmpeg desktop recording helper
+  - User-facing demo script
 
 ## Planned
 
+- Auto-update.
+- Curated website screenshots after owner approval.
 - PDF compression.
 - OCR.
 - Watermark.

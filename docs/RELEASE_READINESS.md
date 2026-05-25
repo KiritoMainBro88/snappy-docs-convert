@@ -10,7 +10,7 @@
 - Release candidate docs: prepared
 - GitHub Release publication: approved for `v0.1.0-beta.1`
 - Public beta: approved as prerelease with known limitations
-- Vercel website preview: pending Phase 9A deploy check
+- Vercel website production deploy: pass
 
 ## Verified
 
@@ -26,6 +26,10 @@
 - PDF Toolbox V1 unit tests for merge, split, extract, rotate, images-to-PDF, path safety, and page ranges.
 - Static website check for local-only copy, release link, source link, and no external CDN/font/script assets.
 - Vite website check for frontend-only build, EN/VI copy, release/source links, and no API/functions folders.
+- Phase 10B website polish adds dark mode, direct `v0.1.0-beta.1` release links, Discord support, screenshot placeholders, MIT license wording, and anti-misleading-repackage wording.
+- Vercel production URL: `https://website-sand-xi-15.vercel.app`.
+- Phase 10C demo pipeline adds generated demo inputs, Playwright website screenshots/video, desktop screenshot helper, FFmpeg desktop recording helper, and user-facing demo scripts.
+- Display app name changed to `kmb file tools`; current beta executable/package filenames still use `SnappyDocsConvert` identifiers.
 - Artifact SHA256 helper.
 - Release notes helper that prints GitHub Release instructions without creating a release.
 - Owner manual GUI QA result recorded in `docs/manual-qa/v0.1.0-rc1-gui-qa.md`.
@@ -52,7 +56,8 @@
 - Code signing.
 - GitHub Release publication.
 - Final license approval.
-- Owner review of Vercel preview website.
+- Owner review of Vercel production website.
+- Owner review of generated demo screenshots/video.
 - GitHub prerelease upload for `v0.1.0-beta.1`.
 
 ## Known Risks
@@ -134,6 +139,36 @@ Production Vercel deploy requires explicit owner approval:
 
 ```powershell
 vercel --cwd website --prod
+```
+
+If Vercel auth is missing:
+
+```powershell
+vercel login
+vercel --cwd website --prod
+```
+
+Official release:
+
+```text
+https://github.com/KiritoMainBro88/snappy-docs-convert/releases/tag/v0.1.0-beta.1
+```
+
+Discord support:
+
+```text
+https://discord.gg/kZ3U36ncun
+```
+
+Generate demo assets:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File .\scripts\create-demo-inputs.ps1
+powershell -ExecutionPolicy Bypass -File .\scripts\capture-app-screenshot.ps1
+powershell -ExecutionPolicy Bypass -File .\scripts\demo-desktop.ps1
+cd website
+npm run demo:website
+cd ..
 ```
 
 Hash release artifact:

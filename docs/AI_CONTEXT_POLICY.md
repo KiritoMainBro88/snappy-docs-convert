@@ -1,6 +1,6 @@
-# AI Context Policy
+﻿# AI Context Policy
 
-Snappy Docs Convert should stay easy for AI agents to inspect without wasting tokens or exposing private data.
+kmb file tools should stay easy for AI agents to inspect without wasting tokens or exposing private data.
 
 ## Standard Toolkit
 

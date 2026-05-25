@@ -1,4 +1,4 @@
-using System.Text;
+﻿using System.Text;
 using SnappyDocsConvert.Core.Models;
 using SnappyDocsConvert.Core.Services.Pdf;
 
@@ -367,7 +367,7 @@ public sealed class PdfImageRendererTests
     {
         public static byte[] Create()
         {
-            const string pageText = "BT /F1 18 Tf 36 90 Td (Snappy Docs Convert) Tj ET\n";
+            const string pageText = "BT /F1 18 Tf 36 90 Td (kmb file tools) Tj ET\n";
             var objects = new[]
             {
                 "<< /Type /Catalog /Pages 2 0 R >>",

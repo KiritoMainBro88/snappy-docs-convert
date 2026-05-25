@@ -1,8 +1,8 @@
-# AGENTS.md
+﻿# AGENTS.md
 
 ## Project Identity
 
-Snappy Docs Convert is a local document conversion app. The target operating system is Windows first.
+kmb file tools is a local document conversion app. The target operating system is Windows first.
 
 Final direction:
 - Local-only conversion.

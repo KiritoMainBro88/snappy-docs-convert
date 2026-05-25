@@ -25,7 +25,11 @@ coverage
 docs/ai-context/**
 docs/qa-output/**
 artifacts/
+artifacts/demo/
 *.zip
+*.mp4
+*.webm
+*.mov
 *.local
 assets/branding/
 

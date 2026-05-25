@@ -1,6 +1,6 @@
-# Engine Setup Guide
+﻿# Engine Setup Guide
 
-Snappy Docs Convert converts Office documents locally. It needs at least one local Office conversion engine.
+kmb file tools converts Office documents locally. It needs at least one local Office conversion engine.
 
 ## Product Decision
 

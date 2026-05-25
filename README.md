@@ -1,8 +1,8 @@
-# Snappy Docs Convert
+# kmb file tools
 
-Snappy Docs Convert is planned as a fast local document conversion app for Windows-first workflows.
+kmb file tools is a fast local document conversion app for Windows-first workflows. The repository and current beta executable/package filenames still use `SnappyDocsConvert` identifiers for compatibility with the published `v0.1.0-beta.1` assets.
 
-Current phase: Phase 10A public beta release prep. This branch contains local Office/PDF conversion, PDF image export, batch conversion, PDF toolbox operations, mode-based WPF UI, English/Vietnamese UI strings, E2E QA, portable packaging, Inno Setup installer packaging, manual GUI QA recorder, release readiness docs, release notes, privacy audit, and a frontend-only website. MSI/MSIX packaging remains a later phase.
+Current phase: Phase 10B website production polish. This branch contains local Office/PDF conversion, PDF image export, batch conversion, PDF toolbox operations, mode-based WPF UI, English/Vietnamese UI strings, E2E QA, portable packaging, Inno Setup installer packaging, manual GUI QA recorder, release readiness docs, release notes, privacy audit, public beta GitHub Release assets, and a frontend-only website. MSI/MSIX packaging remains a later phase.
 
 ## Final Goal
 
@@ -53,7 +53,7 @@ dotnet run --project src/SnappyDocsConvert.App -- --self-check
 
 Phase 2 discovers `soffice.com` or `soffice.exe`, runs LibreOffice headless with an isolated temp profile, and verifies that a PDF was produced in the requested output directory.
 
-Snappy Docs Convert does not bundle LibreOffice in the MVP. If Microsoft Office is not available, users should install LibreOffice from the official site:
+kmb file tools does not bundle LibreOffice in the MVP. If Microsoft Office is not available, users should install LibreOffice from the official site:
 
 https://www.libreoffice.org/download/download-libreoffice/
 
@@ -188,6 +188,10 @@ Polished frontend-only website:
 website\
 ```
 
+Production website:
+
+https://website-sand-xi-15.vercel.app
+
 Run locally:
 
 ```powershell
@@ -203,13 +207,13 @@ Validate from repo root:
 powershell -ExecutionPolicy Bypass -File .\scripts\check-website-vite.ps1
 ```
 
-The website is Vite + React + TypeScript. It has no backend, no API routes, no upload flow, no telemetry, and no external CDN fonts/scripts. Vercel preview deploy can use:
+The website is Vite + React + TypeScript. It has dark mode, English/Vietnamese copy, Discord support links, GitHub Release download buttons, source links, and screenshot placeholders for owner-provided app screenshots. It has no backend, no API routes, no upload flow, no telemetry, and no external CDN fonts/scripts. Vercel preview deploy can use:
 
 ```powershell
 vercel --cwd website
 ```
 
-Production deploy requires explicit owner approval:
+Production deploy requires Vercel auth and explicit owner approval:
 
 ```powershell
 vercel --cwd website --prod
@@ -221,13 +225,38 @@ Legacy no-build fallback:
 website-static\
 ```
 
-Primary download link points to:
+Primary release link:
+
+https://github.com/KiritoMainBro88/snappy-docs-convert/releases/tag/v0.1.0-beta.1
+
+All releases:
 
 https://github.com/KiritoMainBro88/snappy-docs-convert/releases
 
 Source link points to:
 
 https://github.com/KiritoMainBro88/snappy-docs-convert
+
+Support/Discord link:
+
+https://discord.gg/kZ3U36ncun
+
+kmb file tools is MIT licensed. Official downloads are free. The license permits use, modification, and redistribution with attribution/license notice; avoid misleading paid repackages and link back to the original project.
+
+## Demo Assets
+
+Generate local website and desktop demo assets:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File .\scripts\create-demo-inputs.ps1
+powershell -ExecutionPolicy Bypass -File .\scripts\capture-app-screenshot.ps1
+powershell -ExecutionPolicy Bypass -File .\scripts\demo-desktop.ps1
+cd website
+npm run demo:website
+cd ..
+```
+
+Generated screenshots/videos live under ignored `artifacts\demo\`. Do not commit large generated media. Close private windows before desktop screenshot or video capture. See `docs/DEMO_ASSETS.md` and `docs/DEMO_SCRIPT.md`.
 
 Open-source prep files include `CONTRIBUTING.md`, `SECURITY.md`, issue templates, PR template, `docs/OPEN_SOURCE_PLAN.md`, and the final MIT `LICENSE`.
 
@@ -249,7 +278,7 @@ Owner manual GUI QA for `v0.1.0-rc1` is recorded under `docs/manual-qa/`. Public
 
 ## License
 
-Snappy Docs Convert is released under the MIT License. See `LICENSE`.
+kmb file tools is released under the MIT License. See `LICENSE`.
 
 ## Manual GUI QA Recorder
 

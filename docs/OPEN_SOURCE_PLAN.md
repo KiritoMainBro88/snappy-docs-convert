@@ -1,6 +1,6 @@
-# Open Source Plan
+﻿# Open Source Plan
 
-Snappy Docs Convert is intended as a free, local-only community utility.
+kmb file tools is intended as a free, local-only community utility.
 
 ## License
 

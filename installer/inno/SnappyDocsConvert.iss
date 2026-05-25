@@ -1,4 +1,4 @@
-#define MyAppName "Snappy Docs Convert"
+﻿#define MyAppName "kmb file tools"
 #define MyAppExeName "SnappyDocsConvert.App.exe"
 
 #ifndef ReleaseVersion
@@ -21,8 +21,8 @@ AppPublisher=KiritoMainBro88
 AppPublisherURL=https://github.com/KiritoMainBro88/snappy-docs-convert
 AppSupportURL=https://github.com/KiritoMainBro88/snappy-docs-convert/issues
 AppUpdatesURL=https://github.com/KiritoMainBro88/snappy-docs-convert/releases
-DefaultDirName={localappdata}\Programs\Snappy Docs Convert
-DefaultGroupName=Snappy Docs Convert
+DefaultDirName={localappdata}\Programs\kmb file tools
+DefaultGroupName=kmb file tools
 DisableProgramGroupPage=yes
 PrivilegesRequired=lowest
 OutputDir=..\..\artifacts
@@ -45,9 +45,9 @@ Name: "desktopicon"; Description: "Create a desktop shortcut"; GroupDescription:
 Source: "{#SourceDir}\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs createallsubdirs
 
 [Icons]
-Name: "{group}\Snappy Docs Convert"; Filename: "{app}\{#MyAppExeName}"
-Name: "{group}\Uninstall Snappy Docs Convert"; Filename: "{uninstallexe}"
-Name: "{autodesktop}\Snappy Docs Convert"; Filename: "{app}\{#MyAppExeName}"; Tasks: desktopicon
+Name: "{group}\kmb file tools"; Filename: "{app}\{#MyAppExeName}"
+Name: "{group}\Uninstall kmb file tools"; Filename: "{uninstallexe}"
+Name: "{autodesktop}\kmb file tools"; Filename: "{app}\{#MyAppExeName}"; Tasks: desktopicon
 
 [Run]
-Filename: "{app}\{#MyAppExeName}"; Description: "Launch Snappy Docs Convert"; Flags: nowait postinstall skipifsilent
+Filename: "{app}\{#MyAppExeName}"; Description: "Launch kmb file tools"; Flags: nowait postinstall skipifsilent

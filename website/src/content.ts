@@ -1,67 +1,171 @@
 export type Language = "en" | "vi";
 
+export type CardCopy = {
+  title: string;
+  text: string;
+};
+
+export type FaqCopy = {
+  question: string;
+  answer: string;
+};
+
+export type ScreenshotCopy = {
+  title: string;
+  text: string;
+  src: string;
+};
+
 export type SiteCopy = {
   nav: {
-    features: string;
-    privacy: string;
-    how: string;
-    limitations: string;
     download: string;
+    local: string;
+    features: string;
+    toolbox: string;
+    screenshots: string;
+    roadmap: string;
+    faq: string;
+    support: string;
     source: string;
   };
+  controls: {
+    language: string;
+    light: string;
+    dark: string;
+  };
   hero: {
+    eyebrow: string;
     title: string;
     subtitle: string;
     proof: string;
-    primaryCta: string;
-    secondaryCta: string;
+    installerCta: string;
+    portableCta: string;
+    releaseCta: string;
+    sourceCta: string;
     releaseNote: string;
   };
-  trust: string[];
+  download: {
+    title: string;
+    text: string;
+    installer: string;
+    portable: string;
+    allReleases: string;
+    betaNote: string;
+  };
+  stats: Array<{ value: string; label: string }>;
+  localTitle: string;
+  localCards: CardCopy[];
   featuresTitle: string;
-  features: Array<{ title: string; text: string }>;
-  privacyTitle: string;
-  privacy: Array<{ title: string; text: string }>;
-  howTitle: string;
-  how: Array<{ title: string; text: string }>;
-  limitationsTitle: string;
-  limitations: string[];
+  featuresIntro: string;
+  features: CardCopy[];
+  toolboxTitle: string;
+  toolboxIntro: string;
+  toolbox: CardCopy[];
+  screenshotsTitle: string;
+  screenshotsIntro: string;
+  screenshots: ScreenshotCopy[];
+  openSourceTitle: string;
+  openSource: CardCopy[];
+  roadmapTitle: string;
+  roadmap: CardCopy[];
+  faqTitle: string;
+  faq: FaqCopy[];
+  supportTitle: string;
+  supportText: string;
+  discordCta: string;
   footer: {
     line: string;
-    download: string;
-    source: string;
+    license: string;
   };
 };
 
+export const appName = "kmb file tools";
+export const releaseTagUrl =
+  "https://github.com/KiritoMainBro88/snappy-docs-convert/releases/tag/v0.1.0-beta.1";
 export const releasesUrl = "https://github.com/KiritoMainBro88/snappy-docs-convert/releases";
-export const releaseUrl = releasesUrl;
+export const installerUrl =
+  "https://github.com/KiritoMainBro88/snappy-docs-convert/releases/download/v0.1.0-beta.1/SnappyDocsConvert-setup-win-x64-v0.1.0-beta.1.exe";
+export const portableUrl =
+  "https://github.com/KiritoMainBro88/snappy-docs-convert/releases/download/v0.1.0-beta.1/SnappyDocsConvert-portable-win-x64-v0.1.0-beta.1.zip";
 export const sourceUrl = "https://github.com/KiritoMainBro88/snappy-docs-convert";
+export const discordUrl = "https://discord.gg/kZ3U36ncun";
 
 export const copy: Record<Language, SiteCopy> = {
   en: {
     nav: {
-      features: "Features",
-      privacy: "Privacy",
-      how: "How it works",
-      limitations: "Limitations",
       download: "Download",
+      local: "Local-only",
+      features: "Features",
+      toolbox: "PDF Toolbox",
+      screenshots: "Screenshots",
+      roadmap: "Roadmap",
+      faq: "FAQ",
+      support: "Support",
       source: "Source",
     },
-    hero: {
-      title: "Free local document converter for Windows",
-      subtitle:
-        "Convert Office documents, PDFs, pages, slides, and images on your own PC. The website never processes your files.",
-      proof: "No upload · No telemetry · Open source",
-      primaryCta: "Download for Windows from GitHub Releases",
-      secondaryCta: "View source",
-      releaseNote: "Portable Windows MVP. No installer yet.",
+    controls: {
+      language: "Language",
+      light: "Light",
+      dark: "Dark",
     },
-    trust: ["Local desktop app", "No account", "No backend", "No tracking"],
-    featuresTitle: "Useful tools without file upload",
+    hero: {
+      eyebrow: "Free and open-source Windows desktop app",
+      title: "Snappy document conversion without uploading your files.",
+      subtitle:
+        "Convert Office documents, PDFs, images, pages, and slides locally on your PC. The website is only a download and project page for kmb file tools.",
+      proof: "No upload · No telemetry · No account · MIT licensed",
+      installerCta: "Download installer",
+      portableCta: "Download portable ZIP",
+      releaseCta: "View GitHub Release",
+      sourceCta: "View source",
+      releaseNote:
+        "Public beta v0.1.0-beta.1. Unsigned builds may show a Windows SmartScreen warning.",
+    },
+    download: {
+      title: "Official free downloads",
+      text:
+        "Download the installer or portable ZIP from GitHub Releases. Official downloads are free. Please avoid misleading paid repackages; support the original project.",
+      installer: "Windows Installer EXE",
+      portable: "Portable ZIP",
+      allReleases: "View all releases",
+      betaNote:
+        "Microsoft Office is optional for best DOCX/PPTX fidelity. LibreOffice is an optional fallback and is not bundled.",
+    },
+    stats: [
+      { value: "Local", label: "Desktop processing" },
+      { value: "Free", label: "Community-friendly" },
+      { value: "MIT", label: "Open-source license" },
+      { value: "EN/VI", label: "Bilingual UI" },
+    ],
+    localTitle: "Why local-only matters",
+    localCards: [
+      {
+        title: "Your files stay on your machine",
+        text:
+          "The desktop app processes documents locally. The website does not process your files and has no upload form.",
+      },
+      {
+        title: "No telemetry",
+        text:
+          "No analytics scripts, tracking pixels, crash reporters, or account system are included in the website.",
+      },
+      {
+        title: "Clear dependency behavior",
+        text:
+          "Use Microsoft Office when installed. If you do not have Office, the app guides you to install LibreOffice from the official site.",
+      },
+    ],
+    featuresTitle: "Document conversion features",
+    featuresIntro:
+      "A practical Windows utility for common document workflows, designed to stay understandable instead of becoming a cloud dashboard.",
     features: [
       {
         title: "Office documents to PDF",
-        text: "Use the local Microsoft Office engine when available, or configure LibreOffice as the fallback.",
+        text: "Convert DOC, DOCX, RTF, PPT, and PPTX through local Microsoft Office when available.",
+      },
+      {
+        title: "LibreOffice fallback guidance",
+        text: "Use LibreOffice headless conversion for supported formats when Microsoft Office is not available.",
       },
       {
         title: "PDF to PNG, JPEG, WebP",
@@ -69,81 +173,178 @@ export const copy: Record<Language, SiteCopy> = {
       },
       {
         title: "Batch conversion",
-        text: "Queue many files, choose one output folder, and keep partial-success results when one file fails.",
+        text: "Queue multiple files, pick an output folder, and keep partial success when one file fails.",
       },
       {
-        title: "PDF toolbox",
-        text: "Merge, split, extract, rotate, and convert images to PDF using local processing.",
+        title: "Engine setup status",
+        text: "See Word, PowerPoint, LibreOffice, and PDF renderer availability before starting work.",
       },
       {
-        title: "Microsoft Office engine",
-        text: "Best DOCX/PPTX fidelity when Word or PowerPoint is installed and activated in your user session.",
-      },
-      {
-        title: "LibreOffice fallback guidance",
-        text: "LibreOffice is optional and not bundled. The app guides users to install and select soffice when needed.",
+        title: "English and Vietnamese",
+        text: "Switch the desktop UI and website copy between English and Vietnamese.",
       },
     ],
-    privacyTitle: "Privacy by design",
-    privacy: [
+    toolboxTitle: "PDF Toolbox V1",
+    toolboxIntro:
+      "Local PDF utilities for everyday cleanup tasks. No OCR, signing, encryption, or cloud compression in this beta.",
+    toolbox: [
+      { title: "Merge PDFs", text: "Combine several PDF files into one output file." },
+      { title: "Split PDF", text: "Export each page as a separate PDF file." },
+      { title: "Extract pages", text: "Create a new PDF from ranges such as 1,3-5,8." },
+      { title: "Rotate pages", text: "Rotate all pages or selected page ranges." },
+      { title: "Images to PDF", text: "Build one PDF from PNG, JPEG, or WebP images." },
+    ],
+    screenshotsTitle: "App screenshots",
+    screenshotsIntro:
+      "Owner screenshots can be placed in website/public/screenshots. The site keeps working if screenshots are not present yet.",
+    screenshots: [
       {
-        title: "Desktop conversion only",
-        text: "Files are processed by the Windows app on your machine, not by this website.",
+        title: "App home",
+        text: "Files, target, engine, output folder, and progress in one focused page.",
+        src: "/screenshots/app-home.png",
       },
       {
-        title: "Website has no upload form",
-        text: "There is no backend, no API route, and no server-side converter behind this page.",
+        title: "PDF tools",
+        text: "Merge, split, extract, rotate, and images-to-PDF actions separated from conversion.",
+        src: "/screenshots/pdf-tools.png",
       },
       {
-        title: "No telemetry",
-        text: "No analytics scripts, tracking pixels, crash reporters, or account system are included.",
+        title: "Website dark mode",
+        text: "Dark landing page variant for release notes, social sharing, and user guides.",
+        src: "/screenshots/website-dark.png",
       },
     ],
-    howTitle: "How it works",
-    how: [
-      { title: "1. Download", text: "Get the portable zip from GitHub Releases." },
-      { title: "2. Extract", text: "Unzip the folder anywhere you control." },
-      { title: "3. Run", text: "Open SnappyDocsConvert.App.exe on Windows." },
-      { title: "4. Convert", text: "Choose files, output folder, target, and convert locally." },
+    openSourceTitle: "Open source and community",
+    openSource: [
+      {
+        title: "MIT licensed",
+        text:
+          "Free to use, modify, and redistribute with attribution/license notice. The license is permissive and transparent.",
+      },
+      {
+        title: "Official downloads are free",
+        text:
+          "Please avoid misleading paid repackages. If you share the app, link back to the original project and release page.",
+      },
+      {
+        title: "Community support",
+        text: "Report issues, request features, or discuss the roadmap through GitHub and Discord.",
+      },
     ],
-    limitationsTitle: "Current MVP limits",
-    limitations: [
-      "Windows desktop MVP only.",
-      "Unsigned builds may show a Windows SmartScreen warning.",
-      "LibreOffice fallback requires user-installed LibreOffice.",
-      "Microsoft Office is optional, but recommended for best DOCX/PPTX fidelity.",
-      "Public release depends on owner approval and GitHub Release publication.",
+    roadmapTitle: "Roadmap",
+    roadmap: [
+      { title: "Auto-update", text: "Planned. Not implemented in this beta." },
+      { title: "Installer polish", text: "Code signing and MSI/MSIX packaging are future work." },
+      { title: "More PDF tools", text: "Compression, OCR, watermarking, metadata, and password features are planned." },
+      { title: "More smoke coverage", text: "LibreOffice and PowerPoint real smoke tests are pending suitable local setup." },
     ],
+    faqTitle: "FAQ",
+    faq: [
+      {
+        question: "Does the website upload my files?",
+        answer: "No. The website is static and has no upload form, backend, or converter service.",
+      },
+      {
+        question: "Do I need Microsoft Office?",
+        answer:
+          "No for every workflow. Microsoft Office is recommended for best DOCX/PPTX fidelity. LibreOffice can be used as a fallback when installed separately.",
+      },
+      {
+        question: "Why does Windows warn about the app?",
+        answer:
+          "The beta build is unsigned. Windows SmartScreen can warn about unsigned apps until code signing is added.",
+      },
+      {
+        question: "Can I redistribute it?",
+        answer:
+          "Yes under MIT terms, with attribution/license notice. Please do not sell misleading repackages as if they were the official project.",
+      },
+    ],
+    supportTitle: "Support and contribution",
+    supportText:
+      "Need help or want to contribute? Use Discord for quick discussion and GitHub for issues, source, releases, and pull requests.",
+    discordCta: "Join Discord",
     footer: {
-      line: "Free/community-friendly local file tools. No upload, no telemetry.",
-      download: "GitHub Releases",
-      source: "GitHub source",
+      line: "Free local Windows document converter. No upload. No telemetry.",
+      license:
+        "MIT licensed. Free to use, modify, and redistribute with attribution/license notice.",
     },
   },
   vi: {
     nav: {
-      features: "Tính năng",
-      privacy: "Riêng tư",
-      how: "Cách dùng",
-      limitations: "Giới hạn",
       download: "Tải xuống",
+      local: "Chạy cục bộ",
+      features: "Tính năng",
+      toolbox: "Công cụ PDF",
+      screenshots: "Ảnh giao diện",
+      roadmap: "Lộ trình",
+      faq: "Hỏi đáp",
+      support: "Hỗ trợ",
       source: "Mã nguồn",
     },
-    hero: {
-      title: "Trình chuyển đổi tài liệu cục bộ miễn phí cho Windows",
-      subtitle:
-        "Chuyển đổi tài liệu Office, PDF, trang, slide và hình ảnh ngay trên máy tính của bạn. Website không xử lý tệp của bạn.",
-      proof: "Không tải lên · Không telemetry · Mã nguồn mở",
-      primaryCta: "Tải bản Windows từ GitHub Releases",
-      secondaryCta: "Xem mã nguồn",
-      releaseNote: "Bản Windows portable MVP. Chưa có installer.",
+    controls: {
+      language: "Ngôn ngữ",
+      light: "Sáng",
+      dark: "Tối",
     },
-    trust: ["Ứng dụng desktop cục bộ", "Không cần tài khoản", "Không backend", "Không theo dõi"],
-    featuresTitle: "Công cụ hữu ích, không cần upload tệp",
+    hero: {
+      eyebrow: "Ứng dụng Windows miễn phí và mã nguồn mở",
+      title: "Chuyển đổi tài liệu nhanh mà không tải tệp lên máy chủ.",
+      subtitle:
+        "Chuyển đổi tài liệu Office, PDF, hình ảnh, trang và slide cục bộ trên máy tính của bạn. Website chỉ là trang tải xuống và giới thiệu kmb file tools.",
+      proof: "Chạy cục bộ · Không tải lên · Không tài khoản · Giấy phép MIT",
+      installerCta: "Tải installer",
+      portableCta: "Tải bản portable ZIP",
+      releaseCta: "Xem GitHub Release",
+      sourceCta: "Xem mã nguồn",
+      releaseNote:
+        "Public beta v0.1.0-beta.1. Bản chưa ký có thể bị Windows SmartScreen cảnh báo.",
+    },
+    download: {
+      title: "Tải bản chính thức miễn phí",
+      text:
+        "Tải installer hoặc portable ZIP từ GitHub Releases. Bản chính thức là miễn phí. Hãy tránh các bản đóng gói bán lại gây hiểu nhầm; hãy ủng hộ dự án gốc.",
+      installer: "Windows Installer EXE",
+      portable: "Portable ZIP",
+      allReleases: "Xem tất cả bản phát hành",
+      betaNote:
+        "Microsoft Office là tùy chọn để có độ chính xác DOCX/PPTX tốt nhất. LibreOffice là phương án dự phòng tùy chọn và không được đóng gói kèm.",
+    },
+    stats: [
+      { value: "Cục bộ", label: "Xử lý trên máy" },
+      { value: "Miễn phí", label: "Thân thiện cộng đồng" },
+      { value: "MIT", label: "Giấy phép mã nguồn mở" },
+      { value: "EN/VI", label: "Giao diện song ngữ" },
+    ],
+    localTitle: "Vì sao chạy cục bộ quan trọng",
+    localCards: [
+      {
+        title: "Tệp nằm trên máy của bạn",
+        text:
+          "Ứng dụng desktop xử lý tài liệu cục bộ. Website không xử lý tệp của bạn và không có form upload.",
+      },
+      {
+        title: "Không telemetry",
+        text:
+          "Website không có analytics, tracking pixel, crash reporter hay hệ thống tài khoản.",
+      },
+      {
+        title: "Phụ thuộc được giải thích rõ",
+        text:
+          "Dùng Microsoft Office khi đã cài sẵn. Nếu không có Office, app sẽ hướng dẫn cài LibreOffice từ trang chính thức.",
+      },
+    ],
+    featuresTitle: "Tính năng chuyển đổi tài liệu",
+    featuresIntro:
+      "Một công cụ Windows thực dụng cho các luồng làm việc tài liệu phổ biến, ưu tiên dễ hiểu hơn là biến thành dashboard phức tạp.",
     features: [
       {
         title: "Office sang PDF",
-        text: "Dùng Microsoft Office cục bộ khi có sẵn, hoặc cấu hình LibreOffice làm phương án dự phòng.",
+        text: "Chuyển DOC, DOCX, RTF, PPT và PPTX qua Microsoft Office cục bộ khi có sẵn.",
+      },
+      {
+        title: "Hướng dẫn LibreOffice fallback",
+        text: "Dùng LibreOffice headless cho các định dạng được hỗ trợ khi không có Microsoft Office.",
       },
       {
         title: "PDF sang PNG, JPEG, WebP",
@@ -151,55 +352,101 @@ export const copy: Record<Language, SiteCopy> = {
       },
       {
         title: "Chuyển đổi hàng loạt",
-        text: "Xếp nhiều tệp vào hàng đợi, chọn một thư mục xuất và vẫn giữ kết quả khi một tệp lỗi.",
+        text: "Xếp nhiều tệp vào hàng đợi, chọn thư mục xuất và vẫn giữ kết quả khi một tệp lỗi.",
+      },
+      {
+        title: "Trạng thái bộ chuyển đổi",
+        text: "Xem Word, PowerPoint, LibreOffice và PDF renderer có sẵn hay không trước khi chạy.",
+      },
+      {
+        title: "Tiếng Anh và tiếng Việt",
+        text: "Đổi giao diện desktop và website giữa tiếng Anh và tiếng Việt.",
+      },
+    ],
+    toolboxTitle: "Công cụ PDF V1",
+    toolboxIntro:
+      "Các tiện ích PDF cục bộ cho việc chỉnh tài liệu hằng ngày. Beta này chưa có OCR, ký số, mã hóa hay nén cloud.",
+    toolbox: [
+      { title: "Gộp PDF", text: "Gộp nhiều file PDF thành một file đầu ra." },
+      { title: "Tách PDF", text: "Xuất từng trang thành một file PDF riêng." },
+      { title: "Trích trang", text: "Tạo PDF mới từ dải trang như 1,3-5,8." },
+      { title: "Xoay trang", text: "Xoay toàn bộ trang hoặc dải trang được chọn." },
+      { title: "Ảnh sang PDF", text: "Tạo một PDF từ ảnh PNG, JPEG hoặc WebP." },
+    ],
+    screenshotsTitle: "Ảnh giao diện app",
+    screenshotsIntro:
+      "Ảnh chụp do owner cung cấp có thể đặt trong website/public/screenshots. Website vẫn build được nếu chưa có ảnh.",
+    screenshots: [
+      {
+        title: "Trang chính của app",
+        text: "Tệp, định dạng đích, engine, thư mục xuất và tiến trình nằm trong một trang rõ ràng.",
+        src: "/screenshots/app-home.png",
       },
       {
         title: "Công cụ PDF",
-        text: "Gộp, tách, trích trang, xoay trang và chuyển ảnh thành PDF bằng xử lý cục bộ.",
+        text: "Gộp, tách, trích, xoay và ảnh-sang-PDF được tách khỏi luồng chuyển đổi.",
+        src: "/screenshots/pdf-tools.png",
       },
       {
-        title: "Bộ chuyển đổi Microsoft Office",
-        text: "Cho chất lượng DOCX/PPTX tốt nhất khi Word hoặc PowerPoint đã được cài và kích hoạt.",
-      },
-      {
-        title: "Hướng dẫn LibreOffice",
-        text: "LibreOffice là tùy chọn và không được bundle. App hướng dẫn cài và chọn soffice khi cần.",
+        title: "Website dark mode",
+        text: "Giao diện tối của landing page để dùng cho release note, chia sẻ và hướng dẫn người dùng.",
+        src: "/screenshots/website-dark.png",
       },
     ],
-    privacyTitle: "Thiết kế ưu tiên riêng tư",
-    privacy: [
+    openSourceTitle: "Mã nguồn mở và cộng đồng",
+    openSource: [
       {
-        title: "Chỉ chuyển đổi trên desktop",
-        text: "Tệp được xử lý bởi app Windows trên máy của bạn, không phải bởi website này.",
+        title: "Giấy phép MIT",
+        text:
+          "Miễn phí sử dụng, sửa đổi và phân phối lại nếu giữ thông tin bản quyền/giấy phép. Giấy phép rõ ràng và thoáng.",
       },
       {
-        title: "Website không có form upload",
-        text: "Không có backend, không có API route và không có server chuyển đổi phía sau trang này.",
+        title: "Bản chính thức miễn phí",
+        text:
+          "Vui lòng tránh các bản đóng gói bán lại gây hiểu nhầm. Nếu chia sẻ app, hãy dẫn về dự án gốc và trang release chính thức.",
       },
       {
-        title: "Không telemetry",
-        text: "Không analytics, tracking pixel, crash reporter hay hệ thống tài khoản.",
+        title: "Hỗ trợ cộng đồng",
+        text: "Báo lỗi, đề xuất tính năng hoặc thảo luận lộ trình qua GitHub và Discord.",
       },
     ],
-    howTitle: "Cách dùng",
-    how: [
-      { title: "1. Tải xuống", text: "Tải file zip portable từ GitHub Releases." },
-      { title: "2. Giải nén", text: "Giải nén vào thư mục bạn kiểm soát." },
-      { title: "3. Chạy app", text: "Mở SnappyDocsConvert.App.exe trên Windows." },
-      { title: "4. Chuyển đổi", text: "Chọn tệp, thư mục xuất, định dạng đích rồi chạy cục bộ." },
+    roadmapTitle: "Lộ trình",
+    roadmap: [
+      { title: "Tự cập nhật", text: "Đã lên kế hoạch. Chưa có trong beta này." },
+      { title: "Hoàn thiện installer", text: "Code signing và MSI/MSIX là việc cho các phiên bản sau." },
+      { title: "Thêm công cụ PDF", text: "Nén, OCR, watermark, metadata và mật khẩu sẽ được xem xét." },
+      { title: "Thêm kiểm thử thật", text: "LibreOffice và PowerPoint real smoke còn chờ môi trường phù hợp." },
     ],
-    limitationsTitle: "Giới hạn hiện tại của MVP",
-    limitations: [
-      "Hiện là bản desktop MVP cho Windows.",
-      "Bản chưa ký có thể bị Windows SmartScreen cảnh báo.",
-      "LibreOffice fallback yêu cầu người dùng tự cài LibreOffice.",
-      "Microsoft Office là tùy chọn, nhưng nên có để DOCX/PPTX đạt chất lượng tốt nhất.",
-      "Public release cần owner duyệt và tạo GitHub Release.",
+    faqTitle: "Hỏi đáp",
+    faq: [
+      {
+        question: "Website có tải tệp của tôi lên không?",
+        answer: "Không. Website là trang tĩnh, không có form upload, backend hay dịch vụ chuyển đổi.",
+      },
+      {
+        question: "Tôi có cần Microsoft Office không?",
+        answer:
+          "Không phải cho mọi luồng. Microsoft Office giúp DOCX/PPTX chính xác hơn. LibreOffice có thể làm fallback khi bạn tự cài riêng.",
+      },
+      {
+        question: "Vì sao Windows cảnh báo app?",
+        answer:
+          "Bản beta chưa được ký số. Windows SmartScreen có thể cảnh báo app chưa ký cho đến khi có code signing.",
+      },
+      {
+        question: "Tôi có được phân phối lại không?",
+        answer:
+          "Có, theo điều khoản MIT và cần giữ thông tin bản quyền/giấy phép. Vui lòng không bán bản đóng gói gây hiểu nhầm như thể đó là dự án chính thức.",
+      },
     ],
+    supportTitle: "Hỗ trợ và đóng góp",
+    supportText:
+      "Nếu cần hỗ trợ hoặc muốn đóng góp, vào Discord để trao đổi nhanh và dùng GitHub cho issue, mã nguồn, release và pull request.",
+    discordCta: "Vào Discord",
     footer: {
-      line: "Công cụ tệp cục bộ miễn phí cho cộng đồng. Không tải lên, không telemetry.",
-      download: "GitHub Releases",
-      source: "Mã nguồn GitHub",
+      line: "Công cụ chuyển đổi tài liệu Windows chạy cục bộ. Không tải lên. Không telemetry.",
+      license:
+        "Giấy phép MIT. Miễn phí sử dụng, sửa đổi và phân phối lại nếu giữ thông tin bản quyền/giấy phép.",
     },
   },
 };

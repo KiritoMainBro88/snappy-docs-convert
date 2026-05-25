@@ -10,7 +10,7 @@ dotnet run --project src\SnappyDocsConvert.App
 
 | Step | Expected result | Actual result | Pass/Fail | Evidence path/screenshot optional |
 |---|---|---|---|---|
-| 1. Launch app with the command above. | Window opens as `Snappy Docs Convert`; no startup crash. |  |  |  |
+| 1. Launch app with the command above. | Window opens as `kmb file tools`; no startup crash. |  |  |  |
 | 2. Compare engine statuses with `dotnet run --project src\SnappyDocsConvert.App -- --self-check`. | Word, PowerPoint, LibreOffice statuses match local machine. |  |  |  |
 | 3. Verify privacy wording. | Header shows local-only/no-upload wording; no cloud upload claims. |  |  |  |
 | 3a. Switch language EN/VI. | Navigation, buttons, labels, guidance, and major messages switch language without restart. |  |  |  |

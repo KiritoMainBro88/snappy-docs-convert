@@ -1,4 +1,4 @@
-param(
+﻿param(
     [string]$Configuration = "Release",
     [string]$Runtime = "win-x64",
     [switch]$SelfContained,
@@ -81,7 +81,7 @@ else {
 }
 
 $quickstart = @"
-Snappy Docs Convert - Portable Quickstart
+kmb file tools - Portable Quickstart
 
 1. Run SnappyDocsConvert.App.exe.
 2. Add files or folders: PDF, DOC, DOCX, RTF, ODT, PPT, PPTX, ODP.
@@ -99,7 +99,7 @@ No cloud upload. No telemetry.
 "@
 
 $privacy = @"
-Snappy Docs Convert - Privacy
+kmb file tools - Privacy
 
 - Local-only conversion.
 - No cloud upload.
@@ -109,9 +109,9 @@ Snappy Docs Convert - Privacy
 "@
 
 $thirdParty = @"
-Snappy Docs Convert - Third-Party Notices (Initial MVP)
+kmb file tools - Third-Party Notices (Initial MVP)
 
-This portable package contains the Snappy Docs Convert WPF app and .NET publish output.
+This portable package contains the kmb file tools WPF app and .NET publish output.
 
 $runtimeNote
 

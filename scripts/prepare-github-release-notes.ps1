@@ -1,4 +1,4 @@
-param(
+﻿param(
     [string]$Version = "v0.1.0-rc1",
     [string]$ReleaseNotesPath = "docs\releases\v0.1.0-rc1.md",
     [string]$PackagePath = ""
@@ -30,7 +30,7 @@ else {
     $PackagePath = (Resolve-Path -LiteralPath $PackagePath).Path
 }
 
-Write-Host "Release title: Snappy Docs Convert $Version"
+Write-Host "Release title: kmb file tools $Version"
 Write-Host "Release notes: $notesPath"
 
 if (-not [string]::IsNullOrWhiteSpace($PackagePath)) {
@@ -52,10 +52,10 @@ if ($gh) {
     Write-Host "  git tag $Version"
     Write-Host "  git push origin $Version"
     if (-not [string]::IsNullOrWhiteSpace($PackagePath)) {
-        Write-Host "  gh release create $Version `"$PackagePath`" --title `"Snappy Docs Convert $Version`" --notes-file `"$notesPath`" --draft"
+        Write-Host "  gh release create $Version `"$PackagePath`" --title `"kmb file tools $Version`" --notes-file `"$notesPath`" --draft"
     }
     else {
-        Write-Host "  gh release create $Version --title `"Snappy Docs Convert $Version`" --notes-file `"$notesPath`" --draft"
+        Write-Host "  gh release create $Version --title `"kmb file tools $Version`" --notes-file `"$notesPath`" --draft"
     }
 }
 else {
@@ -64,7 +64,7 @@ else {
     Write-Host "  1. Push branch only after owner approval."
     Write-Host "  2. Open GitHub > Releases > Draft a new release."
     Write-Host "  3. Tag: $Version"
-    Write-Host "  4. Title: Snappy Docs Convert $Version"
+    Write-Host "  4. Title: kmb file tools $Version"
     Write-Host "  5. Paste body from: $notesPath"
     Write-Host "  6. Upload portable zip artifact."
     Write-Host "  7. Keep draft until owner approves publish."

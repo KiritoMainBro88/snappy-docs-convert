@@ -1,9 +1,9 @@
-$ErrorActionPreference = "Continue"
+﻿$ErrorActionPreference = "Continue"
 
 $repoRoot = Split-Path -Parent $PSScriptRoot
 Set-Location $repoRoot
 
-Write-Host "Snappy Docs Convert - token tool check"
+Write-Host "kmb file tools - token tool check"
 Write-Host "Repo: $repoRoot"
 Write-Host ""
 

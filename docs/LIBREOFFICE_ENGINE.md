@@ -1,4 +1,4 @@
-# LibreOffice Headless Engine
+﻿# LibreOffice Headless Engine
 
 Phase 2 adds the first local conversion engine. It converts supported Office-style documents to PDF by launching LibreOffice locally in headless mode.
 
@@ -45,7 +45,7 @@ soffice.com --headless --nologo --nodefault --nofirststartwizard --norestore -en
 
 ## Manual Install
 
-Install LibreOffice from the official LibreOffice installer. Snappy Docs Convert does not bundle LibreOffice in the MVP and no repo command installs it automatically.
+Install LibreOffice from the official LibreOffice installer. kmb file tools does not bundle LibreOffice in the MVP and no repo command installs it automatically.
 
 Official download:
 

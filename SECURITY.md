@@ -1,6 +1,6 @@
-# Security Policy
+﻿# Security Policy
 
-Snappy Docs Convert is a local-only desktop utility. It should not upload files, emit telemetry, or call remote conversion services.
+kmb file tools is a local-only desktop utility. It should not upload files, emit telemetry, or call remote conversion services.
 
 ## Reporting A Vulnerability
 

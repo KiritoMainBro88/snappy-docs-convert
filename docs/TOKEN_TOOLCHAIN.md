@@ -1,6 +1,6 @@
-# Token Toolchain
+﻿# Token Toolchain
 
-Snappy Docs Convert uses two real token-saving tools for Codex work:
+kmb file tools uses two real token-saving tools for Codex work:
 
 - RTK: Rust Token Killer. Official repo: https://github.com/rtk-ai/rtk
 - Caveman. Official repo: https://github.com/JuliusBrussee/caveman

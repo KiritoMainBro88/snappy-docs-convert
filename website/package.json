@@ -1,18 +1,21 @@
 {
-  "name": "snappy-docs-convert-website",
+  "name": "kmb-file-tools-website",
   "private": true,
   "version": "0.1.0",
   "type": "module",
   "scripts": {
     "dev": "vite",
     "build": "tsc -b && vite build",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "demo:website": "playwright install chromium && playwright test --config=playwright.config.ts",
+    "test:demo": "npm run demo:website"
   },
   "dependencies": {
     "react": "19.2.6",
     "react-dom": "19.2.6"
   },
   "devDependencies": {
+    "@playwright/test": "^1.60.0",
     "@types/react": "19.2.15",
     "@types/react-dom": "19.2.3",
     "@vitejs/plugin-react": "6.0.2",

@@ -155,3 +155,23 @@
 - Implemented: add `v0.1.0-beta.1` release notes with hashes.
 - Planned: push source, fast-forward main, tag, and create GitHub prerelease with both assets.
 - Not implemented: production Vercel deploy, code signing, MSI/MSIX, or LibreOffice real smoke.
+
+## Phase 10B: Website Production Polish And Deploy
+
+- Implemented: polish the Vite website landing page with clearer download, local-only, features, PDF Toolbox, screenshots, open-source/community, roadmap, FAQ, and support sections.
+- Implemented: add dark mode with persisted theme preference.
+- Implemented: preserve English/Vietnamese website copy and add natural Vietnamese wording for free/open-source, local-only, official downloads, and Discord support.
+- Implemented: link direct beta installer/portable assets, the GitHub Release page, source repository, and Discord support.
+- Implemented: add screenshot placeholders and `website/public/screenshots/README.md` for owner-provided app screenshots.
+- Implemented: update website checker for Discord/release/source links, EN/VI theme copy, no backend/API/functions folders, no external CDN assets, and no known analytics provider markers.
+- Implemented: Vercel production deploy to `https://website-sand-xi-15.vercel.app`.
+- Not implemented: backend, telemetry, analytics, new desktop features, new GitHub app release, or auto-update.
+
+## Phase 10C: Auto Demo Kit
+
+- Implemented: adopt user-facing display name `kmb file tools` while preserving existing `SnappyDocsConvert` package/binary identifiers for beta compatibility.
+- Implemented: add generated demo input script for PDF, RTF, PNG, and unsupported dummy file.
+- Implemented: add Playwright website demo test for light/dark EN, light VI, mobile VI screenshots, link verification, and video recording.
+- Implemented: add desktop screenshot helper and FFmpeg desktop recording helper.
+- Implemented: add demo asset policy and English/Vietnamese demo narration script.
+- Not implemented: backend, telemetry, analytics, new GitHub app release, committed generated media, or OBS automation.

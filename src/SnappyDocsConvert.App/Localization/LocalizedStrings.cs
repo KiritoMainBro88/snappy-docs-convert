@@ -4,7 +4,7 @@ public static class LocalizedStrings
 {
     private static readonly IReadOnlyDictionary<string, string> English = new Dictionary<string, string>
     {
-        ["AppName"] = "Snappy Docs Convert",
+        ["AppName"] = "kmb file tools",
         ["Subtitle"] = "Local document converter",
         ["PrivacyBadge"] = "Local only · No upload",
         ["NavConvert"] = "Convert",
@@ -124,7 +124,7 @@ public static class LocalizedStrings
 
     private static readonly IReadOnlyDictionary<string, string> Vietnamese = new Dictionary<string, string>
     {
-        ["AppName"] = "Snappy Docs Convert",
+        ["AppName"] = "kmb file tools",
         ["Subtitle"] = "Công cụ chuyển đổi tài liệu cục bộ",
         ["PrivacyBadge"] = "Chạy cục bộ · Không tải lên",
         ["NavConvert"] = "Chuyển đổi",

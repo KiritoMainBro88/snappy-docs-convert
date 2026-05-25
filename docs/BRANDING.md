@@ -1,6 +1,6 @@
 # Branding And Logo Assets
 
-Snappy Docs Convert supports owner-provided logo/icon files. No image generation is part of this repo phase.
+`kmb file tools` supports owner-provided logo/icon files. No image generation is part of this repo phase.
 
 ## Expected Files
 
@@ -9,6 +9,8 @@ src/SnappyDocsConvert.App/Assets/logo.png
 src/SnappyDocsConvert.App/Assets/app.ico
 website-static/assets/logo.png
 website-static/favicon.ico
+website/public/assets/logo.png
+website/public/favicon.ico
 ```
 
 ## Windows App

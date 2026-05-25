@@ -1,6 +1,6 @@
-# Contributing
+﻿# Contributing
 
-Snappy Docs Convert is a Windows-first local document conversion app.
+kmb file tools is a Windows-first local document conversion app.
 
 ## Build
 

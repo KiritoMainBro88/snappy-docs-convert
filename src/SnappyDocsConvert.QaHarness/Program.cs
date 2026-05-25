@@ -1,4 +1,4 @@
-using System.Text;
+﻿using System.Text;
 using SnappyDocsConvert.Core.Models;
 using SnappyDocsConvert.Core.Services;
 using SnappyDocsConvert.Core.Services.Batch;
@@ -238,7 +238,7 @@ static string WriteTinyRtf(string path)
     Directory.CreateDirectory(Path.GetDirectoryName(path)!);
     File.WriteAllText(
         path,
-        @"{\rtf1\ansi\deff0{\fonttbl{\f0 Arial;}}\f0\fs24 Snappy Docs Convert QA.\par}",
+        @"{\rtf1\ansi\deff0{\fonttbl{\f0 Arial;}}\f0\fs24 kmb file tools QA.\par}",
         Encoding.ASCII);
     return path;
 }
@@ -261,7 +261,7 @@ internal static class TinyPdf
 {
     public static byte[] Create()
     {
-        const string pageText = "BT /F1 18 Tf 36 90 Td (Snappy Docs Convert QA) Tj ET\n";
+        const string pageText = "BT /F1 18 Tf 36 90 Td (kmb file tools QA) Tj ET\n";
         var objects = new[]
         {
             "<< /Type /Catalog /Pages 2 0 R >>",
