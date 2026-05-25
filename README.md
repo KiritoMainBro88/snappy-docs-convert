@@ -2,7 +2,7 @@
 
 Snappy Docs Convert is planned as a fast local document conversion app for Windows-first workflows.
 
-Current phase: Phase 5A batch conversion pipeline. This branch contains a small .NET core library, local LibreOffice document-to-PDF conversion, Microsoft Office availability detection, guarded Office COM PDF export, Office smoke validation, core dependency guidance, PDF page image export, and a core batch pipeline. UI and installer work are still later phases.
+Current phase: Phase 6A WPF UI MVP. This branch contains a small .NET core library, local LibreOffice document-to-PDF conversion, Microsoft Office availability detection, guarded Office COM PDF export, Office smoke validation, core dependency guidance, PDF page image export, a core batch pipeline, and a runnable Windows WPF app. Installer work is still a later phase.
 
 ## Final Goal
 
@@ -36,6 +36,18 @@ dotnet test
 ```
 
 Normal unit tests use fake process runners where external document engines are involved. They do not require LibreOffice or Microsoft Office.
+
+Run the desktop app:
+
+```powershell
+dotnet run --project src/SnappyDocsConvert.App
+```
+
+Self-check without opening the window:
+
+```powershell
+dotnet run --project src/SnappyDocsConvert.App -- --self-check
+```
 
 ## LibreOffice Engine
 
@@ -100,6 +112,17 @@ output\
 
 Presentation inputs use `slide-001.png`; document/PDF inputs use `page-001.png`. See `docs/BATCH_PIPELINE.md`.
 
+## WPF UI MVP
+
+Phase 6A adds the first runnable desktop UI:
+
+- Queue files/folders with drag/drop or dialogs.
+- Choose output folder, target, engine, image format, DPI, and intermediate PDF option.
+- Run/cancel batch conversion through the core pipeline.
+- See queue status, compact logs, output path, and engine setup guidance.
+
+See `docs/WPF_UI_MVP.md`.
+
 To pack a small AI-friendly context bundle:
 
 ```powershell
@@ -110,4 +133,4 @@ The packed output is written to `docs/ai-context/repomix-output.md` and is ignor
 
 ## Next Phase Summary
 
-The next recommended implementation phase is Phase 6: WPF UI. Wait for owner approval before starting it.
+The next recommended implementation phase is Phase 6B: evidence-based E2E QA gate. Wait for owner approval before starting it.

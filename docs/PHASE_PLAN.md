@@ -51,7 +51,24 @@
 - Implemented: keep/delete intermediate PDFs for images-only jobs based on option.
 - Not implemented: UI queue, progress window, or user-facing batch controls.
 
-## Phase 6: WPF UI Polish
+## Phase 6A: WPF UI MVP
+
+- Implemented: create `SnappyDocsConvert.App` WPF project.
+- Implemented: add files/folders, drag/drop queue, remove/clear queue.
+- Implemented: output folder, target, engine, image format, DPI, and keep-intermediate-PDF settings.
+- Implemented: run/cancel batch conversion through `BatchConversionPipeline`.
+- Implemented: per-file status, output path, summary, and compact logs.
+- Implemented: engine setup status with Office/LibreOffice checks, choose `soffice`, recheck, and LibreOffice download action.
+- Implemented: `--self-check` mode and app smoke build script.
+- Not implemented: final UI polish, installer, or automated GUI interaction tests.
+
+## Phase 6B: Evidence-Based E2E QA Gate
+
+- Run app self-check and smoke scripts.
+- Add safe fixture-driven E2E evidence for PDF input and installed local engines.
+- Record exact pass/fail evidence before packaging.
+
+## Phase 6C: WPF UI Polish
 
 - Build the Windows desktop UI around queue, engine status, progress, cancellation, and output browsing.
 - Keep the UI local-first and privacy-preserving.

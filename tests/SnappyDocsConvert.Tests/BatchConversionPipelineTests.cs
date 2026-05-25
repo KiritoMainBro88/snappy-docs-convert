@@ -8,6 +8,35 @@ namespace SnappyDocsConvert.Tests;
 public sealed class BatchConversionPipelineTests
 {
     [Fact]
+    public void InputScanner_AcceptsSupportedFilesAndRejectsUnsupported()
+    {
+        using var temp = TempDirectory.Create();
+        var pdf = temp.WriteFile("input.pdf", "%PDF");
+        var ignored = temp.WriteFile("ignored.txt", "no");
+        var scanner = new BatchInputScanner();
+
+        var result = scanner.Scan(new[] { pdf, ignored });
+
+        Assert.Contains(pdf, result.AcceptedFiles);
+        Assert.Contains(ignored, result.RejectedPaths);
+    }
+
+    [Fact]
+    public void InputScanner_RecursesFoldersAndDeduplicates()
+    {
+        using var temp = TempDirectory.Create();
+        var folder = temp.CreateSubdirectory("folder");
+        var docx = Path.Combine(folder, "input.docx");
+        File.WriteAllText(docx, "doc");
+        var scanner = new BatchInputScanner();
+
+        var result = scanner.Scan(new[] { folder, docx });
+
+        Assert.Single(result.AcceptedFiles);
+        Assert.Equal(docx, Assert.Single(result.AcceptedFiles));
+    }
+
+    [Fact]
     public void OutputPlanner_PlansDocxPdfPath()
     {
         using var temp = TempDirectory.Create();

@@ -1,6 +1,6 @@
 # Architecture Notes
 
-These diagrams show the intended final direction. Phase 2 adds LibreOffice headless document-to-PDF conversion. Phase 2C adds core setup guidance. Phase 3A adds Microsoft Office COM detection and guarded PDF export for local desktop user sessions. Phase 4 adds PDF page rendering to real image files. Phase 5A adds the core batch pipeline.
+These diagrams show the intended final direction. Phase 2 adds LibreOffice headless document-to-PDF conversion. Phase 2C adds core setup guidance. Phase 3A adds Microsoft Office COM detection and guarded PDF export for local desktop user sessions. Phase 4 adds PDF page rendering to real image files. Phase 5A adds the core batch pipeline. Phase 6A adds the first runnable WPF UI.
 
 ## Phase 2 LibreOffice Engine
 
@@ -87,6 +87,24 @@ flowchart TD
 
 Batch processing continues after failed items and reports partial success. Cancellation marks the current/remaining items cancelled where possible. The UI layer will call this pipeline later.
 
+## Phase 6A WPF UI MVP
+
+```mermaid
+flowchart TD
+  Window["MainWindow"] --> ViewModel["MainWindowViewModel"]
+  ViewModel --> Scanner["BatchInputScanner"]
+  ViewModel --> Advisor["Engine setup checks"]
+  ViewModel --> Runner["UiBatchRunner"]
+  Runner --> Pipeline["BatchConversionPipeline"]
+  Pipeline --> Office["Office COM Engine"]
+  Pipeline --> Libre["LibreOffice Engine"]
+  Pipeline --> Pdf["PDF Image Renderer"]
+  Pipeline --> Progress["BatchConversionProgress"]
+  Progress --> ViewModel
+```
+
+The WPF app runs batch work asynchronously so the UI thread stays responsive. The UI does not require Office or LibreOffice at startup; missing engines appear as setup guidance and affected conversions fail clearly.
+
 ## Final Desktop Architecture
 
 ```mermaid
@@ -144,6 +162,7 @@ flowchart LR
   P02 --> P03["Phase 3: Office COM engine"]
   P03 --> P04["Phase 4: PDF image renderer"]
   P04 --> P05A["Phase 5A: batch pipeline"]
-  P05A --> P05["Phase 6: WPF UI polish"]
-  P05 --> P06["Phase 7: Packaging and release"]
+  P05A --> P06A["Phase 6A: WPF UI MVP"]
+  P06A --> P06B["Phase 6B: E2E QA gate"]
+  P06B --> P07["Phase 7: Packaging and release"]
 ```

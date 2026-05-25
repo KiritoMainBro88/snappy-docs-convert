@@ -68,18 +68,20 @@ public sealed class ConversionEngineSelector : IConversionEngineSelector
                 cancellationToken).ConfigureAwait(false),
             BatchConversionEnginePreference.LibreOffice => await SelectForcedLibreOfficeAsync(
                 extension,
+                options,
                 cancellationToken).ConfigureAwait(false),
-            _ => await SelectAutoAsync(extension, cancellationToken).ConfigureAwait(false)
+            _ => await SelectAutoAsync(extension, options, cancellationToken).ConfigureAwait(false)
         };
     }
 
     private async Task<BatchEngineSelectionResult> SelectAutoAsync(
         string extension,
+        BatchConversionOptions options,
         CancellationToken cancellationToken)
     {
         if (extension is ".odt" or ".odp")
         {
-            return await SelectForcedLibreOfficeAsync(extension, cancellationToken).ConfigureAwait(false);
+            return await SelectForcedLibreOfficeAsync(extension, options, cancellationToken).ConfigureAwait(false);
         }
 
         var officeAvailability = await _officeAvailabilityProvider
@@ -96,7 +98,7 @@ public sealed class ConversionEngineSelector : IConversionEngineSelector
             return BatchEngineSelectionResult.Selected(ConversionEngineKind.MicrosoftOffice);
         }
 
-        var libreOfficeSelection = await SelectForcedLibreOfficeAsync(extension, cancellationToken).ConfigureAwait(false);
+        var libreOfficeSelection = await SelectForcedLibreOfficeAsync(extension, options, cancellationToken).ConfigureAwait(false);
         if (libreOfficeSelection.Success)
         {
             return libreOfficeSelection;
@@ -142,6 +144,7 @@ public sealed class ConversionEngineSelector : IConversionEngineSelector
 
     private async Task<BatchEngineSelectionResult> SelectForcedLibreOfficeAsync(
         string extension,
+        BatchConversionOptions options,
         CancellationToken cancellationToken)
     {
         if (!LibreOfficeExtensions.Contains(extension))
@@ -151,7 +154,13 @@ public sealed class ConversionEngineSelector : IConversionEngineSelector
         }
 
         var availability = await _libreOfficeLocator
-            .LocateAsync(new LibreOfficeOptions { ProbeVersion = false }, cancellationToken)
+            .LocateAsync(
+                new LibreOfficeOptions
+                {
+                    ExecutablePath = options.LibreOfficeExecutablePath,
+                    ProbeVersion = false
+                },
+                cancellationToken)
             .ConfigureAwait(false);
 
         return availability.IsAvailable

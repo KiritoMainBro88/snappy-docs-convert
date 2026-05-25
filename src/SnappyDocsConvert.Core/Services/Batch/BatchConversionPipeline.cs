@@ -166,6 +166,7 @@ public sealed class BatchConversionPipeline : IBatchConversionPipeline
                     documentEngine.Value,
                     inputPath,
                     tempDirectory,
+                    job.Options,
                     cancellationToken).ConfigureAwait(false);
 
                 warnings.AddRange(conversion.Warnings);
@@ -284,11 +285,16 @@ public sealed class BatchConversionPipeline : IBatchConversionPipeline
         ConversionEngineKind engineKind,
         string inputPath,
         string outputDirectory,
+        BatchConversionOptions options,
         CancellationToken cancellationToken)
     {
         var request = new ConversionRequest(inputPath, outputDirectory)
         {
-            AllowOverwrite = true
+            AllowOverwrite = true,
+            Options = new LibreOfficeOptions
+            {
+                ExecutablePath = options.LibreOfficeExecutablePath
+            }
         };
 
         return engineKind switch

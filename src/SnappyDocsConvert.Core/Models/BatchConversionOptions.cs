@@ -16,6 +16,8 @@ public sealed record BatchConversionOptions
 
     public bool KeepIntermediatePdf { get; init; }
 
+    public string? LibreOfficeExecutablePath { get; init; }
+
     public OverwritePolicy OverwritePolicy { get; init; } = OverwritePolicy.AutoRename;
 
     public int MaxDocumentConversions { get; init; } = 1;
