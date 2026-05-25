@@ -45,7 +45,11 @@ soffice.com --headless --nologo --nodefault --nofirststartwizard --norestore -en
 
 ## Manual Install
 
-Install LibreOffice from the official LibreOffice installer. No admin-only repo command installs it automatically.
+Install LibreOffice from the official LibreOffice installer. Snappy Docs Convert does not bundle LibreOffice in the MVP and no repo command installs it automatically.
+
+Official download:
+
+https://www.libreoffice.org/download/download-libreoffice/
 
 Verify:
 
@@ -54,6 +58,17 @@ soffice --version
 ```
 
 If `soffice` is not on `PATH`, provide the full executable path in `LibreOfficeOptions.ExecutablePath`.
+
+Accepted manual selections:
+
+- `C:\Program Files\LibreOffice`
+- `C:\Program Files\LibreOffice\program`
+- `C:\Program Files\LibreOffice\program\soffice.com`
+- `C:\Program Files\LibreOffice\program\soffice.exe`
+
+LibreOffice command-line help:
+
+https://help.libreoffice.org/latest/en-US/text/shared/guide/start_parameters.html
 
 ## Privacy
 
@@ -72,6 +87,7 @@ Missing `soffice`:
 - Install LibreOffice.
 - Verify `soffice --version`.
 - Provide explicit `LibreOfficeOptions.ExecutablePath`.
+- If selecting manually, choose `soffice.com`, `soffice.exe`, the `program` folder, or the LibreOffice root folder.
 
 Timeout:
 - Increase request timeout.

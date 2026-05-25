@@ -78,12 +78,49 @@ public sealed class LibreOfficeLocator : ILibreOfficeLocator
         CancellationToken cancellationToken)
     {
         var fullPath = _pathService.GetFullPath(candidate);
+        if (_pathService.DirectoryExists(fullPath))
+        {
+            var executableInDirectory = ResolveFromSelectedDirectory(fullPath);
+            if (executableInDirectory is null)
+            {
+                return EngineAvailability.Unavailable(
+                    "Selected LibreOffice directory does not contain program\\soffice.com or soffice.exe.");
+            }
+
+            return await AvailableWithVersionAsync(executableInDirectory, options, cancellationToken)
+                .ConfigureAwait(false);
+        }
+
         if (!_pathService.FileExists(fullPath))
         {
             return EngineAvailability.Unavailable(missingReason);
         }
 
         return await AvailableWithVersionAsync(fullPath, options, cancellationToken).ConfigureAwait(false);
+    }
+
+    private string? ResolveFromSelectedDirectory(string directory)
+    {
+        foreach (var executableName in PathExecutableNames)
+        {
+            var directCandidate = _pathService.Combine(directory, executableName);
+            if (_pathService.FileExists(directCandidate))
+            {
+                return directCandidate;
+            }
+        }
+
+        var programDirectory = _pathService.Combine(directory, "program");
+        foreach (var executableName in PathExecutableNames)
+        {
+            var programCandidate = _pathService.Combine(programDirectory, executableName);
+            if (_pathService.FileExists(programCandidate))
+            {
+                return programCandidate;
+            }
+        }
+
+        return null;
     }
 
     private async Task<EngineAvailability> AvailableWithVersionAsync(

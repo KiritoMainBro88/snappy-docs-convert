@@ -17,6 +17,8 @@
 - Implemented: convert supported Office files to PDF where supported.
 - Implemented: add timeouts, cancellation, and structured result reporting.
 - Implemented: add unit tests with fake process runner; no LibreOffice install required for normal tests.
+- Implemented: core setup guidance for Office/LibreOffice dependency decisions.
+- Implemented: official LibreOffice download/CLI links and choose-path/recheck actions.
 
 ## Phase 3: Office COM Engine
 

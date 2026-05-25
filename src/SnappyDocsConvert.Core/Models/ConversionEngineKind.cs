@@ -2,5 +2,6 @@ namespace SnappyDocsConvert.Core.Models;
 
 public enum ConversionEngineKind
 {
-    LibreOffice = 1
+    LibreOffice = 1,
+    MicrosoftOffice = 2
 }

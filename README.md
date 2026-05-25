@@ -2,7 +2,7 @@
 
 Snappy Docs Convert is planned as a fast local document conversion app for Windows-first workflows.
 
-Current phase: Phase 2 LibreOffice headless engine. This branch now contains a small .NET core library plus unit tests for local document-to-PDF conversion through LibreOffice. UI, Microsoft Office COM, and PDF-to-image rendering are still later phases.
+Current phase: Phase 2C engine setup guidance. This branch contains a small .NET core library, local LibreOffice document-to-PDF conversion, and core dependency guidance for Office/LibreOffice setup. UI, Microsoft Office COM conversion, and PDF-to-image rendering are still later phases.
 
 ## Final Goal
 
@@ -41,13 +41,17 @@ Normal unit tests use fake process runners. They do not require LibreOffice.
 
 Phase 2 discovers `soffice.com` or `soffice.exe`, runs LibreOffice headless with an isolated temp profile, and verifies that a PDF was produced in the requested output directory.
 
+Snappy Docs Convert does not bundle LibreOffice in the MVP. If Microsoft Office is not available, users should install LibreOffice from the official site:
+
+https://www.libreoffice.org/download/download-libreoffice/
+
 Manual LibreOffice verify:
 
 ```powershell
 soffice --version
 ```
 
-See `docs/LIBREOFFICE_ENGINE.md` for supported formats, troubleshooting, and limitations.
+The app will auto-detect common install paths or accept a manually selected `soffice.com` / `soffice.exe` path. See `docs/ENGINE_SETUP_GUIDE.md` and `docs/LIBREOFFICE_ENGINE.md`.
 
 To pack a small AI-friendly context bundle:
 

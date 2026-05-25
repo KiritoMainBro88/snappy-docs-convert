@@ -40,6 +40,56 @@ public sealed class LibreOfficeEngineTests
     }
 
     [Fact]
+    public async Task Locator_AcceptsLibreOfficeRootDirectory_WhenProgramSofficeExists()
+    {
+        using var temp = TempDirectory.Create();
+        var programDirectory = temp.CreateSubdirectory(Path.Combine("LibreOffice", "program"));
+        var fakeExecutable = Path.Combine(programDirectory, "soffice.com");
+        File.WriteAllText(fakeExecutable, string.Empty);
+        var rootDirectory = Path.Combine(temp.Path, "LibreOffice");
+        var locator = new LibreOfficeLocator(new PathService(), new FakeProcessRunner());
+
+        var result = await locator.LocateAsync(
+            new LibreOfficeOptions { ExecutablePath = rootDirectory, ProbeVersion = false },
+            CancellationToken.None);
+
+        Assert.True(result.IsAvailable);
+        Assert.Equal(Path.GetFullPath(fakeExecutable), result.ExecutablePath);
+    }
+
+    [Fact]
+    public async Task Locator_AcceptsLibreOfficeProgramDirectory_WhenSofficeExists()
+    {
+        using var temp = TempDirectory.Create();
+        var programDirectory = temp.CreateSubdirectory("program");
+        var fakeExecutable = Path.Combine(programDirectory, "soffice.exe");
+        File.WriteAllText(fakeExecutable, string.Empty);
+        var locator = new LibreOfficeLocator(new PathService(), new FakeProcessRunner());
+
+        var result = await locator.LocateAsync(
+            new LibreOfficeOptions { ExecutablePath = programDirectory, ProbeVersion = false },
+            CancellationToken.None);
+
+        Assert.True(result.IsAvailable);
+        Assert.Equal(Path.GetFullPath(fakeExecutable), result.ExecutablePath);
+    }
+
+    [Fact]
+    public async Task Locator_RejectsDirectoryWithoutSoffice()
+    {
+        using var temp = TempDirectory.Create();
+        var selectedDirectory = temp.CreateSubdirectory("LibreOffice");
+        var locator = new LibreOfficeLocator(new PathService(), new FakeProcessRunner());
+
+        var result = await locator.LocateAsync(
+            new LibreOfficeOptions { ExecutablePath = selectedDirectory, ProbeVersion = false },
+            CancellationToken.None);
+
+        Assert.False(result.IsAvailable);
+        Assert.Contains("does not contain", result.Reason, StringComparison.OrdinalIgnoreCase);
+    }
+
+    [Fact]
     public void CommandBuilder_IncludesRequiredHeadlessArguments()
     {
         using var temp = TempDirectory.Create();

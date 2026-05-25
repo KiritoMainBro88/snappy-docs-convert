@@ -1,6 +1,6 @@
 # Architecture Notes
 
-These diagrams show the intended final direction. Phase 2 now adds the first .NET core conversion engine for LibreOffice headless document-to-PDF conversion.
+These diagrams show the intended final direction. Phase 2 now adds the first .NET core conversion engine for LibreOffice headless document-to-PDF conversion. Phase 2C adds core engine setup guidance so the future UI can explain missing dependencies without pretending conversion can run.
 
 ## Phase 2 LibreOffice Engine
 
@@ -16,6 +16,21 @@ flowchart LR
 ```
 
 Phase 2 code lives in `src/SnappyDocsConvert.Core`. Tests live in `tests/SnappyDocsConvert.Tests` and use fake process runners so LibreOffice is not required for the normal suite.
+
+## Engine Setup Guidance Core
+
+```mermaid
+flowchart TD
+  Choice["User setup choice"] --> Advisor["EngineSetupAdvisor"]
+  Office["Microsoft Office availability provider"] --> Advisor
+  Libre["LibreOffice locator"] --> Advisor
+  Advisor --> Status["EngineSetupStatus"]
+  Status --> CanConvert["CanConvertOfficeDocuments"]
+  Status --> Recommended["PreferredEngine"]
+  Status --> Actions["Download / choose soffice / recheck actions"]
+```
+
+The Office availability provider intentionally returns unavailable until Phase 3 implements real Microsoft Office COM detection.
 
 ## Final Desktop Architecture
 
@@ -43,7 +58,7 @@ flowchart TD
   OfficeCheck -->|"Yes"| Office["Use Office COM"]
   OfficeCheck -->|"No"| LibreCheck{"LibreOffice available?"}
   LibreCheck -->|"Yes"| Libre["Use LibreOffice headless"]
-  LibreCheck -->|"No"| Missing["Show missing engine message"]
+  LibreCheck -->|"No"| Missing["Show setup guidance"]
   Type -->|"PDF"| Pdf["Use PDF renderer"]
   Type -->|"Image"| Image["Copy or normalize image output"]
   Office --> Done["Write local output"]
