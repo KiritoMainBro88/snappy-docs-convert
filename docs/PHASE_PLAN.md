@@ -22,10 +22,11 @@
 
 ## Phase 3: Office COM Engine
 
-- Detect Microsoft Office availability.
-- Add Word DOCX to PDF export through COM.
-- Add PowerPoint PPTX to PDF and slide image export through COM.
-- Handle cleanup, COM release, and Office process safety.
+- Implemented: detect Word and PowerPoint COM ProgIDs.
+- Implemented: add Word `.doc`, `.docx`, `.rtf` to PDF export through COM.
+- Implemented: add PowerPoint `.ppt`, `.pptx` to PDF export through COM.
+- Implemented: serialize Office COM conversions, run on STA thread, enforce timeout, and release COM objects.
+- Not implemented: slide image export; reserved for later renderer/export phases.
 
 ## Phase 4: PDF Image Renderer
 

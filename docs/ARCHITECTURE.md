@@ -1,6 +1,6 @@
 # Architecture Notes
 
-These diagrams show the intended final direction. Phase 2 now adds the first .NET core conversion engine for LibreOffice headless document-to-PDF conversion. Phase 2C adds core engine setup guidance so the future UI can explain missing dependencies without pretending conversion can run.
+These diagrams show the intended final direction. Phase 2 adds LibreOffice headless document-to-PDF conversion. Phase 2C adds core setup guidance. Phase 3A adds Microsoft Office COM detection and guarded PDF export for local desktop user sessions.
 
 ## Phase 2 LibreOffice Engine
 
@@ -30,7 +30,24 @@ flowchart TD
   Status --> Actions["Download / choose soffice / recheck actions"]
 ```
 
-The Office availability provider intentionally returns unavailable until Phase 3 implements real Microsoft Office COM detection.
+The Office availability provider checks Word and PowerPoint ProgIDs without launching Office.
+
+## Phase 3A Office COM Engine
+
+```mermaid
+flowchart LR
+  Request["ConversionRequest"] --> Validate["Validate input and extension"]
+  Validate --> Detect["Check Word/PowerPoint ProgID"]
+  Detect --> Serialize["Office COM semaphore"]
+  Serialize --> Sta["Dedicated STA thread"]
+  Sta --> Open["Open source read-only"]
+  Open --> Export["ExportAsFixedFormat PDF"]
+  Export --> Cleanup["Close, quit, release COM"]
+  Cleanup --> Verify["Verify non-empty PDF"]
+  Verify --> Result["ConversionResult"]
+```
+
+Office COM conversions are serialized. The engine only quits the COM app instance it created. It is not intended for server/service/unattended automation.
 
 ## Final Desktop Architecture
 

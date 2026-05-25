@@ -2,7 +2,7 @@
 
 Snappy Docs Convert is planned as a fast local document conversion app for Windows-first workflows.
 
-Current phase: Phase 2C engine setup guidance. This branch contains a small .NET core library, local LibreOffice document-to-PDF conversion, and core dependency guidance for Office/LibreOffice setup. UI, Microsoft Office COM conversion, and PDF-to-image rendering are still later phases.
+Current phase: Phase 3A Microsoft Office COM engine. This branch contains a small .NET core library, local LibreOffice document-to-PDF conversion, Microsoft Office availability detection, guarded Office COM PDF export, and core dependency guidance. UI and PDF-to-image rendering are still later phases.
 
 ## Final Goal
 
@@ -53,6 +53,12 @@ soffice --version
 
 The app will auto-detect common install paths or accept a manually selected `soffice.com` / `soffice.exe` path. See `docs/ENGINE_SETUP_GUIDE.md` and `docs/LIBREOFFICE_ENGINE.md`.
 
+## Microsoft Office Engine
+
+Phase 3A detects `Word.Application` and `PowerPoint.Application` COM ProgIDs and adds a guarded local desktop PDF export engine for `.doc`, `.docx`, `.rtf`, `.ppt`, and `.pptx`.
+
+This engine is local desktop user-session automation only. It is not for server, service, or unattended use. See `docs/OFFICE_COM_ENGINE.md`.
+
 To pack a small AI-friendly context bundle:
 
 ```powershell
@@ -63,4 +69,4 @@ The packed output is written to `docs/ai-context/repomix-output.md` and is ignor
 
 ## Next Phase Summary
 
-The next recommended implementation phase is Phase 3: Microsoft Office COM engine. Wait for owner approval before starting it.
+The next recommended implementation phase is Phase 4: PDF image renderer. Wait for owner approval before starting it.

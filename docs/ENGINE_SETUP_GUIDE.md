@@ -11,9 +11,14 @@ Snappy Docs Convert converts Office documents locally. It needs at least one loc
 
 ## If User Has Microsoft Office
 
-Phase 3 will add Microsoft Office COM detection and conversion. When available, that engine should be preferred for best DOCX/PPTX fidelity.
+Phase 3A adds Microsoft Office COM detection and guarded PDF export. When Word/PowerPoint COM is available, that engine should be preferred for best DOCX/PPTX fidelity.
 
-Phase 2C only adds a placeholder availability provider. It returns unavailable until Phase 3 implements real detection.
+Office engine support:
+
+- Word: `.doc`, `.docx`, `.rtf`
+- PowerPoint: `.ppt`, `.pptx`
+
+Office must be installed, activated, and usable by the logged-in Windows user.
 
 ## If User Does Not Have Microsoft Office
 
@@ -58,5 +63,7 @@ The core advisor returns choose-path and recheck actions for future UI surfaces.
 - `EngineSetupRecommendation`
 - `EngineSetupAction`
 - `ExternalToolLink`
+- `OfficeAvailability`
+- `OfficeComConversionEngine`
 
 These types are UI-ready but do not create a UI window in this phase.

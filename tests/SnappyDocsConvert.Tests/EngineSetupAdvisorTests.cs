@@ -197,5 +197,15 @@ public sealed class EngineSetupAdvisorTests
 
         public Task<EngineAvailability> GetAvailabilityAsync(CancellationToken cancellationToken)
             => Task.FromResult(_availability);
+
+        public Task<OfficeAvailability> GetOfficeAvailabilityAsync(CancellationToken cancellationToken)
+            => Task.FromResult(new OfficeAvailability(
+                _availability.IsAvailable,
+                _availability.IsAvailable,
+                _availability.IsAvailable,
+                _availability.IsAvailable,
+                _availability.IsAvailable ? Array.Empty<string>() : new[] { _availability.Reason ?? "Office missing." },
+                Array.Empty<EngineSetupRecommendation>(),
+                _availability.Version));
     }
 }
