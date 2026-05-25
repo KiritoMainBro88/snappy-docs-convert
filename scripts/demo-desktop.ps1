@@ -44,7 +44,8 @@ try {
         "-f", "gdigrab",
         "-framerate", "15",
         "-t", "$DurationSeconds",
-        "-i", "desktop",
+        "-i", "title=kmb file tools",
+        "-vf", "pad=ceil(iw/2)*2:ceil(ih/2)*2",
         "-vcodec", "libx264",
         "-preset", "veryfast",
         "-pix_fmt", "yuv420p",
@@ -53,7 +54,25 @@ try {
 
     & $ffmpeg.Source @arguments
     if ($LASTEXITCODE -ne 0) {
-        throw "ffmpeg failed with exit code $LASTEXITCODE."
+        Write-Warning "Window capture failed; falling back to desktop capture."
+        $arguments = @(
+            "-y",
+            "-hide_banner",
+            "-loglevel", "error",
+            "-f", "gdigrab",
+            "-framerate", "15",
+            "-t", "$DurationSeconds",
+            "-i", "desktop",
+            "-vf", "pad=ceil(iw/2)*2:ceil(ih/2)*2",
+            "-vcodec", "libx264",
+            "-preset", "veryfast",
+            "-pix_fmt", "yuv420p",
+            $videoPath
+        )
+        & $ffmpeg.Source @arguments
+        if ($LASTEXITCODE -ne 0) {
+            throw "ffmpeg failed with exit code $LASTEXITCODE."
+        }
     }
 
     if (-not (Test-Path -LiteralPath $videoPath)) {

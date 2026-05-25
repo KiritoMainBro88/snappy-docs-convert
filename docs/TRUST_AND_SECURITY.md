@@ -54,13 +54,13 @@ GitHub UI:
 2. Go to **Actions**.
 3. Select **Release build**.
 4. Click **Run workflow**.
-5. Enter a version such as `v0.1.0-beta.2`.
+5. Enter a version such as `v0.1.0-beta.3`.
 6. Download workflow artifacts after the run completes.
 
 GitHub CLI:
 
 ```powershell
-gh workflow run release-build.yml -f version=v0.1.0-beta.2 --repo KiritoMainBro88/snappy-docs-convert
+gh workflow run release-build.yml -f version=v0.1.0-beta.3 --repo KiritoMainBro88/snappy-docs-convert
 ```
 
 This does not create a GitHub Release automatically.

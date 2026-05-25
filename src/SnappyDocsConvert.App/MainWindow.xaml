@@ -330,9 +330,9 @@
                                 <Button Content="{Binding Loc[ThemeDark]}" Command="{Binding UseDarkThemeCommand}" Style="{StaticResource SmallButton}" />
                             </WrapPanel>
                             <TextBlock Margin="0,8,0,0" Style="{StaticResource TinyMutedText}">
-                                <Run Text="{Binding Loc[EffectiveTheme]}" />
+                                <Run Text="{Binding Loc[EffectiveTheme], Mode=OneWay}" />
                                 <Run Text=": " />
-                                <Run Text="{Binding EffectiveThemeText}" />
+                                <Run Text="{Binding EffectiveThemeText, Mode=OneWay}" />
                             </TextBlock>
                         </StackPanel>
                     </Border>
@@ -379,10 +379,10 @@
                                 <Button Content="{Binding Loc[OpenReleasePage]}" Command="{Binding OpenReleasePageCommand}" />
                             </WrapPanel>
                             <TextBlock Text="{Binding UpdateStatus}" TextWrapping="Wrap" Margin="0,12,0,0" />
-                            <ProgressBar Minimum="0" Maximum="100" Value="{Binding UpdateDownloadProgress}" Height="12" Margin="0,8,0,0" />
+                            <ProgressBar Minimum="0" Maximum="100" Value="{Binding UpdateDownloadProgress, Mode=OneWay}" Height="12" Margin="0,8,0,0" />
                             <TextBlock Text="{Binding LatestVersion}" Style="{StaticResource TinyMutedText}" Margin="0,8,0,0" />
                             <TextBlock Text="{Binding Loc[ReleaseNotes]}" Style="{StaticResource FieldLabel}" />
-                            <TextBox Text="{Binding ReleaseNotesPreview}" MinHeight="110" TextWrapping="Wrap" AcceptsReturn="True" IsReadOnly="True" />
+                            <TextBox Text="{Binding ReleaseNotesPreview, Mode=OneWay}" MinHeight="110" TextWrapping="Wrap" AcceptsReturn="True" IsReadOnly="True" />
                         </StackPanel>
                     </Border>
 

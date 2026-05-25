@@ -1,8 +1,8 @@
 # Website And Vercel
 
-Phase 9A adds a polished frontend-only website under `website/`. Phase 13A keeps it frontend-only and adds system/light/dark mode, browser language detection with persisted EN/VI selection, direct beta.2 release download links, Discord support, curated static demo screenshots/video, and clearer open-source/community copy.
+Phase 9A adds a polished frontend-only website under `website/`. Phase 13B keeps it frontend-only and adds system/light/dark mode, browser language detection with persisted EN/VI selection, beta.3 release download links, Discord support, desktop-app-first demo screenshots/video, and clearer open-source/community copy.
 
-Display app name: `kmb file tools`. Internal executable/project identifiers still use `SnappyDocsConvert`, but beta.2 public package filenames use `kmb-file-tools`.
+Display app name: `kmb file tools`. Internal executable/project identifiers still use `SnappyDocsConvert`, but public package filenames use `kmb-file-tools`.
 
 ## Rules
 
@@ -97,11 +97,18 @@ Production deployment: https://website-2v6dq1ywv-kiritomainbro88s-projects.verce
 Production alias: https://website-sand-xi-15.vercel.app
 ```
 
+Latest Phase 13B production deploy:
+
+```text
+Production deployment: https://website-b440wwkes-kiritomainbro88s-projects.vercel.app
+Production alias: https://website-sand-xi-15.vercel.app
+```
+
 Current repository homepage metadata points to `https://website-sand-xi-15.vercel.app`.
 
 ## Links
 
-- Release: https://github.com/KiritoMainBro88/snappy-docs-convert/releases/tag/v0.1.0-beta.2
+- Release: https://github.com/KiritoMainBro88/snappy-docs-convert/releases/tag/v0.1.0-beta.3
 - All releases: https://github.com/KiritoMainBro88/snappy-docs-convert/releases
 - Source: https://github.com/KiritoMainBro88/snappy-docs-convert
 - Discord: https://discord.gg/kZ3U36ncun
@@ -123,6 +130,15 @@ Expected names:
 Do not include private documents, personal paths, secrets, or generated QA output in screenshots.
 
 ## Demo Assets
+
+The primary website demo should show the desktop app, not just the website. Curated public assets live under:
+
+```text
+website/public/demo/app-home.png
+website/public/demo/app-demo.mp4
+```
+
+Only commit curated demo assets that use generated sample inputs and contain no private document names, personal paths, tokens, or user data.
 
 Generate website demo screenshots/video:
 

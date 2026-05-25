@@ -82,12 +82,12 @@ export type SiteCopy = {
 
 export const appName = "kmb file tools";
 export const releaseTagUrl =
-  "https://github.com/KiritoMainBro88/snappy-docs-convert/releases/tag/v0.1.0-beta.2";
+  "https://github.com/KiritoMainBro88/snappy-docs-convert/releases/tag/v0.1.0-beta.3";
 export const releasesUrl = "https://github.com/KiritoMainBro88/snappy-docs-convert/releases";
 export const installerUrl =
-  "https://github.com/KiritoMainBro88/snappy-docs-convert/releases/download/v0.1.0-beta.2/kmb-file-tools-setup-win-x64-v0.1.0-beta.2.exe";
+  "https://github.com/KiritoMainBro88/snappy-docs-convert/releases/download/v0.1.0-beta.3/kmb-file-tools-setup-win-x64-v0.1.0-beta.3.exe";
 export const portableUrl =
-  "https://github.com/KiritoMainBro88/snappy-docs-convert/releases/download/v0.1.0-beta.2/kmb-file-tools-portable-win-x64-v0.1.0-beta.2.zip";
+  "https://github.com/KiritoMainBro88/snappy-docs-convert/releases/download/v0.1.0-beta.3/kmb-file-tools-portable-win-x64-v0.1.0-beta.3.zip";
 export const sourceUrl = "https://github.com/KiritoMainBro88/snappy-docs-convert";
 export const discordUrl = "https://discord.gg/kZ3U36ncun";
 
@@ -121,7 +121,7 @@ export const copy: Record<Language, SiteCopy> = {
       releaseCta: "View GitHub Release",
       sourceCta: "View source",
       releaseNote:
-        "Public beta v0.1.0-beta.2. Unsigned builds may show a Windows SmartScreen warning.",
+        "Public beta v0.1.0-beta.3. Unsigned builds may show a Windows SmartScreen warning.",
     },
     download: {
       title: "Official free downloads",
@@ -196,23 +196,23 @@ export const copy: Record<Language, SiteCopy> = {
       { title: "Rotate pages", text: "Rotate all pages or selected page ranges." },
       { title: "Images to PDF", text: "Build one PDF from PNG, JPEG, or WebP images." },
     ],
-    screenshotsTitle: "App screenshots",
+    screenshotsTitle: "App demo",
     screenshotsIntro:
-      "Demo screenshots and short videos show the website and desktop app flow. The site keeps working if media is not present.",
+      "Desktop app demo comes first: launch the app, choose files, pick an output folder, and convert locally. Website screenshots stay secondary.",
     screenshots: [
       {
         title: "App home",
         text: "Files, target, engine, output folder, and progress in one focused page.",
+        src: "/demo/app-home.png",
+      },
+      {
+        title: "How to convert files",
+        text: "Add files, choose PDF/images/PDF+images, select Auto engine, then start the queue.",
         src: "/demo/home-light-en.png",
       },
       {
-        title: "PDF tools",
-        text: "Merge, split, extract, rotate, and images-to-PDF actions separated from conversion.",
-        src: "/demo/home-light-vi.png",
-      },
-      {
-        title: "Website dark mode",
-        text: "Dark landing page variant for release notes, social sharing, and user guides.",
+        title: "PDF tools and settings",
+        text: "PDF toolbox and update settings are separate from normal conversion so users know current mode.",
         src: "/demo/home-dark-en.png",
       },
     ],
@@ -311,7 +311,7 @@ export const copy: Record<Language, SiteCopy> = {
       releaseCta: "Xem GitHub Release",
       sourceCta: "Xem mã nguồn",
       releaseNote:
-        "Public beta v0.1.0-beta.2. Bản chưa ký có thể bị Windows SmartScreen cảnh báo.",
+        "Public beta v0.1.0-beta.3. Bản chưa ký có thể bị Windows SmartScreen cảnh báo.",
     },
     download: {
       title: "Tải bản chính thức miễn phí",
@@ -386,23 +386,23 @@ export const copy: Record<Language, SiteCopy> = {
       { title: "Xoay trang", text: "Xoay toàn bộ trang hoặc dải trang được chọn." },
       { title: "Ảnh sang PDF", text: "Tạo một PDF từ ảnh PNG, JPEG hoặc WebP." },
     ],
-    screenshotsTitle: "Ảnh giao diện app",
+    screenshotsTitle: "Demo app",
     screenshotsIntro:
-      "Ảnh và video demo ngắn cho thấy luồng website và desktop app. Website vẫn build được nếu chưa có media.",
+      "Demo desktop app được ưu tiên: mở app, chọn tệp, chọn thư mục xuất và chuyển đổi cục bộ. Ảnh website chỉ là phần phụ.",
     screenshots: [
       {
         title: "Trang chính của app",
         text: "Tệp, định dạng đích, engine, thư mục xuất và tiến trình nằm trong một trang rõ ràng.",
-        src: "/demo/home-light-en.png",
+        src: "/demo/app-home.png",
       },
       {
-        title: "Công cụ PDF",
-        text: "Gộp, tách, trích, xoay và ảnh-sang-PDF được tách khỏi luồng chuyển đổi.",
+        title: "Cách chuyển đổi tệp",
+        text: "Thêm tệp, chọn PDF/ảnh/PDF+ảnh, chọn engine Auto rồi bắt đầu hàng đợi.",
         src: "/demo/home-light-vi.png",
       },
       {
-        title: "Website dark mode",
-        text: "Giao diện tối của landing page để dùng cho release note, chia sẻ và hướng dẫn người dùng.",
+        title: "Công cụ PDF và cài đặt",
+        text: "Công cụ PDF và cập nhật nằm riêng khỏi luồng chuyển đổi để người dùng biết mình đang ở chế độ nào.",
         src: "/demo/home-dark-en.png",
       },
     ],

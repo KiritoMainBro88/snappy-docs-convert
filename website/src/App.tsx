@@ -299,11 +299,14 @@ function App() {
           </div>
           <div className="demo-video-card">
             <div>
-              <h3>Website demo</h3>
-              <p>{language === "vi" ? "Video demo ngắn, chạy từ asset tĩnh." : "Short static demo video generated from the website."}</p>
+              <h3>{language === "vi" ? "Video demo app" : "Desktop app demo"}</h3>
+              <p>{language === "vi" ? "Video desktop app với dữ liệu demo cục bộ." : "Desktop app video recorded with local synthetic demo inputs."}</p>
             </div>
-            <video controls preload="metadata" src="/demo/website-demo.webm" />
+            <video controls preload="metadata" src="/demo/app-demo.mp4" />
           </div>
+          <p className="muted website-demo-link">
+            {language === "vi" ? "Demo website vẫn có trong bộ asset, nhưng trang này ưu tiên demo app." : "Website demo assets remain available, but this section prioritizes the desktop app."}
+          </p>
         </section>
 
         <section className="section split-section">

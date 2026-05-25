@@ -8,24 +8,44 @@ namespace SnappyDocsConvert.App;
 
 public partial class App : Application
 {
+    private readonly AppStartupLogger _startupLogger = new();
+
     protected override async void OnStartup(StartupEventArgs e)
     {
-        base.OnStartup(e);
+        _startupLogger.Initialize();
+        _startupLogger.RegisterHandlers(this);
+        _startupLogger.Log("OnStartup begin");
 
-        var factory = new AppServiceFactory();
-        if (e.Args.Any(arg => string.Equals(arg, "--self-check", StringComparison.OrdinalIgnoreCase)))
+        try
         {
-            NativeConsole.AttachToParent();
-            var exitCode = await SelfCheckRunner.RunAsync(factory, Console.Out, CancellationToken.None);
-            Shutdown(exitCode);
-            return;
+            base.OnStartup(e);
+
+            var factory = new AppServiceFactory();
+            if (e.Args.Any(arg => string.Equals(arg, "--self-check", StringComparison.OrdinalIgnoreCase)))
+            {
+                _startupLogger.Log("self-check begin");
+                NativeConsole.AttachToParent();
+                var exitCode = await SelfCheckRunner.RunAsync(factory, Console.Out, CancellationToken.None);
+                _startupLogger.Log($"self-check end exitCode={exitCode}");
+                Shutdown(exitCode);
+                return;
+            }
+
+            _startupLogger.Log("create main window");
+            var window = new MainWindow
+            {
+                DataContext = new MainWindowViewModel(factory)
+            };
+            _startupLogger.Log("show main window");
+            window.Show();
+            _startupLogger.Log("OnStartup complete");
         }
-
-        var window = new MainWindow
+        catch (Exception ex)
         {
-            DataContext = new MainWindowViewModel(factory)
-        };
-        window.Show();
+            _startupLogger.WriteCrash(ex);
+            _startupLogger.ShowCrashMessage();
+            Shutdown(1);
+        }
     }
 
     private static class NativeConsole

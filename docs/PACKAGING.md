@@ -1,6 +1,6 @@
 ﻿# Portable Packaging
 
-Phase 7 creates a portable Windows x64 folder and zip for the WPF MVP. This is not an MSI/MSIX installer.
+Phase 7 creates a portable Windows x64 folder and zip for the WPF MVP. This is not an MSI/MSIX installer. Phase 13B adds GUI launch smoke so a package is not considered healthy unless the real desktop window appears.
 
 ## Build Portable Package
 
@@ -31,13 +31,13 @@ powershell -ExecutionPolicy Bypass -File .\scripts\package-portable.ps1 -SelfCon
 The beta installer uses Inno Setup and installs per-user by default.
 
 ```powershell
-powershell -ExecutionPolicy Bypass -File .\scripts\package-installer.ps1 -Version v0.1.0-beta.2
+powershell -ExecutionPolicy Bypass -File .\scripts\package-installer.ps1 -Version v0.1.0-beta.3
 ```
 
 Expected output:
 
 ```text
-artifacts\kmb-file-tools-setup-win-x64-v0.1.0-beta.2.exe
+artifacts\kmb-file-tools-setup-win-x64-v0.1.0-beta.3.exe
 ```
 
 Installer metadata:
@@ -52,7 +52,7 @@ Installer metadata:
 Smoke installer:
 
 ```powershell
-powershell -ExecutionPolicy Bypass -File .\scripts\smoke-installer.ps1 -InstallerPath .\artifacts\kmb-file-tools-setup-win-x64-v0.1.0-beta.2.exe
+powershell -ExecutionPolicy Bypass -File .\scripts\smoke-installer.ps1 -InstallerPath .\artifacts\kmb-file-tools-setup-win-x64-v0.1.0-beta.3.exe
 ```
 
 The smoke script verifies the EXE, reports signature status, silently installs to a temp folder, runs installed `SnappyDocsConvert.App.exe --self-check`, and uninstalls silently.
@@ -70,8 +70,22 @@ The smoke check verifies:
 - `README-QUICKSTART.txt`, `PRIVACY.txt`, and `THIRD-PARTY-NOTICES.txt` exist.
 - Source folders, tests, QA output, logs, generated PDFs/images, and nested zips are absent.
 - Expected branding asset `Assets\logo.png` is allowed when present.
+- Packaged GUI launch smoke starts the extracted app and verifies a real `kmb file tools` window appears.
 
 With `WinExe`, console output from `--self-check` can be unavailable under automation. Release smoke treats exit code 0 as valid when JSON output is not captured.
+
+Direct GUI launch smoke:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File .\scripts\smoke-gui-launch.ps1 -ExePath .\artifacts\kmb-file-tools-portable-win-x64-<version>\SnappyDocsConvert.App.exe
+```
+
+Startup logs:
+
+```text
+%LOCALAPPDATA%\kmb-file-tools\logs\app.log
+%LOCALAPPDATA%\kmb-file-tools\logs\crash.log
+```
 
 No-console smoke:
 
@@ -118,7 +132,7 @@ powershell -ExecutionPolicy Bypass -File .\scripts\prepare-github-release-notes.
 Manual remote release build:
 
 ```powershell
-gh workflow run release-build.yml -f version=v0.1.0-beta.2 --repo KiritoMainBro88/snappy-docs-convert
+gh workflow run release-build.yml -f version=v0.1.0-beta.3 --repo KiritoMainBro88/snappy-docs-convert
 ```
 
 Or use GitHub UI:
@@ -160,7 +174,7 @@ The site links downloads to GitHub Releases. It must remain frontend-only: no ba
 Current public beta release:
 
 ```text
-https://github.com/KiritoMainBro88/snappy-docs-convert/releases/tag/v0.1.0-beta.2
+https://github.com/KiritoMainBro88/snappy-docs-convert/releases/tag/v0.1.0-beta.3
 ```
 
 Support/Discord:
@@ -171,7 +185,7 @@ https://discord.gg/kZ3U36ncun
 
 The website includes system/light/dark mode, browser language detection with persisted EN/VI selection, direct installer/portable download buttons, and curated demo screenshots/video. Official downloads are free. Because the project uses MIT, documentation should say redistribution is allowed with attribution/license notice; it should warn against misleading paid repackages without claiming resale is prohibited.
 
-Display app name is `kmb file tools`. Public beta.2 package filenames use `kmb-file-tools`; internal executable/project names still use `SnappyDocsConvert` for .NET compatibility.
+Display app name is `kmb file tools`. Public beta package filenames use `kmb-file-tools`; internal executable/project names still use `SnappyDocsConvert` for .NET compatibility.
 
 Demo assets:
 
@@ -218,4 +232,4 @@ Output goes under ignored `docs\qa-output\gui\YYYYMMDD-HHMMSS\`. This recorder d
 - Public beta should wait for a completed `MANUAL_GUI_QA_RESULT.md`.
 - Unsigned builds may show Windows SmartScreen warnings until signing exists.
 - Checksum manifests and GitHub artifact attestations improve transparency but do not remove SmartScreen/Unknown Publisher warnings.
-- GitHub Release upload is owner-approved for `v0.1.0-beta.2`; packaging scripts still do not publish by themselves.
+- GitHub Release upload is owner-approved for `v0.1.0-beta.3`; packaging scripts still do not publish by themselves.

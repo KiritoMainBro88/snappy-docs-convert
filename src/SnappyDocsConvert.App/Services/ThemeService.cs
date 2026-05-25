@@ -32,6 +32,12 @@ public sealed class ThemeService
     {
         if (Application.Current.Resources[key] is SolidColorBrush brush)
         {
+            if (brush.IsFrozen)
+            {
+                Application.Current.Resources[key] = new SolidColorBrush((Color)ColorConverter.ConvertFromString(color));
+                return;
+            }
+
             brush.Color = (Color)ColorConverter.ConvertFromString(color);
         }
         else

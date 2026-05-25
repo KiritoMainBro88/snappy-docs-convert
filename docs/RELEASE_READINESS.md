@@ -8,7 +8,7 @@
 - Installer: Inno Setup EXE pass
 - Code signing: pending
 - Release candidate docs: prepared
-- GitHub Release publication: pass for `v0.1.0-beta.1`; `v0.1.0-beta.2` in progress
+- GitHub Release publication: pass through `v0.1.0-beta.2`; `v0.1.0-beta.3` hotfix in progress
 - Public beta: approved as prerelease with known limitations
 - Vercel website production deploy: pass
 
@@ -26,7 +26,8 @@
 - PDF Toolbox V1 unit tests for merge, split, extract, rotate, images-to-PDF, path safety, and page ranges.
 - Static website check for local-only copy, release link, source link, and no external CDN/font/script assets.
 - Vite website check for frontend-only build, EN/VI copy, release/source links, and no API/functions folders.
-- Phase 13A adds app Settings, persisted language/theme preferences, manual update center, direct `v0.1.0-beta.2` release links, Discord support, curated website demo assets, MIT license wording, and anti-misleading-repackage wording.
+- Phase 13A adds app Settings, persisted language/theme preferences, manual update center, direct release links, Discord support, curated website demo assets, MIT license wording, and anti-misleading-repackage wording.
+- Phase 13B fixes a packaged GUI startup crash, adds local startup diagnostics, and adds GUI launch smoke so self-check is no longer treated as enough proof that the window opens.
 - Vercel production URL: `https://website-sand-xi-15.vercel.app`.
 - Phase 10C demo pipeline adds generated demo inputs, Playwright website screenshots/video, desktop screenshot helper, FFmpeg desktop recording helper, and user-facing demo scripts.
 - Display app name changed to `kmb file tools`; current beta executable/package filenames still use `SnappyDocsConvert` identifiers.
@@ -72,6 +73,7 @@
 - Prior manual QA found PDF to Images UI freeze and missing unsupported-file feedback.
 - Phase 8D added async safeguards and visible unsupported-file warnings; owner must re-test before public beta.
 - Public beta is approved as prerelease; known limitations remain documented.
+- `v0.1.0-beta.2` portable GUI launch failed owner testing; `v0.1.0-beta.3` must pass packaged GUI launch smoke before release.
 - MIT license is finalized.
 
 ## Commands
@@ -82,10 +84,16 @@ Build portable package:
 powershell -ExecutionPolicy Bypass -File .\scripts\package-portable.ps1
 ```
 
-Smoke release zip:
+Smoke release zip, including packaged GUI launch smoke:
 
 ```powershell
 powershell -ExecutionPolicy Bypass -File .\scripts\smoke-release.ps1 -PackagePath .\artifacts\kmb-file-tools-portable-win-x64-<version>.zip
+```
+
+Run GUI launch smoke directly:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File .\scripts\smoke-gui-launch.ps1 -ExePath .\artifacts\kmb-file-tools-portable-win-x64-<version>\SnappyDocsConvert.App.exe
 ```
 
 Run core E2E QA:
@@ -109,13 +117,13 @@ powershell -ExecutionPolicy Bypass -File .\scripts\smoke-no-console.ps1
 Build installer:
 
 ```powershell
-powershell -ExecutionPolicy Bypass -File .\scripts\package-installer.ps1 -Version v0.1.0-beta.2
+powershell -ExecutionPolicy Bypass -File .\scripts\package-installer.ps1 -Version v0.1.0-beta.3
 ```
 
 Smoke installer:
 
 ```powershell
-powershell -ExecutionPolicy Bypass -File .\scripts\smoke-installer.ps1 -InstallerPath .\artifacts\kmb-file-tools-setup-win-x64-v0.1.0-beta.2.exe
+powershell -ExecutionPolicy Bypass -File .\scripts\smoke-installer.ps1 -InstallerPath .\artifacts\kmb-file-tools-setup-win-x64-v0.1.0-beta.3.exe
 ```
 
 Check static website:
@@ -149,10 +157,10 @@ vercel login
 vercel --cwd website --prod
 ```
 
-Official release:
+Latest hotfix release:
 
 ```text
-https://github.com/KiritoMainBro88/snappy-docs-convert/releases/tag/v0.1.0-beta.2
+https://github.com/KiritoMainBro88/snappy-docs-convert/releases/tag/v0.1.0-beta.3
 ```
 
 Discord support:
@@ -193,7 +201,7 @@ Actions > Release build > Run workflow > version
 CLI equivalent:
 
 ```powershell
-gh workflow run release-build.yml -f version=v0.1.0-beta.2 --repo KiritoMainBro88/snappy-docs-convert
+gh workflow run release-build.yml -f version=v0.1.0-beta.3 --repo KiritoMainBro88/snappy-docs-convert
 ```
 
 The workflow publishes workflow artifacts and attestations only. It does not create a GitHub Release.
@@ -213,5 +221,5 @@ powershell -ExecutionPolicy Bypass -File .\scripts\prepare-github-release-notes.
 ## Recommendation
 
 - OK for public beta prerelease with known limitations.
-- GitHub Release allowed for `v0.1.0-beta.2` as prerelease after validation/build/smoke pass.
+- GitHub Release allowed for `v0.1.0-beta.3` as prerelease after validation/build/smoke pass.
 - Recommended next work: owner downloads GitHub Release assets and performs manual installer/UI verification.

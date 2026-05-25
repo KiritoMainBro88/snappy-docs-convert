@@ -80,7 +80,7 @@ foreach ($pattern in $providerPatterns) {
 
 $distText = ($builtFiles | ForEach-Object { Get-Content -LiteralPath $_.FullName -Raw }) -join "`n"
 $required = @(
-    "https://github.com/KiritoMainBro88/snappy-docs-convert/releases/tag/v0.1.0-beta.2",
+    "https://github.com/KiritoMainBro88/snappy-docs-convert/releases/tag/v0.1.0-beta.3",
     "https://github.com/KiritoMainBro88/snappy-docs-convert",
     "https://discord.gg/kZ3U36ncun",
     "No upload",
@@ -103,8 +103,9 @@ $sourceRequired = @(
     "navigator.language",
     "localStorage",
     "prefers-color-scheme",
-    "website-demo.webm",
-    "/demo/home-light-en.png"
+    "app-demo.mp4",
+    "/demo/app-home.png",
+    "Desktop app demo"
 )
 
 foreach ($text in $sourceRequired) {

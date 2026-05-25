@@ -13,10 +13,20 @@ public sealed class AppSettingsService
         WriteIndented = true
     };
 
-    public string SettingsPath { get; } = Path.Combine(
-        Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
-        "kmb-file-tools",
-        "settings.json");
+    public AppSettingsService()
+        : this(Path.Combine(
+            Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
+            "kmb-file-tools",
+            "settings.json"))
+    {
+    }
+
+    public AppSettingsService(string settingsPath)
+    {
+        SettingsPath = settingsPath;
+    }
+
+    public string SettingsPath { get; }
 
     public AppSettingsData Load()
     {
@@ -28,12 +38,32 @@ public sealed class AppSettingsService
             }
 
             var json = File.ReadAllText(SettingsPath);
-            return JsonSerializer.Deserialize<AppSettingsData>(json, JsonOptions) ?? new AppSettingsData();
+            return Normalize(JsonSerializer.Deserialize<AppSettingsData>(json, JsonOptions) ?? new AppSettingsData());
         }
         catch
         {
             return new AppSettingsData();
         }
+    }
+
+    public static AppSettingsData Normalize(AppSettingsData settings)
+    {
+        if (!Enum.IsDefined(settings.Language))
+        {
+            settings.Language = AppLanguagePreference.System;
+        }
+
+        if (!Enum.IsDefined(settings.Theme))
+        {
+            settings.Theme = AppThemePreference.System;
+        }
+
+        if (!Enum.IsDefined(settings.UpdateChannel))
+        {
+            settings.UpdateChannel = DefaultUpdateChannel;
+        }
+
+        return settings;
     }
 
     public void Save(AppSettingsData settings)

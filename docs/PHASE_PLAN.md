@@ -217,3 +217,14 @@
 - Implemented: update website to link `v0.1.0-beta.2`, detect browser language, persist language/theme in localStorage, keep frontend-only/no telemetry constraints, and show curated demo screenshots/video.
 - Implemented: rename public beta package output to `kmb-file-tools-portable-*` and `kmb-file-tools-setup-*`.
 - Not implemented: silent background auto-update, Velopack, code signing, LibreOffice smoke, PowerPoint smoke, OCR engine.
+
+## Phase 13B: Portable Launch Hotfix And App Demo Website
+
+- Implemented: reproduce packaged portable GUI launch failure instead of trusting `--self-check` alone.
+- Implemented: fix startup crash caused by mutating read-only WPF theme brush resources.
+- Implemented: add local startup diagnostics and crash logging under `%LOCALAPPDATA%\kmb-file-tools\logs\`.
+- Implemented: add packaged GUI launch smoke that verifies the real `kmb file tools` window appears.
+- Implemented: update release smoke to include GUI launch smoke.
+- Implemented: update website demo section to prioritize desktop app screenshot/video assets.
+- Planned: release `v0.1.0-beta.3` only after packaged GUI launch smoke passes.
+- Not implemented: code signing, silent auto-update, backend, telemetry, LibreOffice smoke, PowerPoint smoke, OCR engine.

@@ -1,6 +1,7 @@
 param(
     [string]$PackagePath = "",
-    [string]$ReleaseDir = ""
+    [string]$ReleaseDir = "",
+    [switch]$SkipGuiLaunch
 )
 
 $ErrorActionPreference = "Stop"
@@ -90,6 +91,9 @@ try {
     Write-Host "Release smoke: required docs present"
     Write-Host "Release smoke: forbidden content absent"
     Write-Host "Release smoke: self-check exit ok"
+    if (-not $SkipGuiLaunch.IsPresent) {
+        & (Join-Path $PSScriptRoot "smoke-gui-launch.ps1") -ExePath $exe.FullName
+    }
     Write-Host "Release smoke: pass"
 }
 finally {
