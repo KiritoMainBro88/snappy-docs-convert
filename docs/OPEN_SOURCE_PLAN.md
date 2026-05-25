@@ -2,17 +2,15 @@
 
 Snappy Docs Convert is intended as a free, local-only community utility.
 
-## Proposed License
+## License
 
-Recommended: MIT License.
-
-Current repo includes `LICENSE-DRAFT-MIT.txt` only. Rename it to `LICENSE` after owner confirms MIT or chooses another license.
+Owner approved MIT for public community release. Final `LICENSE` is committed.
 
 ## Public Repo Prep
 
 - Keep source public.
 - Publish portable zip assets through GitHub Releases.
-- Host static website from `website-static/` or a later Lovable redesign.
+- Host static website from `website/` or keep `website-static/` as fallback.
 - Keep docs clear that conversion is local-only.
 - Do not commit generated PDFs/images, QA logs, release zips, or user files.
 
@@ -26,7 +24,7 @@ Current repo includes `LICENSE-DRAFT-MIT.txt` only. Rename it to `LICENSE` after
 ## Before Public Beta
 
 - Complete owner manual GUI QA.
-- Decide final license.
+- Keep MIT license and notices current.
 - Decide signing/SmartScreen messaging.
 - Add PowerPoint fixture smoke or document skip.
 - Re-run package and release smoke.

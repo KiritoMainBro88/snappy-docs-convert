@@ -2,7 +2,7 @@
 
 Snappy Docs Convert is planned as a fast local document conversion app for Windows-first workflows.
 
-Current phase: Phase 9A static marketing website and Vercel preview prep. This branch contains local Office/PDF conversion, PDF image export, batch conversion, PDF toolbox operations, mode-based WPF UI, English/Vietnamese UI strings, E2E QA, portable packaging, manual GUI QA recorder, release readiness docs, release-candidate notes, privacy audit, manual GUI QA result with blockers, and a frontend-only website. MSI/MSIX installer work is still a later phase.
+Current phase: Phase 10A public beta release prep. This branch contains local Office/PDF conversion, PDF image export, batch conversion, PDF toolbox operations, mode-based WPF UI, English/Vietnamese UI strings, E2E QA, portable packaging, Inno Setup installer packaging, manual GUI QA recorder, release readiness docs, release notes, privacy audit, and a frontend-only website. MSI/MSIX packaging remains a later phase.
 
 ## Final Goal
 
@@ -166,6 +166,18 @@ powershell -ExecutionPolicy Bypass -File .\scripts\smoke-release.ps1 -PackagePat
 
 The portable MVP does not bundle Microsoft Office or LibreOffice. Microsoft Office is optional and recommended for best DOCX/PPTX fidelity. LibreOffice is an optional fallback; the app guides users to the official download when needed. See `docs/PACKAGING.md`.
 
+Build the Windows installer:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File .\scripts\package-installer.ps1 -Version v0.1.0-beta.1
+```
+
+Smoke the installer:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File .\scripts\smoke-installer.ps1 -InstallerPath .\artifacts\SnappyDocsConvert-setup-win-x64-v0.1.0-beta.1.exe
+```
+
 Normal double-click launch should open the GUI without a console because the WPF project uses `OutputType=WinExe`. If launched from an existing terminal, that terminal staying open is normal. `--self-check` remains available for smoke scripts, but WinExe console output can be unavailable under automation; smoke checks rely on exit code when needed.
 
 ## Website And Open Source Prep
@@ -217,7 +229,7 @@ Source link points to:
 
 https://github.com/KiritoMainBro88/snappy-docs-convert
 
-Open-source prep files include `CONTRIBUTING.md`, `SECURITY.md`, issue templates, PR template, `docs/OPEN_SOURCE_PLAN.md`, and draft MIT license file. Final license still needs owner approval.
+Open-source prep files include `CONTRIBUTING.md`, `SECURITY.md`, issue templates, PR template, `docs/OPEN_SOURCE_PLAN.md`, and the final MIT `LICENSE`.
 
 ## Release Candidate Prep
 
@@ -235,9 +247,9 @@ No GitHub push or release upload is done by these scripts. The owner must approv
 
 Owner manual GUI QA for `v0.1.0-rc1` is recorded under `docs/manual-qa/`. Public beta is blocked by GUI responsiveness/feedback issues, untested GUI flows, and missing final license approval.
 
-## License Status
+## License
 
-Current license status: draft only. `LICENSE-DRAFT-MIT.txt` exists, but the owner has not explicitly approved MIT in this session. Do not publish a public release until a final license is approved and committed.
+Snappy Docs Convert is released under the MIT License. See `LICENSE`.
 
 ## Manual GUI QA Recorder
 

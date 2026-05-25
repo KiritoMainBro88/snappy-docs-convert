@@ -144,3 +144,14 @@
 - Implemented: document Vercel preview and production deploy commands.
 - Implemented: add Vite website checker for build, required links/copy, no API/functions folders, and no external CDN/font/script references.
 - Not implemented: backend, API routes, telemetry, analytics, production Vercel deploy, GitHub Release creation, or GitHub push.
+
+## Phase 10A: Public Beta Release
+
+- Implemented: finalize MIT `LICENSE`.
+- Implemented: add Inno Setup installer script.
+- Implemented: add installer packaging and smoke scripts.
+- Implemented: build public beta portable zip and installer exe.
+- Implemented: smoke portable zip and installer.
+- Implemented: add `v0.1.0-beta.1` release notes with hashes.
+- Planned: push source, fast-forward main, tag, and create GitHub prerelease with both assets.
+- Not implemented: production Vercel deploy, code signing, MSI/MSIX, or LibreOffice real smoke.

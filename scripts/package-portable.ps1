@@ -131,6 +131,11 @@ Set-Content -LiteralPath (Join-Path $portableDir "README-QUICKSTART.txt") -Value
 Set-Content -LiteralPath (Join-Path $portableDir "PRIVACY.txt") -Value $privacy -Encoding UTF8
 Set-Content -LiteralPath (Join-Path $portableDir "THIRD-PARTY-NOTICES.txt") -Value $thirdParty -Encoding UTF8
 
+$licensePath = Join-Path $repoRoot "LICENSE"
+if (Test-Path -LiteralPath $licensePath) {
+    Copy-Item -LiteralPath $licensePath -Destination (Join-Path $portableDir "LICENSE") -Force
+}
+
 $exePath = Join-Path $portableDir "SnappyDocsConvert.App.exe"
 if (-not (Test-Path -LiteralPath $exePath)) {
     throw "Published executable missing: $exePath"

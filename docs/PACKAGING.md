@@ -26,6 +26,37 @@ Optional self-contained build:
 powershell -ExecutionPolicy Bypass -File .\scripts\package-portable.ps1 -SelfContained
 ```
 
+## Build Installer
+
+The beta installer uses Inno Setup and installs per-user by default.
+
+```powershell
+powershell -ExecutionPolicy Bypass -File .\scripts\package-installer.ps1 -Version v0.1.0-beta.1
+```
+
+Expected output:
+
+```text
+artifacts\SnappyDocsConvert-setup-win-x64-v0.1.0-beta.1.exe
+```
+
+Installer metadata:
+
+- App name: Snappy Docs Convert
+- Install scope: per-user
+- Start Menu shortcut: yes
+- Optional Desktop shortcut: yes
+- License included: MIT
+- Quickstart/privacy/third-party notices included through portable publish output
+
+Smoke installer:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File .\scripts\smoke-installer.ps1 -InstallerPath .\artifacts\SnappyDocsConvert-setup-win-x64-v0.1.0-beta.1.exe
+```
+
+The smoke script verifies the EXE, reports signature status, silently installs to a temp folder, runs installed `SnappyDocsConvert.App.exe --self-check`, and uninstalls silently.
+
 ## Smoke Release Package
 
 ```powershell
@@ -64,14 +95,16 @@ powershell -ExecutionPolicy Bypass -File .\scripts\prepare-github-release-notes.
 
 1. Run QA: `scripts\qa-e2e.ps1`.
 2. Build package: `scripts\package-portable.ps1`.
-3. Smoke release: `scripts\smoke-release.ps1`.
-4. Hash artifact: `scripts\hash-artifact.ps1`.
-5. Push branch only after owner approval.
-6. Merge/review on GitHub.
-7. Tag release candidate.
-8. Create GitHub Release draft.
-9. Upload portable zip.
-10. Update website if release URL or copy changes.
+3. Build installer: `scripts\package-installer.ps1`.
+4. Smoke release zip: `scripts\smoke-release.ps1`.
+5. Smoke installer: `scripts\smoke-installer.ps1`.
+6. Hash artifacts: `scripts\hash-artifact.ps1`.
+7. Push branch only after owner approval.
+8. Merge/review on GitHub.
+9. Tag release.
+10. Create GitHub prerelease.
+11. Upload portable zip and installer exe.
+12. Update website if release URL or copy changes.
 
 ## Website And Vercel
 
@@ -121,10 +154,10 @@ Output goes under ignored `docs\qa-output\gui\YYYYMMDD-HHMMSS\`. This recorder d
 
 ## Known Gaps
 
-- Installer pending.
+- MSI/MSIX installer pending; Inno Setup EXE installer exists for beta.
 - LibreOffice real smoke depends on installed LibreOffice.
 - PowerPoint real smoke fixture pending.
 - Manual GUI QA remains owner-executed via `docs/GUI_QA_CHECKLIST.md`.
 - Public beta should wait for a completed `MANUAL_GUI_QA_RESULT.md`.
 - Unsigned builds may show Windows SmartScreen warnings until signing exists.
-- GitHub Release upload is manual/owner-approved; packaging scripts do not publish.
+- GitHub Release upload is owner-approved for `v0.1.0-beta.1`; packaging scripts still do not publish by themselves.

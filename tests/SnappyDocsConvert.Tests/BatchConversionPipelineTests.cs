@@ -357,7 +357,7 @@ public sealed class BatchConversionPipelineTests
         using var temp = TempDirectory.Create();
         var first = temp.WriteFile("bad.docx", "bad");
         var second = temp.WriteFile("good.docx", "good");
-        var selector = new FakeSelector(path => path.Contains("bad", StringComparison.OrdinalIgnoreCase)
+        var selector = new FakeSelector(path => Path.GetFileName(path).Contains("bad", StringComparison.OrdinalIgnoreCase)
             ? BatchEngineSelectionResult.Failed("no engine")
             : BatchEngineSelectionResult.Selected(ConversionEngineKind.MicrosoftOffice));
         var pipeline = Pipeline(selector, office: new FakeOfficeEngine());
