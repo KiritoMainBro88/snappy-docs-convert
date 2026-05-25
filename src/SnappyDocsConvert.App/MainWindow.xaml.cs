@@ -28,7 +28,14 @@ public partial class MainWindow : Window
 
         if (e.Data.GetData(DataFormats.FileDrop) is string[] paths)
         {
-            viewModel.AddPaths(paths);
+            if (viewModel.SelectedPage == AppPage.PdfTools)
+            {
+                viewModel.AddPdfToolPaths(paths);
+            }
+            else
+            {
+                viewModel.AddPaths(paths);
+            }
         }
     }
 }

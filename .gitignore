@@ -25,6 +25,7 @@ docs/qa-output/**
 artifacts/
 *.zip
 *.local
+assets/branding/
 
 # Wrangler / Cloudflare
 .wrangler/

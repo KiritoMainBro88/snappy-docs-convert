@@ -58,6 +58,14 @@
         <Setter Property="FontSize" Value="12" />
     </Style>
 
+    <Style x:Key="NavButton" TargetType="Button" BasedOn="{StaticResource {x:Type Button}}">
+        <Setter Property="Margin" Value="0,0,0,8" />
+        <Setter Property="Padding" Value="12,10" />
+        <Setter Property="HorizontalContentAlignment" Value="Left" />
+        <Setter Property="FontWeight" Value="SemiBold" />
+        <Setter Property="Background" Value="{StaticResource SoftPanelBrush}" />
+    </Style>
+
     <Style TargetType="TextBox">
         <Setter Property="Padding" Value="9,7" />
         <Setter Property="MinHeight" Value="34" />
@@ -85,6 +93,11 @@
         <Setter Property="Padding" Value="14" />
     </Style>
 
+    <Style x:Key="SidebarPanel" TargetType="Border" BasedOn="{StaticResource Panel}">
+        <Setter Property="Padding" Value="12" />
+        <Setter Property="Background" Value="#F9FAFB" />
+    </Style>
+
     <Style x:Key="SettingsGroup" TargetType="Border" BasedOn="{StaticResource Panel}">
         <Setter Property="Background" Value="{StaticResource SoftPanelBrush}" />
         <Setter Property="Padding" Value="12" />
@@ -94,6 +107,12 @@
     <Style x:Key="EngineCard" TargetType="Border" BasedOn="{StaticResource Panel}">
         <Setter Property="Padding" Value="10" />
         <Setter Property="Margin" Value="0,0,8,8" />
+        <Setter Property="Background" Value="{StaticResource SoftPanelBrush}" />
+    </Style>
+
+    <Style x:Key="ToolCard" TargetType="Border" BasedOn="{StaticResource Panel}">
+        <Setter Property="Padding" Value="14" />
+        <Setter Property="Margin" Value="0,0,10,10" />
         <Setter Property="Background" Value="{StaticResource SoftPanelBrush}" />
     </Style>
 
@@ -111,6 +130,18 @@
         <Setter Property="CornerRadius" Value="12" />
         <Setter Property="Padding" Value="10,5" />
         <Setter Property="VerticalAlignment" Value="Center" />
+    </Style>
+
+    <Style x:Key="AlertPanel" TargetType="Border" BasedOn="{StaticResource Panel}">
+        <Setter Property="Background" Value="{StaticResource WarningSoftBrush}" />
+        <Setter Property="BorderBrush" Value="#FEDF89" />
+        <Setter Property="Padding" Value="12" />
+        <Setter Property="Margin" Value="0,0,0,12" />
+        <Style.Triggers>
+            <DataTrigger Binding="{Binding AlertText}" Value="">
+                <Setter Property="Visibility" Value="Collapsed" />
+            </DataTrigger>
+        </Style.Triggers>
     </Style>
 
     <Style x:Key="TitleText" TargetType="TextBlock">
@@ -151,11 +182,37 @@
             <DataTrigger Binding="{Binding Text, RelativeSource={RelativeSource Self}}" Value="Available">
                 <Setter Property="Foreground" Value="{StaticResource SuccessBrush}" />
             </DataTrigger>
+            <DataTrigger Binding="{Binding Text, RelativeSource={RelativeSource Self}}" Value="Có sẵn">
+                <Setter Property="Foreground" Value="{StaticResource SuccessBrush}" />
+            </DataTrigger>
             <DataTrigger Binding="{Binding Text, RelativeSource={RelativeSource Self}}" Value="Missing">
+                <Setter Property="Foreground" Value="{StaticResource ErrorBrush}" />
+            </DataTrigger>
+            <DataTrigger Binding="{Binding Text, RelativeSource={RelativeSource Self}}" Value="Thiếu">
                 <Setter Property="Foreground" Value="{StaticResource ErrorBrush}" />
             </DataTrigger>
             <DataTrigger Binding="{Binding Text, RelativeSource={RelativeSource Self}}" Value="Checking">
                 <Setter Property="Foreground" Value="{StaticResource WarningBrush}" />
+            </DataTrigger>
+            <DataTrigger Binding="{Binding Text, RelativeSource={RelativeSource Self}}" Value="Đang kiểm tra">
+                <Setter Property="Foreground" Value="{StaticResource WarningBrush}" />
+            </DataTrigger>
+        </Style.Triggers>
+    </Style>
+
+    <Style x:Key="LogoInitials" TargetType="TextBlock">
+        <Setter Property="FontSize" Value="14" />
+        <Setter Property="FontWeight" Value="SemiBold" />
+        <Setter Property="Foreground" Value="{StaticResource AccentBrush}" />
+        <Setter Property="HorizontalAlignment" Value="Center" />
+        <Setter Property="VerticalAlignment" Value="Center" />
+        <Setter Property="Visibility" Value="Collapsed" />
+        <Style.Triggers>
+            <DataTrigger Binding="{Binding LogoPath}" Value="">
+                <Setter Property="Visibility" Value="Visible" />
+            </DataTrigger>
+            <DataTrigger Binding="{Binding LogoPath}" Value="{x:Null}">
+                <Setter Property="Visibility" Value="Visible" />
             </DataTrigger>
         </Style.Triggers>
     </Style>

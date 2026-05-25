@@ -1,15 +1,28 @@
 using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.IO;
+using System.Windows;
+using SnappyDocsConvert.App.Localization;
 using SnappyDocsConvert.App.Services;
 using SnappyDocsConvert.Core.Models;
 using SnappyDocsConvert.Core.Services.Batch;
-using SnappyDocsConvert.Core.Services.PdfTools;
 
 namespace SnappyDocsConvert.App.ViewModels;
 
 public sealed class MainWindowViewModel : ObservableObject
 {
+    private static readonly IReadOnlySet<string> PdfToolPdfExtensions =
+        new HashSet<string>(StringComparer.OrdinalIgnoreCase) { ".pdf" };
+
+    private static readonly IReadOnlySet<string> PdfToolImageExtensions =
+        new HashSet<string>(StringComparer.OrdinalIgnoreCase)
+        {
+            ".png",
+            ".jpg",
+            ".jpeg",
+            ".webp"
+        };
+
     private readonly FilePickerService _filePicker;
     private readonly FolderPickerService _folderPicker;
     private readonly IBatchInputScanner _inputScanner;
@@ -25,14 +38,20 @@ public sealed class MainWindowViewModel : ObservableObject
     private bool _keepIntermediatePdf;
     private bool _isRunning;
     private string? _customLibreOfficePath;
-    private string _summaryText = "Ready. Add files or folders.";
-    private string _selectedEngineGuidance = "Auto uses Microsoft Office when available, then LibreOffice fallback. No cloud upload.";
+    private string _summaryText;
+    private string _selectedEngineGuidance = "";
     private PdfToolOperation _selectedPdfToolOperation = PdfToolOperation.Merge;
     private PdfRotationAngle _selectedPdfRotationAngle = PdfRotationAngle.Degrees90;
     private string _pdfToolPageRanges = "";
     private string _pdfToolOutputFileName = "";
-    private string _pdfToolStatus = "PDF tools ready. Add local PDF/image files.";
+    private string _pdfToolStatus = "";
+    private string _alertText = "";
+    private AppPage _selectedPage = AppPage.Convert;
     private CancellationTokenSource? _runCancellation;
+    private bool _wordAvailable;
+    private bool _powerPointAvailable;
+    private bool _libreOfficeAvailable;
+    private bool _engineStatusKnown;
 
     public MainWindowViewModel(AppServiceFactory serviceFactory)
     {
@@ -41,6 +60,8 @@ public sealed class MainWindowViewModel : ObservableObject
         _folderPicker = serviceFactory.CreateFolderPickerService();
         _inputScanner = serviceFactory.CreateBatchInputScanner();
         _batchRunner = serviceFactory.CreateBatchRunner();
+        _summaryText = Loc["Ready"];
+        _pdfToolStatus = Loc["PdfToolsReady"];
 
         AddFilesCommand = new RelayCommand(AddFiles, () => !IsRunning);
         AddFolderCommand = new RelayCommand(AddFolder, () => !IsRunning);
@@ -52,6 +73,7 @@ public sealed class MainWindowViewModel : ObservableObject
         OpenOutputFolderCommand = new RelayCommand(OpenOutputFolder);
         OpenItemOutputCommand = new RelayCommand<QueueItemViewModel>(OpenItemOutput, item => !IsRunning && item is not null && !string.IsNullOrWhiteSpace(item.Output));
         ClearLogCommand = new RelayCommand(ClearLog, () => LogLines.Count > 0);
+        CopyLogsCommand = new RelayCommand(CopyLogs, () => LogLines.Count > 0);
         AddPdfToolFilesCommand = new RelayCommand(AddPdfToolFiles, () => !IsRunning);
         ClearPdfToolInputsCommand = new RelayCommand(ClearPdfToolInputs, () => !IsRunning && PdfToolInputs.Count > 0);
         RunPdfToolCommand = new AsyncRelayCommand(RunPdfToolAsync, () => !IsRunning);
@@ -59,8 +81,22 @@ public sealed class MainWindowViewModel : ObservableObject
         ChooseLibreOfficeCommand = new AsyncRelayCommand(ChooseLibreOfficeAsync, () => !IsRunning);
         OpenLibreOfficeDownloadCommand = new RelayCommand(OpenLibreOfficeDownload);
 
+        ShowConvertCommand = new RelayCommand(() => SelectedPage = AppPage.Convert);
+        ShowPdfToolsCommand = new RelayCommand(() => SelectedPage = AppPage.PdfTools);
+        ShowEnginesCommand = new RelayCommand(() => SelectedPage = AppPage.Engines);
+        ShowLogsCommand = new RelayCommand(() => SelectedPage = AppPage.Logs);
+        ShowHelpCommand = new RelayCommand(() => SelectedPage = AppPage.Help);
+        UseEnglishCommand = new RelayCommand(() => SetLanguage(Language.English));
+        UseVietnameseCommand = new RelayCommand(() => SetLanguage(Language.Vietnamese));
+
+        LogoPath = FindLogoPath();
+        RefreshChoices();
+        RefreshEngineStatusLabels();
+        RefreshSelectedEngineGuidance();
         _ = RecheckEnginesAsync();
     }
+
+    public LocalizationService Loc { get; } = new();
 
     public ObservableCollection<QueueItemViewModel> Queue { get; } = new();
 
@@ -68,17 +104,19 @@ public sealed class MainWindowViewModel : ObservableObject
 
     public ObservableCollection<string> PdfToolInputs { get; } = new();
 
+    public ObservableCollection<string> RejectedPaths { get; } = new();
+
+    public ObservableCollection<ChoiceItem<BatchConversionTarget>> TargetChoices { get; } = new();
+
+    public ObservableCollection<ChoiceItem<BatchConversionEnginePreference>> EngineChoices { get; } = new();
+
+    public ObservableCollection<ChoiceItem<ImageOutputFormat>> ImageFormatChoices { get; } = new();
+
+    public ObservableCollection<ChoiceItem<PdfToolOperation>> PdfToolOperationChoices { get; } = new();
+
+    public ObservableCollection<ChoiceItem<PdfRotationAngle>> PdfRotationChoices { get; } = new();
+
     public EngineStatusViewModel EngineStatus { get; } = new();
-
-    public IReadOnlyList<BatchConversionTarget> Targets { get; } = Enum.GetValues<BatchConversionTarget>();
-
-    public IReadOnlyList<BatchConversionEnginePreference> Engines { get; } = Enum.GetValues<BatchConversionEnginePreference>();
-
-    public IReadOnlyList<ImageOutputFormat> ImageFormats { get; } = Enum.GetValues<ImageOutputFormat>();
-
-    public IReadOnlyList<PdfToolOperation> PdfToolOperations { get; } = Enum.GetValues<PdfToolOperation>();
-
-    public IReadOnlyList<PdfRotationAngle> PdfRotationAngles { get; } = Enum.GetValues<PdfRotationAngle>();
 
     public RelayCommand AddFilesCommand { get; }
 
@@ -100,6 +138,8 @@ public sealed class MainWindowViewModel : ObservableObject
 
     public RelayCommand ClearLogCommand { get; }
 
+    public RelayCommand CopyLogsCommand { get; }
+
     public RelayCommand AddPdfToolFilesCommand { get; }
 
     public RelayCommand ClearPdfToolInputsCommand { get; }
@@ -111,6 +151,22 @@ public sealed class MainWindowViewModel : ObservableObject
     public AsyncRelayCommand ChooseLibreOfficeCommand { get; }
 
     public RelayCommand OpenLibreOfficeDownloadCommand { get; }
+
+    public RelayCommand ShowConvertCommand { get; }
+
+    public RelayCommand ShowPdfToolsCommand { get; }
+
+    public RelayCommand ShowEnginesCommand { get; }
+
+    public RelayCommand ShowLogsCommand { get; }
+
+    public RelayCommand ShowHelpCommand { get; }
+
+    public RelayCommand UseEnglishCommand { get; }
+
+    public RelayCommand UseVietnameseCommand { get; }
+
+    public string LogoPath { get; }
 
     public QueueItemViewModel? SelectedQueueItem
     {
@@ -193,7 +249,14 @@ public sealed class MainWindowViewModel : ObservableObject
     public PdfToolOperation SelectedPdfToolOperation
     {
         get => _selectedPdfToolOperation;
-        set => SetProperty(ref _selectedPdfToolOperation, value);
+        set
+        {
+            if (SetProperty(ref _selectedPdfToolOperation, value))
+            {
+                OnPropertyChanged(nameof(IsPdfToolPageRangeVisible));
+                OnPropertyChanged(nameof(IsPdfToolRotationVisible));
+            }
+        }
     }
 
     public PdfRotationAngle SelectedPdfRotationAngle
@@ -220,8 +283,65 @@ public sealed class MainWindowViewModel : ObservableObject
         set => SetProperty(ref _pdfToolStatus, value);
     }
 
+    public string AlertText
+    {
+        get => _alertText;
+        set
+        {
+            if (SetProperty(ref _alertText, value))
+            {
+                OnPropertyChanged(nameof(HasAlert));
+            }
+        }
+    }
+
+    public bool HasAlert => !string.IsNullOrWhiteSpace(AlertText);
+
+    public AppPage SelectedPage
+    {
+        get => _selectedPage;
+        set
+        {
+            if (SetProperty(ref _selectedPage, value))
+            {
+                OnPropertyChanged(nameof(CurrentModeTitle));
+                OnPropertyChanged(nameof(CurrentModeDescription));
+            }
+        }
+    }
+
+    public string CurrentModeTitle => SelectedPage switch
+    {
+        AppPage.PdfTools => Loc["ModePdfToolsTitle"],
+        AppPage.Engines => Loc["ModeEnginesTitle"],
+        AppPage.Logs => Loc["ModeLogsTitle"],
+        AppPage.Help => Loc["ModeHelpTitle"],
+        _ => Loc["ModeConvertTitle"]
+    };
+
+    public string CurrentModeDescription => SelectedPage switch
+    {
+        AppPage.PdfTools => Loc["ModePdfToolsDescription"],
+        AppPage.Engines => Loc["ModeEnginesDescription"],
+        AppPage.Logs => Loc["ModeLogsDescription"],
+        AppPage.Help => Loc["ModeHelpDescription"],
+        _ => Loc["ModeConvertDescription"]
+    };
+
+    public bool IsPdfToolPageRangeVisible =>
+        SelectedPdfToolOperation is PdfToolOperation.ExtractPages or PdfToolOperation.RotatePages;
+
+    public bool IsPdfToolRotationVisible => SelectedPdfToolOperation == PdfToolOperation.RotatePages;
+
     public void AddPaths(IEnumerable<string> paths)
     {
+        if (IsRunning)
+        {
+            ShowAlert(Loc["WaitCurrentTask"]);
+            Log("Add blocked: task running.");
+            return;
+        }
+
         var scan = _inputScanner.Scan(paths);
         var existing = Queue
             .Select(item => item.InputPath)
@@ -232,6 +352,7 @@ public sealed class MainWindowViewModel : ObservableObject
         {
             if (existing.Contains(filePath))
             {
+                AddRejectedPath(filePath, "Duplicate ignored");
                 Log($"Duplicate ignored: {filePath}");
                 continue;
             }
@@ -243,6 +364,7 @@ public sealed class MainWindowViewModel : ObservableObject
 
         foreach (var rejectedPath in scan.RejectedPaths.Take(20))
         {
+            AddRejectedPath(rejectedPath, "Unsupported or missing");
             Log($"Unsupported or missing path skipped: {rejectedPath}");
         }
 
@@ -251,15 +373,21 @@ public sealed class MainWindowViewModel : ObservableObject
             Log($"Skipped {scan.RejectedPaths.Count - 20} more unsupported paths.");
         }
 
+        if (scan.RejectedPaths.Count > 0)
+        {
+            ShowAlert($"{scan.RejectedPaths.Count} {Loc["UnsupportedSkipped"]}");
+        }
+        else if (added > 0)
+        {
+            AlertText = "";
+        }
+
         SummaryText = $"{Queue.Count} file(s) queued.";
         Log($"Added {added} file(s).");
         RaiseCommandStates();
     }
 
-    private void AddFiles()
-    {
-        AddPaths(_filePicker.PickInputFiles());
-    }
+    private void AddFiles() => AddPaths(_filePicker.PickInputFiles());
 
     private void AddFolder()
     {
@@ -286,6 +414,8 @@ public sealed class MainWindowViewModel : ObservableObject
     private void ClearQueue()
     {
         Queue.Clear();
+        RejectedPaths.Clear();
+        AlertText = "";
         SummaryText = "Queue cleared.";
         Log("Queue cleared.");
         RaiseCommandStates();
@@ -305,27 +435,31 @@ public sealed class MainWindowViewModel : ObservableObject
     {
         if (Queue.Count == 0)
         {
+            ShowAlert(Loc["AddFilesBeforeStart"]);
             Log("Start blocked: queue is empty.");
-            SummaryText = "Add files before starting.";
+            SummaryText = Loc["AddFilesBeforeStart"];
             return;
         }
 
         if (string.IsNullOrWhiteSpace(OutputFolder))
         {
+            ShowAlert(Loc["ChooseOutputBeforeStart"]);
             Log("Start blocked: output folder is required.");
-            SummaryText = "Choose an output folder.";
+            SummaryText = Loc["ChooseOutputBeforeStart"];
             return;
         }
 
         if (Dpi is < 72 or > 600)
         {
+            ShowAlert(Loc["DpiInvalid"]);
             Log("Start blocked: DPI must be 72-600.");
-            SummaryText = "DPI must be 72-600.";
+            SummaryText = Loc["DpiInvalid"];
             return;
         }
 
         IsRunning = true;
         _runCancellation = new CancellationTokenSource();
+        SummaryText = Loc["Running"];
 
         foreach (var item in Queue)
         {
@@ -339,6 +473,7 @@ public sealed class MainWindowViewModel : ObservableObject
         {
             Directory.CreateDirectory(OutputFolder);
             Log("Batch started.");
+            AlertText = "";
 
             var job = new BatchConversionJob(
                 Queue.Select(item => new BatchConversionItem(item.InputPath)).ToArray(),
@@ -355,9 +490,11 @@ public sealed class MainWindowViewModel : ObservableObject
                     OverwritePolicy = OverwritePolicy.AutoRename
                 });
 
+            var token = _runCancellation.Token;
             var progress = new Progress<BatchConversionProgress>(UpdateProgress);
-            var result = await _batchRunner
-                .RunAsync(job, progress, _runCancellation.Token)
+            var result = await Task.Run(
+                    () => _batchRunner.RunAsync(job, progress, token),
+                    token)
                 .ConfigureAwait(true);
 
             foreach (var itemResult in result.Items)
@@ -376,30 +513,55 @@ public sealed class MainWindowViewModel : ObservableObject
         catch (Exception ex)
         {
             SummaryText = "Batch failed.";
+            ShowAlert(ex.Message);
             Log($"Batch error: {ex.Message}");
         }
         finally
         {
             IsRunning = false;
-            _runCancellation.Dispose();
+            _runCancellation?.Dispose();
             _runCancellation = null;
         }
     }
 
-    private void AddPdfToolFiles()
+    public void AddPdfToolPaths(IEnumerable<string> paths)
     {
+        if (IsRunning)
+        {
+            ShowAlert(Loc["WaitCurrentTask"]);
+            Log("PDF tool add blocked: task running.");
+            return;
+        }
+
         var existing = PdfToolInputs.ToHashSet(StringComparer.OrdinalIgnoreCase);
         var added = 0;
-        foreach (var path in _filePicker.PickPdfToolFiles())
+        var rejected = 0;
+
+        foreach (var path in paths.Where(path => !string.IsNullOrWhiteSpace(path)))
         {
-            if (!existing.Add(path))
+            var fullPath = Path.GetFullPath(path);
+            if (!IsPdfToolInputAllowed(fullPath))
             {
-                Log($"PDF tool duplicate ignored: {path}");
+                rejected++;
+                AddRejectedPath(fullPath, $"Not valid for {SelectedPdfToolOperation}");
+                Log($"PDF tool rejected input for {SelectedPdfToolOperation}: {fullPath}");
                 continue;
             }
 
-            PdfToolInputs.Add(path);
+            if (!existing.Add(fullPath))
+            {
+                AddRejectedPath(fullPath, "Duplicate ignored");
+                Log($"PDF tool duplicate ignored: {fullPath}");
+                continue;
+            }
+
+            PdfToolInputs.Add(fullPath);
             added++;
+        }
+
+        if (rejected > 0)
+        {
+            ShowAlert($"{rejected} PDF tool input(s) rejected for {SelectedPdfToolOperation}.");
         }
 
         PdfToolStatus = $"{PdfToolInputs.Count} PDF tool input(s) ready.";
@@ -407,10 +569,12 @@ public sealed class MainWindowViewModel : ObservableObject
         RaiseCommandStates();
     }
 
+    private void AddPdfToolFiles() => AddPdfToolPaths(_filePicker.PickPdfToolFiles());
+
     private void ClearPdfToolInputs()
     {
         PdfToolInputs.Clear();
-        PdfToolStatus = "PDF tool inputs cleared.";
+        PdfToolStatus = Loc["PdfToolsReady"];
         Log("PDF tool inputs cleared.");
         RaiseCommandStates();
     }
@@ -419,19 +583,33 @@ public sealed class MainWindowViewModel : ObservableObject
     {
         if (PdfToolInputs.Count == 0)
         {
-            PdfToolStatus = "Add PDF/image inputs first.";
+            PdfToolStatus = Loc["PdfToolNoInputs"];
+            ShowAlert(PdfToolStatus);
             Log("PDF tool blocked: no inputs.");
+            return;
+        }
+
+        var invalidInput = PdfToolInputs.FirstOrDefault(path => !IsPdfToolInputAllowed(path));
+        if (!string.IsNullOrWhiteSpace(invalidInput))
+        {
+            PdfToolStatus = $"Input not valid for {SelectedPdfToolOperation}: {invalidInput}";
+            ShowAlert(PdfToolStatus);
+            Log(PdfToolStatus);
             return;
         }
 
         if (string.IsNullOrWhiteSpace(OutputFolder))
         {
-            PdfToolStatus = "Choose output folder first.";
+            PdfToolStatus = Loc["PdfToolChooseOutput"];
+            ShowAlert(PdfToolStatus);
             Log("PDF tool blocked: output folder is required.");
             return;
         }
 
         IsRunning = true;
+        _runCancellation = new CancellationTokenSource();
+        PdfToolStatus = Loc["Running"];
+
         try
         {
             Directory.CreateDirectory(OutputFolder);
@@ -450,13 +628,18 @@ public sealed class MainWindowViewModel : ObservableObject
             };
 
             Log($"PDF tool started: {SelectedPdfToolOperation}.");
-            var result = await _serviceFactory.CreatePdfToolService()
-                .RunAsync(request, CancellationToken.None)
+            AlertText = "";
+            var service = _serviceFactory.CreatePdfToolService();
+            var token = _runCancellation.Token;
+            var result = await Task.Run(
+                    () => service.RunAsync(request, token),
+                    token)
                 .ConfigureAwait(true);
 
             if (!result.Success)
             {
                 PdfToolStatus = result.ErrorMessage ?? "PDF tool failed.";
+                ShowAlert(PdfToolStatus);
                 Log($"PDF tool failed: {PdfToolStatus}");
                 return;
             }
@@ -469,20 +652,29 @@ public sealed class MainWindowViewModel : ObservableObject
                 Log($"PDF tool warning: {warning}");
             }
         }
+        catch (OperationCanceledException)
+        {
+            PdfToolStatus = "PDF tool cancelled.";
+            Log(PdfToolStatus);
+        }
         catch (Exception ex)
         {
             PdfToolStatus = $"PDF tool error: {ex.Message}";
+            ShowAlert(PdfToolStatus);
             Log(PdfToolStatus);
         }
         finally
         {
             IsRunning = false;
+            _runCancellation?.Dispose();
+            _runCancellation = null;
         }
     }
 
     private void Cancel()
     {
         _runCancellation?.Cancel();
+        SummaryText = "Cancel requested.";
         Log("Cancel requested.");
     }
 
@@ -490,6 +682,7 @@ public sealed class MainWindowViewModel : ObservableObject
     {
         if (string.IsNullOrWhiteSpace(OutputFolder) || !Directory.Exists(OutputFolder))
         {
+            ShowAlert(Loc["OutputFolderMissing"]);
             Log("Open output blocked: folder does not exist.");
             return;
         }
@@ -539,6 +732,20 @@ public sealed class MainWindowViewModel : ObservableObject
     {
         LogLines.Clear();
         ClearLogCommand.RaiseCanExecuteChanged();
+        CopyLogsCommand.RaiseCanExecuteChanged();
+    }
+
+    private void CopyLogs()
+    {
+        try
+        {
+            Clipboard.SetText(string.Join(Environment.NewLine, LogLines));
+            Log("Logs copied.");
+        }
+        catch (Exception ex)
+        {
+            Log($"Copy logs failed: {ex.Message}");
+        }
     }
 
     private async Task RecheckEnginesAsync()
@@ -565,10 +772,11 @@ public sealed class MainWindowViewModel : ObservableObject
                 .GetStatusAsync(mode, _customLibreOfficePath, CancellationToken.None)
                 .ConfigureAwait(true);
 
-            EngineStatus.WordStatus = office.WordAvailable ? "Available" : "Missing";
-            EngineStatus.PowerPointStatus = office.PowerPointAvailable ? "Available" : "Missing";
-            EngineStatus.LibreOfficeStatus = libre.IsAvailable ? "Available" : "Missing";
-            EngineStatus.PdfRendererStatus = "Available";
+            _wordAvailable = office.WordAvailable;
+            _powerPointAvailable = office.PowerPointAvailable;
+            _libreOfficeAvailable = libre.IsAvailable;
+            _engineStatusKnown = true;
+            RefreshEngineStatusLabels();
             EngineStatus.LibreOfficePath = libre.ExecutablePath ?? libre.Reason ?? "No LibreOffice path detected.";
             EngineStatus.Guidance = setup.BlockingReason
                 ?? string.Join(" ", setup.Recommendations.Select(recommendation => recommendation.Message));
@@ -652,15 +860,152 @@ public sealed class MainWindowViewModel : ObservableObject
         SelectedEngineGuidance = SelectedEngine switch
         {
             BatchConversionEnginePreference.MicrosoftOffice =>
-                EngineStatus.WordStatus == "Available" || EngineStatus.PowerPointStatus == "Available"
-                    ? "Microsoft Office mode uses installed Word/PowerPoint. Files needing a missing Office app will fail clearly."
-                    : "Microsoft Office mode selected, but Word/PowerPoint are missing. Use Auto or LibreOffice after setup.",
+                _wordAvailable || _powerPointAvailable
+                    ? Loc["OfficeGuidanceAvailable"]
+                    : Loc["OfficeGuidanceMissing"],
             BatchConversionEnginePreference.LibreOffice =>
-                EngineStatus.LibreOfficeStatus == "Available"
-                    ? "LibreOffice mode uses detected soffice for supported Office/OpenDocument files."
-                    : "LibreOffice mode needs soffice.com or soffice.exe. Choose path or install LibreOffice from official site.",
-            _ => "Auto mode uses Microsoft Office first for DOC/PPT when available, then LibreOffice fallback. PDF rendering is local."
+                _libreOfficeAvailable
+                    ? Loc["LibreGuidanceAvailable"]
+                    : Loc["LibreGuidanceMissing"],
+            _ => Loc["AutoGuidance"]
         };
+    }
+
+    private void RefreshEngineStatusLabels()
+    {
+        if (!_engineStatusKnown)
+        {
+            EngineStatus.WordStatus = Loc["Checking"];
+            EngineStatus.PowerPointStatus = Loc["Checking"];
+            EngineStatus.LibreOfficeStatus = Loc["Checking"];
+        }
+        else
+        {
+            EngineStatus.WordStatus = _wordAvailable ? Loc["Available"] : Loc["Missing"];
+            EngineStatus.PowerPointStatus = _powerPointAvailable ? Loc["Available"] : Loc["Missing"];
+            EngineStatus.LibreOfficeStatus = _libreOfficeAvailable ? Loc["Available"] : Loc["Missing"];
+        }
+
+        EngineStatus.PdfRendererStatus = Loc["Available"];
+    }
+
+    private void SetLanguage(Language language)
+    {
+        Loc.SetLanguage(language);
+        RefreshChoices();
+        RefreshEngineStatusLabels();
+        RefreshSelectedEngineGuidance();
+        OnPropertyChanged(nameof(CurrentModeTitle));
+        OnPropertyChanged(nameof(CurrentModeDescription));
+        if (PdfToolStatus == LocalizedStrings.Get(language == Language.English ? Language.Vietnamese : Language.English, "PdfToolsReady"))
+        {
+            PdfToolStatus = Loc["PdfToolsReady"];
+        }
+    }
+
+    private void RefreshChoices()
+    {
+        ReplaceChoices(
+            TargetChoices,
+            Enum.GetValues<BatchConversionTarget>()
+                .Select(value => new ChoiceItem<BatchConversionTarget>(value, TargetLabel(value))));
+        ReplaceChoices(
+            EngineChoices,
+            Enum.GetValues<BatchConversionEnginePreference>()
+                .Select(value => new ChoiceItem<BatchConversionEnginePreference>(value, EngineLabel(value))));
+        ReplaceChoices(
+            ImageFormatChoices,
+            Enum.GetValues<ImageOutputFormat>()
+                .Select(value => new ChoiceItem<ImageOutputFormat>(value, ImageFormatLabel(value))));
+        ReplaceChoices(
+            PdfToolOperationChoices,
+            Enum.GetValues<PdfToolOperation>()
+                .Select(value => new ChoiceItem<PdfToolOperation>(value, PdfToolLabel(value))));
+        ReplaceChoices(
+            PdfRotationChoices,
+            Enum.GetValues<PdfRotationAngle>()
+                .Select(value => new ChoiceItem<PdfRotationAngle>(value, RotationLabel(value))));
+    }
+
+    private string TargetLabel(BatchConversionTarget target) => target switch
+    {
+        BatchConversionTarget.Pdf => Loc["TargetPdf"],
+        BatchConversionTarget.Images => Loc["TargetImages"],
+        BatchConversionTarget.PdfAndImages => Loc["TargetPdfAndImages"],
+        _ => target.ToString()
+    };
+
+    private string EngineLabel(BatchConversionEnginePreference engine) => engine switch
+    {
+        BatchConversionEnginePreference.Auto => Loc["EngineAuto"],
+        BatchConversionEnginePreference.MicrosoftOffice => Loc["EngineMicrosoftOffice"],
+        BatchConversionEnginePreference.LibreOffice => Loc["EngineLibreOffice"],
+        _ => engine.ToString()
+    };
+
+    private string ImageFormatLabel(ImageOutputFormat format) => format switch
+    {
+        ImageOutputFormat.Png => Loc["FormatPng"],
+        ImageOutputFormat.Jpeg => Loc["FormatJpeg"],
+        ImageOutputFormat.Webp => Loc["FormatWebp"],
+        _ => format.ToString()
+    };
+
+    private string PdfToolLabel(PdfToolOperation operation) => operation switch
+    {
+        PdfToolOperation.Merge => Loc["ToolMerge"],
+        PdfToolOperation.Split => Loc["ToolSplit"],
+        PdfToolOperation.ExtractPages => Loc["ToolExtract"],
+        PdfToolOperation.RotatePages => Loc["ToolRotate"],
+        PdfToolOperation.ImagesToPdf => Loc["ToolImagesToPdf"],
+        _ => operation.ToString()
+    };
+
+    private string RotationLabel(PdfRotationAngle angle) => angle switch
+    {
+        PdfRotationAngle.Degrees90 => Loc["Rotation90"],
+        PdfRotationAngle.Degrees180 => Loc["Rotation180"],
+        PdfRotationAngle.Degrees270 => Loc["Rotation270"],
+        _ => angle.ToString()
+    };
+
+    private static void ReplaceChoices<T>(
+        ObservableCollection<ChoiceItem<T>> target,
+        IEnumerable<ChoiceItem<T>> choices)
+    {
+        target.Clear();
+        foreach (var choice in choices)
+        {
+            target.Add(choice);
+        }
+    }
+
+    private bool IsPdfToolInputAllowed(string path)
+    {
+        if (string.IsNullOrWhiteSpace(path) || !File.Exists(path))
+        {
+            return false;
+        }
+
+        var extension = Path.GetExtension(path);
+        return SelectedPdfToolOperation == PdfToolOperation.ImagesToPdf
+            ? PdfToolImageExtensions.Contains(extension)
+            : PdfToolPdfExtensions.Contains(extension);
+    }
+
+    private void AddRejectedPath(string path, string reason)
+    {
+        var entry = $"{reason}: {path}";
+        if (!RejectedPaths.Contains(entry))
+        {
+            RejectedPaths.Add(entry);
+        }
+    }
+
+    private void ShowAlert(string message)
+    {
+        AlertText = message;
+        SummaryText = message;
     }
 
     private void Log(string message)
@@ -672,6 +1017,7 @@ public sealed class MainWindowViewModel : ObservableObject
         }
 
         ClearLogCommand.RaiseCanExecuteChanged();
+        CopyLogsCommand.RaiseCanExecuteChanged();
     }
 
     private void RaiseCommandStates()
@@ -686,8 +1032,15 @@ public sealed class MainWindowViewModel : ObservableObject
         ChooseLibreOfficeCommand.RaiseCanExecuteChanged();
         OpenItemOutputCommand.RaiseCanExecuteChanged();
         ClearLogCommand.RaiseCanExecuteChanged();
+        CopyLogsCommand.RaiseCanExecuteChanged();
         AddPdfToolFilesCommand.RaiseCanExecuteChanged();
         ClearPdfToolInputsCommand.RaiseCanExecuteChanged();
         RunPdfToolCommand.RaiseCanExecuteChanged();
+    }
+
+    private static string FindLogoPath()
+    {
+        var outputLogo = Path.Combine(AppContext.BaseDirectory, "Assets", "logo.png");
+        return File.Exists(outputLogo) ? outputLogo : "";
     }
 }

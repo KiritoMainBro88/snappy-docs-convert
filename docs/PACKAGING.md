@@ -38,6 +38,7 @@ The smoke check verifies:
 - `SnappyDocsConvert.App.exe --self-check` exits successfully and reports `selfCheck: ok`.
 - `README-QUICKSTART.txt`, `PRIVACY.txt`, and `THIRD-PARTY-NOTICES.txt` exist.
 - Source folders, tests, QA output, logs, generated PDFs/images, and nested zips are absent.
+- Expected branding asset `Assets\logo.png` is allowed when present.
 
 With `WinExe`, console output from `--self-check` can be unavailable under automation. Release smoke treats exit code 0 as valid when JSON output is not captured.
 

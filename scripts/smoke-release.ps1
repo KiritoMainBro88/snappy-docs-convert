@@ -63,9 +63,19 @@ try {
         throw "Forbidden directories found: $($foundForbiddenDirectories.FullName -join '; ')"
     }
 
+    $allowedBrandingFiles = @(
+        "Assets\logo.png"
+    )
     $forbiddenExtensions = @(".pdf", ".png", ".jpg", ".jpeg", ".webp", ".log", ".zip")
     $foundForbiddenFiles = Get-ChildItem -LiteralPath $releaseRoot -Recurse -File |
-        Where-Object { $forbiddenExtensions -contains $_.Extension.ToLowerInvariant() }
+        Where-Object {
+            $relativePath = $_.FullName
+            if ($_.FullName.StartsWith($appDir, [StringComparison]::OrdinalIgnoreCase)) {
+                $relativePath = $_.FullName.Substring($appDir.Length).TrimStart('\', '/')
+            }
+            ($forbiddenExtensions -contains $_.Extension.ToLowerInvariant()) -and
+                ($allowedBrandingFiles -notcontains $relativePath)
+        }
     if ($foundForbiddenFiles) {
         throw "Forbidden files found: $($foundForbiddenFiles.FullName -join '; ')"
     }

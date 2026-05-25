@@ -15,64 +15,122 @@
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
             <RowDefinition Height="*" />
-            <RowDefinition Height="154" />
             <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="188" />
+            <ColumnDefinition Width="*" />
+        </Grid.ColumnDefinitions>
 
-        <Grid Grid.Row="0" Margin="0,0,0,14">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="*" />
-                <ColumnDefinition Width="Auto" />
-            </Grid.ColumnDefinitions>
+        <Border Grid.Row="0" Grid.ColumnSpan="2" Style="{StaticResource Panel}" Margin="0,0,0,14" Padding="14">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
 
-            <StackPanel>
-                <StackPanel Orientation="Horizontal">
-                    <TextBlock Text="Snappy Docs Convert" Style="{StaticResource TitleText}" />
-                    <Border Style="{StaticResource PrivacyBadge}" Margin="14,3,0,0">
-                        <TextBlock Text="Local only · No upload"
-                                   Foreground="{StaticResource SuccessBrush}"
-                                   FontWeight="SemiBold"
-                                   FontSize="12" />
-                    </Border>
+                <Border Width="52"
+                        Height="52"
+                        CornerRadius="12"
+                        Background="{StaticResource AccentSoftBrush}"
+                        BorderBrush="#BFDBFE"
+                        BorderThickness="1">
+                    <Grid>
+                        <TextBlock Text="SDC" Style="{StaticResource LogoInitials}" />
+                        <Image Source="{Binding LogoPath}" Stretch="UniformToFill">
+                            <Image.Style>
+                                <Style TargetType="Image">
+                                    <Setter Property="Visibility" Value="Visible" />
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding LogoPath}" Value="">
+                                            <Setter Property="Visibility" Value="Collapsed" />
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </Image.Style>
+                        </Image>
+                    </Grid>
+                </Border>
+
+                <StackPanel Grid.Column="1" Margin="14,0,0,0" VerticalAlignment="Center">
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Text="{Binding Loc[AppName]}" Style="{StaticResource TitleText}" FontSize="24" />
+                        <Border Style="{StaticResource PrivacyBadge}" Margin="14,2,0,0">
+                            <TextBlock Text="{Binding Loc[PrivacyBadge]}"
+                                       Foreground="{StaticResource SuccessBrush}"
+                                       FontWeight="SemiBold"
+                                       FontSize="12" />
+                        </Border>
+                    </StackPanel>
+                    <TextBlock Text="{Binding CurrentModeTitle}" FontWeight="SemiBold" Margin="0,4,0,0" />
+                    <TextBlock Text="{Binding CurrentModeDescription}" Style="{StaticResource TinyMutedText}" />
                 </StackPanel>
-                <TextBlock Text="Local document converter"
-                           Style="{StaticResource SubtitleText}" />
+
+                <StackPanel Grid.Column="2"
+                            Orientation="Horizontal"
+                            VerticalAlignment="Center"
+                            HorizontalAlignment="Right">
+                    <Button Content="EN" Command="{Binding UseEnglishCommand}" Style="{StaticResource SmallButton}" />
+                    <Button Content="VI" Command="{Binding UseVietnameseCommand}" Style="{StaticResource SmallButton}" />
+                </StackPanel>
+            </Grid>
+        </Border>
+
+        <Border Grid.Row="1" Grid.Column="0" Style="{StaticResource SidebarPanel}" Margin="0,0,14,0">
+            <StackPanel>
+                <Button Content="{Binding Loc[NavConvert]}" Command="{Binding ShowConvertCommand}" Style="{StaticResource NavButton}" />
+                <Button Content="{Binding Loc[NavPdfTools]}" Command="{Binding ShowPdfToolsCommand}" Style="{StaticResource NavButton}" />
+                <Button Content="{Binding Loc[NavEngines]}" Command="{Binding ShowEnginesCommand}" Style="{StaticResource NavButton}" />
+                <Button Content="{Binding Loc[NavLogs]}" Command="{Binding ShowLogsCommand}" Style="{StaticResource NavButton}" />
+                <Button Content="{Binding Loc[NavHelp]}" Command="{Binding ShowHelpCommand}" Style="{StaticResource NavButton}" />
+
+                <Border Style="{StaticResource SettingsGroup}" Margin="0,16,0,0">
+                    <StackPanel>
+                        <TextBlock Text="{Binding Loc[Status]}" Style="{StaticResource FieldLabel}" Margin="0,0,0,6" />
+                        <TextBlock Text="{Binding SummaryText}" TextWrapping="Wrap" Style="{StaticResource TinyMutedText}" />
+                    </StackPanel>
+                </Border>
             </StackPanel>
+        </Border>
 
-            <WrapPanel Grid.Column="1"
-                       HorizontalAlignment="Right"
-                       VerticalAlignment="Center">
-                <Button Content="Add Files" Command="{Binding AddFilesCommand}" Style="{StaticResource PrimaryButton}" />
-                <Button Content="Add Folder" Command="{Binding AddFolderCommand}" />
-                <Button Content="Remove Selected" Command="{Binding RemoveSelectedCommand}" />
-                <Button Content="Clear Queue" Command="{Binding ClearCommand}" />
-            </WrapPanel>
-        </Grid>
+        <Grid Grid.Row="1" Grid.Column="1">
+            <Grid.Style>
+                <Style TargetType="Grid">
+                    <Setter Property="Visibility" Value="Collapsed" />
+                    <Style.Triggers>
+                        <DataTrigger Binding="{Binding SelectedPage}" Value="Convert">
+                            <Setter Property="Visibility" Value="Visible" />
+                        </DataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </Grid.Style>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="*" />
+            </Grid.RowDefinitions>
 
-        <Grid Grid.Row="1">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="*" MinWidth="680" />
-                <ColumnDefinition Width="388" />
-            </Grid.ColumnDefinitions>
+            <StackPanel Grid.Row="0">
+                <Border Style="{StaticResource AlertPanel}">
+                    <StackPanel>
+                        <TextBlock Text="{Binding Loc[Alert]}" FontWeight="SemiBold" Foreground="{StaticResource WarningBrush}" />
+                        <TextBlock Text="{Binding AlertText}" TextWrapping="Wrap" Margin="0,4,0,0" />
+                        <ItemsControl ItemsSource="{Binding RejectedPaths}" Margin="0,6,0,0" />
+                    </StackPanel>
+                </Border>
 
-            <Grid Grid.Column="0" Margin="0,0,14,0">
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="118" />
-                    <RowDefinition Height="*" />
-                </Grid.RowDefinitions>
-
-                <Border Grid.Row="0"
-                        Style="{StaticResource DropZone}"
+                <Border Style="{StaticResource DropZone}"
                         Drop="Window_Drop"
                         DragOver="Window_DragOver">
                     <Grid>
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="Auto" />
                             <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="Auto" />
                         </Grid.ColumnDefinitions>
-                        <Border Width="52"
-                                Height="52"
-                                CornerRadius="26"
+                        <Border Width="54"
+                                Height="54"
+                                CornerRadius="27"
                                 Background="{StaticResource PanelBrush}"
                                 BorderBrush="#BFDBFE"
                                 BorderThickness="1"
@@ -84,24 +142,93 @@
                                        HorizontalAlignment="Center"
                                        VerticalAlignment="Center" />
                         </Border>
-                        <StackPanel Grid.Column="1"
-                                    Margin="16,0,0,0"
-                                    VerticalAlignment="Center">
-                            <TextBlock Text="Drop files or folders here"
-                                       FontSize="19"
-                                       FontWeight="SemiBold" />
-                            <TextBlock Text="Supported: PDF, DOC, DOCX, RTF, ODT, PPT, PPTX, ODP"
-                                       Style="{StaticResource MutedText}"
-                                       Margin="0,4,0,0" />
-                            <TextBlock Text="Empty queue? Use Add Files, Add Folder, or drag content into this area."
-                                       Style="{StaticResource TinyMutedText}"
-                                       Margin="0,8,0,0" />
+                        <StackPanel Grid.Column="1" Margin="16,0,0,0" VerticalAlignment="Center">
+                            <TextBlock Text="{Binding Loc[DropTitle]}" FontSize="19" FontWeight="SemiBold" />
+                            <TextBlock Text="{Binding Loc[SupportedFormats]}" Style="{StaticResource MutedText}" Margin="0,4,0,0" />
+                            <TextBlock Text="{Binding Loc[EmptyQueue]}" Style="{StaticResource TinyMutedText}" Margin="0,8,0,0" />
                         </StackPanel>
+                        <WrapPanel Grid.Column="2" VerticalAlignment="Center" HorizontalAlignment="Right">
+                            <Button Content="{Binding Loc[AddFiles]}" Command="{Binding AddFilesCommand}" Style="{StaticResource PrimaryButton}" />
+                            <Button Content="{Binding Loc[AddFolder]}" Command="{Binding AddFolderCommand}" />
+                        </WrapPanel>
                     </Grid>
                 </Border>
 
-                <DataGrid Grid.Row="1"
-                          Margin="0,14,0,0"
+                <Border Style="{StaticResource Panel}" Margin="0,12,0,12">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="1.35*" />
+                            <ColumnDefinition Width="1.2*" />
+                            <ColumnDefinition Width="1.1*" />
+                        </Grid.ColumnDefinitions>
+
+                        <StackPanel Grid.Column="0" Margin="0,0,14,0">
+                            <TextBlock Text="{Binding Loc[Output]}" Style="{StaticResource SectionTitle}" />
+                            <TextBlock Text="{Binding Loc[OutputFolder]}" Style="{StaticResource FieldLabel}" />
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="Auto" />
+                                </Grid.ColumnDefinitions>
+                                <TextBox Text="{Binding OutputFolder, UpdateSourceTrigger=PropertyChanged}" />
+                                <Button Grid.Column="1"
+                                        Content="{Binding Loc[Choose]}"
+                                        Command="{Binding ChooseOutputFolderCommand}"
+                                        Margin="8,0,0,0" />
+                            </Grid>
+                        </StackPanel>
+
+                        <StackPanel Grid.Column="1" Margin="0,0,14,0">
+                            <TextBlock Text="{Binding Loc[Conversion]}" Style="{StaticResource SectionTitle}" />
+                            <TextBlock Text="{Binding Loc[Target]}" Style="{StaticResource FieldLabel}" />
+                            <ComboBox ItemsSource="{Binding TargetChoices}"
+                                      DisplayMemberPath="Label"
+                                      SelectedValuePath="Value"
+                                      SelectedValue="{Binding SelectedTarget}" />
+                            <TextBlock Text="{Binding Loc[Engine]}" Style="{StaticResource FieldLabel}" />
+                            <ComboBox ItemsSource="{Binding EngineChoices}"
+                                      DisplayMemberPath="Label"
+                                      SelectedValuePath="Value"
+                                      SelectedValue="{Binding SelectedEngine}" />
+                            <TextBlock Text="{Binding SelectedEngineGuidance}"
+                                       Style="{StaticResource TinyMutedText}"
+                                       TextWrapping="Wrap"
+                                       Margin="0,8,0,0" />
+                        </StackPanel>
+
+                        <StackPanel Grid.Column="2">
+                            <TextBlock Text="{Binding Loc[Images]}" Style="{StaticResource SectionTitle}" />
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="92" />
+                                </Grid.ColumnDefinitions>
+                                <StackPanel Grid.Column="0" Margin="0,0,8,0">
+                                    <TextBlock Text="{Binding Loc[ImageFormat]}" Style="{StaticResource FieldLabel}" />
+                                    <ComboBox ItemsSource="{Binding ImageFormatChoices}"
+                                              DisplayMemberPath="Label"
+                                              SelectedValuePath="Value"
+                                              SelectedValue="{Binding SelectedImageFormat}" />
+                                </StackPanel>
+                                <StackPanel Grid.Column="1">
+                                    <TextBlock Text="{Binding Loc[Dpi]}" Style="{StaticResource FieldLabel}" />
+                                    <TextBox Text="{Binding Dpi, UpdateSourceTrigger=PropertyChanged}" />
+                                </StackPanel>
+                            </Grid>
+                            <CheckBox Content="{Binding Loc[KeepIntermediate]}" IsChecked="{Binding KeepIntermediatePdf}" />
+                            <TextBlock Text="{Binding Loc[DpiHelp]}" Style="{StaticResource TinyMutedText}" TextWrapping="Wrap" Margin="0,8,0,0" />
+                        </StackPanel>
+                    </Grid>
+                </Border>
+            </StackPanel>
+
+            <Grid Grid.Row="1">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="*" />
+                    <RowDefinition Height="Auto" />
+                </Grid.RowDefinitions>
+
+                <DataGrid Grid.Row="0"
                           ItemsSource="{Binding Queue}"
                           SelectedItem="{Binding SelectedQueueItem}"
                           AutoGenerateColumns="False"
@@ -112,26 +239,20 @@
                           AlternationCount="2"
                           RowHeaderWidth="0">
                     <DataGrid.Columns>
-                        <DataGridTemplateColumn Header="File" Width="2.2*" MinWidth="190">
+                        <DataGridTemplateColumn Header="File" Width="2.1*" MinWidth="190">
                             <DataGridTemplateColumn.CellTemplate>
                                 <DataTemplate>
                                     <StackPanel>
-                                        <TextBlock Text="{Binding FileName}"
-                                                   FontWeight="SemiBold"
-                                                   TextTrimming="CharacterEllipsis"
-                                                   ToolTip="{Binding InputPath}" />
-                                        <TextBlock Text="{Binding InputPath}"
-                                                   Style="{StaticResource TinyMutedText}"
-                                                   TextTrimming="CharacterEllipsis"
-                                                   ToolTip="{Binding InputPath}" />
+                                        <TextBlock Text="{Binding FileName}" FontWeight="SemiBold" TextTrimming="CharacterEllipsis" ToolTip="{Binding InputPath}" />
+                                        <TextBlock Text="{Binding InputPath}" Style="{StaticResource TinyMutedText}" TextTrimming="CharacterEllipsis" ToolTip="{Binding InputPath}" />
                                     </StackPanel>
                                 </DataTemplate>
                             </DataGridTemplateColumn.CellTemplate>
                         </DataGridTemplateColumn>
-                        <DataGridTextColumn Header="Type" Binding="{Binding Type}" Width="66" />
-                        <DataGridTextColumn Header="Target" Binding="{Binding Target}" Width="115" />
-                        <DataGridTextColumn Header="Engine" Binding="{Binding Engine}" Width="126" />
-                        <DataGridTemplateColumn Header="Status" Width="118">
+                        <DataGridTextColumn Header="Type" Binding="{Binding Type}" Width="70" />
+                        <DataGridTextColumn Header="Target" Binding="{Binding Target}" Width="110" />
+                        <DataGridTextColumn Header="Engine" Binding="{Binding Engine}" Width="120" />
+                        <DataGridTemplateColumn Header="Status" Width="112">
                             <DataGridTemplateColumn.CellTemplate>
                                 <DataTemplate>
                                     <Border Style="{StaticResource StatusPillBorder}">
@@ -140,30 +261,24 @@
                                 </DataTemplate>
                             </DataGridTemplateColumn.CellTemplate>
                         </DataGridTemplateColumn>
-                        <DataGridTemplateColumn Header="Message" Width="1.8*" MinWidth="190">
+                        <DataGridTemplateColumn Header="Message" Width="1.7*" MinWidth="160">
                             <DataGridTemplateColumn.CellTemplate>
                                 <DataTemplate>
-                                    <TextBlock Text="{Binding Message}"
-                                               TextWrapping="Wrap"
-                                               TextTrimming="CharacterEllipsis"
-                                               ToolTip="{Binding Message}" />
+                                    <TextBlock Text="{Binding Message}" TextWrapping="Wrap" TextTrimming="CharacterEllipsis" ToolTip="{Binding Message}" />
                                 </DataTemplate>
                             </DataGridTemplateColumn.CellTemplate>
                         </DataGridTemplateColumn>
-                        <DataGridTemplateColumn Header="Output" Width="1.8*" MinWidth="190">
+                        <DataGridTemplateColumn Header="Output" Width="1.6*" MinWidth="160">
                             <DataGridTemplateColumn.CellTemplate>
                                 <DataTemplate>
-                                    <TextBlock Text="{Binding Output}"
-                                               Style="{StaticResource TinyMutedText}"
-                                               TextTrimming="CharacterEllipsis"
-                                               ToolTip="{Binding Output}" />
+                                    <TextBlock Text="{Binding Output}" Style="{StaticResource TinyMutedText}" TextTrimming="CharacterEllipsis" ToolTip="{Binding Output}" />
                                 </DataTemplate>
                             </DataGridTemplateColumn.CellTemplate>
                         </DataGridTemplateColumn>
                         <DataGridTemplateColumn Header="" Width="76">
                             <DataGridTemplateColumn.CellTemplate>
                                 <DataTemplate>
-                                    <Button Content="Open"
+                                    <Button Content="{Binding DataContext.Loc[Open], RelativeSource={RelativeSource AncestorType=DataGrid}}"
                                             Style="{StaticResource SmallButton}"
                                             Command="{Binding DataContext.OpenItemOutputCommand, RelativeSource={RelativeSource AncestorType=DataGrid}}"
                                             CommandParameter="{Binding}" />
@@ -172,200 +287,276 @@
                         </DataGridTemplateColumn>
                     </DataGrid.Columns>
                 </DataGrid>
-            </Grid>
 
-            <Border Grid.Column="1" Style="{StaticResource Panel}">
-                <ScrollViewer VerticalScrollBarVisibility="Auto">
-                    <StackPanel>
-                        <TextBlock Text="Engine status" Style="{StaticResource SectionTitle}" />
-                        <UniformGrid Columns="2" Margin="0,0,0,4" DataContext="{Binding EngineStatus}">
-                            <Border Style="{StaticResource EngineCard}">
-                                <StackPanel>
-                                    <TextBlock Text="Microsoft Word" FontWeight="SemiBold" />
-                                    <TextBlock Text="{Binding WordStatus}" Style="{StaticResource StatusValueText}" Margin="0,4,0,0" />
-                                </StackPanel>
-                            </Border>
-                            <Border Style="{StaticResource EngineCard}" Margin="0,0,0,8">
-                                <StackPanel>
-                                    <TextBlock Text="PowerPoint" FontWeight="SemiBold" />
-                                    <TextBlock Text="{Binding PowerPointStatus}" Style="{StaticResource StatusValueText}" Margin="0,4,0,0" />
-                                </StackPanel>
-                            </Border>
-                            <Border Style="{StaticResource EngineCard}">
-                                <StackPanel>
-                                    <TextBlock Text="LibreOffice" FontWeight="SemiBold" />
-                                    <TextBlock Text="{Binding LibreOfficeStatus}" Style="{StaticResource StatusValueText}" Margin="0,4,0,0" />
-                                </StackPanel>
-                            </Border>
-                            <Border Style="{StaticResource EngineCard}" Margin="0,0,0,8">
-                                <StackPanel>
-                                    <TextBlock Text="PDF renderer" FontWeight="SemiBold" />
-                                    <TextBlock Text="{Binding PdfRendererStatus}" Style="{StaticResource StatusValueText}" Margin="0,4,0,0" />
-                                </StackPanel>
-                            </Border>
-                        </UniformGrid>
-
-                        <Border Style="{StaticResource SettingsGroup}">
-                            <StackPanel DataContext="{Binding EngineStatus}">
-                                <TextBlock Text="Setup guidance" Style="{StaticResource SectionTitle}" />
-                                <TextBlock Text="{Binding Guidance}" TextWrapping="Wrap" />
-                                <TextBlock Text="{Binding LibreOfficePath}"
-                                           Style="{StaticResource TinyMutedText}"
-                                           TextWrapping="Wrap"
-                                           Margin="0,8,0,0" />
-                            </StackPanel>
-                        </Border>
-
-                        <Border Style="{StaticResource SettingsGroup}">
-                            <StackPanel>
-                                <TextBlock Text="Output" Style="{StaticResource SectionTitle}" />
-                                <TextBlock Text="Folder" Style="{StaticResource FieldLabel}" />
-                                <Grid>
-                                    <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="*" />
-                                        <ColumnDefinition Width="Auto" />
-                                    </Grid.ColumnDefinitions>
-                                    <TextBox Grid.Column="0" Text="{Binding OutputFolder, UpdateSourceTrigger=PropertyChanged}" />
-                                    <Button Grid.Column="1" Content="Choose" Command="{Binding ChooseOutputFolderCommand}" Margin="8,0,0,0" />
-                                </Grid>
-                            </StackPanel>
-                        </Border>
-
-                        <Border Style="{StaticResource SettingsGroup}">
-                            <StackPanel>
-                                <TextBlock Text="Conversion" Style="{StaticResource SectionTitle}" />
-                                <TextBlock Text="Target" Style="{StaticResource FieldLabel}" />
-                                <ComboBox ItemsSource="{Binding Targets}" SelectedItem="{Binding SelectedTarget}" />
-                                <TextBlock Text="Engine" Style="{StaticResource FieldLabel}" />
-                                <ComboBox ItemsSource="{Binding Engines}" SelectedItem="{Binding SelectedEngine}" />
-                                <TextBlock Text="{Binding SelectedEngineGuidance}"
-                                           Style="{StaticResource TinyMutedText}"
-                                           TextWrapping="Wrap"
-                                           Margin="0,8,0,0" />
-                            </StackPanel>
-                        </Border>
-
-                        <Border Style="{StaticResource SettingsGroup}">
-                            <StackPanel>
-                                <TextBlock Text="Images" Style="{StaticResource SectionTitle}" />
-                                <TextBlock Text="Format" Style="{StaticResource FieldLabel}" />
-                                <ComboBox ItemsSource="{Binding ImageFormats}" SelectedItem="{Binding SelectedImageFormat}" />
-                                <TextBlock Text="DPI" Style="{StaticResource FieldLabel}" />
-                                <TextBox Text="{Binding Dpi, UpdateSourceTrigger=PropertyChanged}" />
-                                <TextBlock Text="72-600 DPI. Default 200. High DPI may use more memory."
-                                           Style="{StaticResource TinyMutedText}"
-                                           TextWrapping="Wrap"
-                                           Margin="0,6,0,0" />
-                                <CheckBox Content="Keep intermediate PDF for images-only runs"
-                                          IsChecked="{Binding KeepIntermediatePdf}" />
-                            </StackPanel>
-                        </Border>
-
-                        <Border Style="{StaticResource SettingsGroup}" Margin="0">
-                            <StackPanel>
-                                <TextBlock Text="Engines" Style="{StaticResource SectionTitle}" />
-                                <WrapPanel>
-                                    <Button Content="Recheck" Command="{Binding RecheckEnginesCommand}" Margin="0,0,6,6" />
-                                    <Button Content="Choose soffice" Command="{Binding ChooseLibreOfficeCommand}" Margin="0,0,6,6" />
-                                </WrapPanel>
-                                <Button Content="Open official LibreOffice download"
-                                        Command="{Binding OpenLibreOfficeDownloadCommand}"
-                                        Margin="0,4,0,0" />
-                            </StackPanel>
-                        </Border>
-
-                        <Border Style="{StaticResource SettingsGroup}" Margin="0,12,0,0">
-                            <StackPanel>
-                                <TextBlock Text="PDF Tools" Style="{StaticResource SectionTitle}" />
-                                <TextBlock Text="Local tools: merge, split, extract, rotate, images to PDF."
-                                           Style="{StaticResource TinyMutedText}"
-                                           TextWrapping="Wrap" />
-
-                                <TextBlock Text="Operation" Style="{StaticResource FieldLabel}" />
-                                <ComboBox ItemsSource="{Binding PdfToolOperations}"
-                                          SelectedItem="{Binding SelectedPdfToolOperation}" />
-
-                                <TextBlock Text="Inputs" Style="{StaticResource FieldLabel}" />
-                                <ListBox ItemsSource="{Binding PdfToolInputs}"
-                                         Height="74"
-                                         BorderBrush="{StaticResource BorderBrushSoft}"
-                                         Background="{StaticResource PanelBrush}" />
-                                <WrapPanel Margin="0,8,0,0">
-                                    <Button Content="Add PDFs / Images"
-                                            Command="{Binding AddPdfToolFilesCommand}"
-                                            Margin="0,0,6,6" />
-                                    <Button Content="Clear Inputs"
-                                            Command="{Binding ClearPdfToolInputsCommand}"
-                                            Margin="0,0,6,6" />
-                                </WrapPanel>
-
-                                <TextBlock Text="Output file name (optional)" Style="{StaticResource FieldLabel}" />
-                                <TextBox Text="{Binding PdfToolOutputFileName, UpdateSourceTrigger=PropertyChanged}" />
-                                <TextBlock Text="Output folder uses the main Output folder above."
-                                           Style="{StaticResource TinyMutedText}"
-                                           TextWrapping="Wrap"
-                                           Margin="0,6,0,0" />
-
-                                <TextBlock Text="Page range for Extract/Rotate" Style="{StaticResource FieldLabel}" />
-                                <TextBox Text="{Binding PdfToolPageRanges, UpdateSourceTrigger=PropertyChanged}"
-                                         ToolTip="Example: 1,3-5,8" />
-
-                                <TextBlock Text="Rotation" Style="{StaticResource FieldLabel}" />
-                                <ComboBox ItemsSource="{Binding PdfRotationAngles}"
-                                          SelectedItem="{Binding SelectedPdfRotationAngle}" />
-
-                                <Button Content="Start Tool"
-                                        Command="{Binding RunPdfToolCommand}"
-                                        Style="{StaticResource PrimaryButton}"
-                                        Margin="0,12,0,0" />
-                                <TextBlock Text="{Binding PdfToolStatus}"
-                                           Style="{StaticResource TinyMutedText}"
-                                           TextWrapping="Wrap"
-                                           Margin="0,8,0,0" />
-                            </StackPanel>
-                        </Border>
-                    </StackPanel>
-                </ScrollViewer>
-            </Border>
-        </Grid>
-
-        <Border Grid.Row="2" Style="{StaticResource Panel}" Margin="0,14,0,0">
-            <Grid>
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="Auto" />
-                    <RowDefinition Height="*" />
-                </Grid.RowDefinitions>
-                <Grid>
+                <Grid Grid.Row="1" Margin="0,12,0,0">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="*" />
                         <ColumnDefinition Width="Auto" />
                     </Grid.ColumnDefinitions>
-                    <TextBlock Text="Log" Style="{StaticResource SectionTitle}" />
-                    <Button Grid.Column="1"
-                            Content="Clear Log"
-                            Style="{StaticResource SmallButton}"
-                            Command="{Binding ClearLogCommand}" />
+                    <StackPanel Orientation="Horizontal">
+                        <Button Content="{Binding Loc[RemoveSelected]}" Command="{Binding RemoveSelectedCommand}" />
+                        <Button Content="{Binding Loc[ClearQueue]}" Command="{Binding ClearCommand}" />
+                    </StackPanel>
+                    <WrapPanel Grid.Column="1" HorizontalAlignment="Right">
+                        <Button Content="{Binding Loc[StartQueue]}" Command="{Binding StartCommand}" Style="{StaticResource PrimaryButton}" />
+                        <Button Content="{Binding Loc[Cancel]}" Command="{Binding CancelCommand}" Style="{StaticResource DangerButton}" />
+                        <Button Content="{Binding Loc[OpenOutput]}" Command="{Binding OpenOutputFolderCommand}" />
+                    </WrapPanel>
                 </Grid>
-                <ListBox Grid.Row="1"
-                         ItemsSource="{Binding LogLines}"
-                         Style="{StaticResource LogListBox}" />
             </Grid>
-        </Border>
+        </Grid>
 
-        <Border Grid.Row="3" Style="{StaticResource Panel}" Margin="0,14,0,0" Padding="12">
+        <Grid Grid.Row="1" Grid.Column="1">
+            <Grid.Style>
+                <Style TargetType="Grid">
+                    <Setter Property="Visibility" Value="Collapsed" />
+                    <Style.Triggers>
+                        <DataTrigger Binding="{Binding SelectedPage}" Value="PdfTools">
+                            <Setter Property="Visibility" Value="Visible" />
+                        </DataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </Grid.Style>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="*" />
+            </Grid.RowDefinitions>
+
+            <Border Grid.Row="0" Style="{StaticResource AlertPanel}">
+                <StackPanel>
+                    <TextBlock Text="{Binding Loc[Alert]}" FontWeight="SemiBold" Foreground="{StaticResource WarningBrush}" />
+                    <TextBlock Text="{Binding AlertText}" TextWrapping="Wrap" Margin="0,4,0,0" />
+                    <ItemsControl ItemsSource="{Binding RejectedPaths}" Margin="0,6,0,0" />
+                </StackPanel>
+            </Border>
+
+            <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto">
+                <StackPanel>
+                    <UniformGrid Columns="5" Margin="0,0,0,12">
+                        <Border Style="{StaticResource ToolCard}">
+                            <TextBlock Text="{Binding Loc[ToolMerge]}" FontWeight="SemiBold" TextWrapping="Wrap" />
+                        </Border>
+                        <Border Style="{StaticResource ToolCard}">
+                            <TextBlock Text="{Binding Loc[ToolSplit]}" FontWeight="SemiBold" TextWrapping="Wrap" />
+                        </Border>
+                        <Border Style="{StaticResource ToolCard}">
+                            <TextBlock Text="{Binding Loc[ToolExtract]}" FontWeight="SemiBold" TextWrapping="Wrap" />
+                        </Border>
+                        <Border Style="{StaticResource ToolCard}">
+                            <TextBlock Text="{Binding Loc[ToolRotate]}" FontWeight="SemiBold" TextWrapping="Wrap" />
+                        </Border>
+                        <Border Style="{StaticResource ToolCard}">
+                            <TextBlock Text="{Binding Loc[ToolImagesToPdf]}" FontWeight="SemiBold" TextWrapping="Wrap" />
+                        </Border>
+                    </UniformGrid>
+
+                    <Border Style="{StaticResource Panel}">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="1.05*" />
+                                <ColumnDefinition Width="1.2*" />
+                            </Grid.ColumnDefinitions>
+
+                            <StackPanel Grid.Column="0" Margin="0,0,18,0">
+                                <TextBlock Text="{Binding Loc[PdfToolsIntro]}" Style="{StaticResource MutedText}" TextWrapping="Wrap" />
+                                <TextBlock Text="{Binding Loc[Operation]}" Style="{StaticResource FieldLabel}" />
+                                <ComboBox ItemsSource="{Binding PdfToolOperationChoices}"
+                                          DisplayMemberPath="Label"
+                                          SelectedValuePath="Value"
+                                          SelectedValue="{Binding SelectedPdfToolOperation}" />
+
+                                <TextBlock Text="{Binding Loc[Inputs]}" Style="{StaticResource FieldLabel}" />
+                                <ListBox ItemsSource="{Binding PdfToolInputs}"
+                                         MinHeight="138"
+                                         BorderBrush="{StaticResource BorderBrushSoft}"
+                                         Background="{StaticResource PanelBrush}" />
+                                <WrapPanel Margin="0,10,0,0">
+                                    <Button Content="{Binding Loc[AddPdfToolInputs]}" Command="{Binding AddPdfToolFilesCommand}" Style="{StaticResource PrimaryButton}" />
+                                    <Button Content="{Binding Loc[ClearInputs]}" Command="{Binding ClearPdfToolInputsCommand}" />
+                                </WrapPanel>
+                            </StackPanel>
+
+                            <StackPanel Grid.Column="1">
+                                <TextBlock Text="{Binding Loc[OutputFileName]}" Style="{StaticResource FieldLabel}" />
+                                <TextBox Text="{Binding PdfToolOutputFileName, UpdateSourceTrigger=PropertyChanged}" />
+                                <TextBlock Text="{Binding Loc[MainOutputFolderHint]}" Style="{StaticResource TinyMutedText}" Margin="0,6,0,0" />
+
+                                <StackPanel>
+                                    <StackPanel.Style>
+                                        <Style TargetType="StackPanel">
+                                            <Setter Property="Visibility" Value="Visible" />
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding IsPdfToolPageRangeVisible}" Value="False">
+                                                    <Setter Property="Visibility" Value="Collapsed" />
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </StackPanel.Style>
+                                    <TextBlock Text="{Binding Loc[PageRange]}" Style="{StaticResource FieldLabel}" />
+                                    <TextBox Text="{Binding PdfToolPageRanges, UpdateSourceTrigger=PropertyChanged}" ToolTip="{Binding Loc[PageRangeHint]}" />
+                                    <TextBlock Text="{Binding Loc[PageRangeHint]}" Style="{StaticResource TinyMutedText}" Margin="0,6,0,0" />
+                                </StackPanel>
+
+                                <StackPanel>
+                                    <StackPanel.Style>
+                                        <Style TargetType="StackPanel">
+                                            <Setter Property="Visibility" Value="Visible" />
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding IsPdfToolRotationVisible}" Value="False">
+                                                    <Setter Property="Visibility" Value="Collapsed" />
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </StackPanel.Style>
+                                    <TextBlock Text="{Binding Loc[Rotation]}" Style="{StaticResource FieldLabel}" />
+                                    <ComboBox ItemsSource="{Binding PdfRotationChoices}"
+                                              DisplayMemberPath="Label"
+                                              SelectedValuePath="Value"
+                                              SelectedValue="{Binding SelectedPdfRotationAngle}" />
+                                </StackPanel>
+
+                                <Button Content="{Binding Loc[StartTool]}" Command="{Binding RunPdfToolCommand}" Style="{StaticResource PrimaryButton}" Margin="0,18,0,0" />
+                                <Border Style="{StaticResource SettingsGroup}" Margin="0,14,0,0">
+                                    <StackPanel>
+                                        <TextBlock Text="{Binding Loc[Result]}" Style="{StaticResource SectionTitle}" />
+                                        <TextBlock Text="{Binding PdfToolStatus}" TextWrapping="Wrap" />
+                                    </StackPanel>
+                                </Border>
+                            </StackPanel>
+                        </Grid>
+                    </Border>
+
+                    <Border Style="{StaticResource SettingsGroup}" Margin="0,12,0,0">
+                        <StackPanel>
+                            <TextBlock Text="{Binding Loc[RejectedFiles]}" Style="{StaticResource SectionTitle}" />
+                            <ListBox ItemsSource="{Binding RejectedPaths}" MinHeight="80" />
+                        </StackPanel>
+                    </Border>
+                </StackPanel>
+            </ScrollViewer>
+        </Grid>
+
+        <Grid Grid.Row="1" Grid.Column="1">
+            <Grid.Style>
+                <Style TargetType="Grid">
+                    <Setter Property="Visibility" Value="Collapsed" />
+                    <Style.Triggers>
+                        <DataTrigger Binding="{Binding SelectedPage}" Value="Engines">
+                            <Setter Property="Visibility" Value="Visible" />
+                        </DataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </Grid.Style>
+            <ScrollViewer VerticalScrollBarVisibility="Auto">
+                <StackPanel>
+                    <UniformGrid Columns="4" DataContext="{Binding EngineStatus}" Margin="0,0,0,12">
+                        <Border Style="{StaticResource EngineCard}">
+                            <StackPanel>
+                                <TextBlock Text="{Binding DataContext.Loc[MicrosoftWord], RelativeSource={RelativeSource AncestorType=Window}}" FontWeight="SemiBold" />
+                                <TextBlock Text="{Binding WordStatus}" Style="{StaticResource StatusValueText}" Margin="0,4,0,0" />
+                            </StackPanel>
+                        </Border>
+                        <Border Style="{StaticResource EngineCard}">
+                            <StackPanel>
+                                <TextBlock Text="{Binding DataContext.Loc[PowerPoint], RelativeSource={RelativeSource AncestorType=Window}}" FontWeight="SemiBold" />
+                                <TextBlock Text="{Binding PowerPointStatus}" Style="{StaticResource StatusValueText}" Margin="0,4,0,0" />
+                            </StackPanel>
+                        </Border>
+                        <Border Style="{StaticResource EngineCard}">
+                            <StackPanel>
+                                <TextBlock Text="{Binding DataContext.Loc[LibreOffice], RelativeSource={RelativeSource AncestorType=Window}}" FontWeight="SemiBold" />
+                                <TextBlock Text="{Binding LibreOfficeStatus}" Style="{StaticResource StatusValueText}" Margin="0,4,0,0" />
+                            </StackPanel>
+                        </Border>
+                        <Border Style="{StaticResource EngineCard}">
+                            <StackPanel>
+                                <TextBlock Text="{Binding DataContext.Loc[PdfRenderer], RelativeSource={RelativeSource AncestorType=Window}}" FontWeight="SemiBold" />
+                                <TextBlock Text="{Binding PdfRendererStatus}" Style="{StaticResource StatusValueText}" Margin="0,4,0,0" />
+                            </StackPanel>
+                        </Border>
+                    </UniformGrid>
+
+                    <Border Style="{StaticResource Panel}">
+                        <StackPanel>
+                            <TextBlock Text="{Binding Loc[SetupGuidance]}" Style="{StaticResource SectionTitle}" />
+                            <TextBlock Text="{Binding EngineStatus.Guidance}" TextWrapping="Wrap" />
+                            <TextBlock Text="{Binding EngineStatus.LibreOfficePath}" Style="{StaticResource TinyMutedText}" TextWrapping="Wrap" Margin="0,8,0,0" />
+                            <TextBlock Text="{Binding Loc[HaveOffice]}" Margin="0,14,0,0" />
+                            <TextBlock Text="{Binding Loc[NoOffice]}" Margin="0,4,0,0" />
+                            <WrapPanel Margin="0,16,0,0">
+                                <Button Content="{Binding Loc[Recheck]}" Command="{Binding RecheckEnginesCommand}" Style="{StaticResource PrimaryButton}" />
+                                <Button Content="{Binding Loc[ChooseSoffice]}" Command="{Binding ChooseLibreOfficeCommand}" />
+                                <Button Content="{Binding Loc[OpenLibreOfficeDownload]}" Command="{Binding OpenLibreOfficeDownloadCommand}" />
+                            </WrapPanel>
+                        </StackPanel>
+                    </Border>
+                </StackPanel>
+            </ScrollViewer>
+        </Grid>
+
+        <Grid Grid.Row="1" Grid.Column="1">
+            <Grid.Style>
+                <Style TargetType="Grid">
+                    <Setter Property="Visibility" Value="Collapsed" />
+                    <Style.Triggers>
+                        <DataTrigger Binding="{Binding SelectedPage}" Value="Logs">
+                            <Setter Property="Visibility" Value="Visible" />
+                        </DataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </Grid.Style>
+            <Border Style="{StaticResource Panel}">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="*" />
+                    </Grid.RowDefinitions>
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Text="{Binding Loc[Log]}" Style="{StaticResource SectionTitle}" />
+                        <WrapPanel Grid.Column="1">
+                            <Button Content="{Binding Loc[CopyLogs]}" Style="{StaticResource SmallButton}" Command="{Binding CopyLogsCommand}" />
+                            <Button Content="{Binding Loc[ClearLog]}" Style="{StaticResource SmallButton}" Command="{Binding ClearLogCommand}" />
+                        </WrapPanel>
+                    </Grid>
+                    <ListBox Grid.Row="1" ItemsSource="{Binding LogLines}" Style="{StaticResource LogListBox}" />
+                </Grid>
+            </Border>
+        </Grid>
+
+        <Grid Grid.Row="1" Grid.Column="1">
+            <Grid.Style>
+                <Style TargetType="Grid">
+                    <Setter Property="Visibility" Value="Collapsed" />
+                    <Style.Triggers>
+                        <DataTrigger Binding="{Binding SelectedPage}" Value="Help">
+                            <Setter Property="Visibility" Value="Visible" />
+                        </DataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </Grid.Style>
+            <Border Style="{StaticResource Panel}">
+                <StackPanel>
+                    <TextBlock Text="{Binding Loc[HelpLocal]}" FontSize="18" FontWeight="SemiBold" TextWrapping="Wrap" />
+                    <TextBlock Text="{Binding Loc[HelpConvert]}" Margin="0,14,0,0" TextWrapping="Wrap" />
+                    <TextBlock Text="{Binding Loc[HelpTools]}" Margin="0,8,0,0" TextWrapping="Wrap" />
+                    <TextBlock Text="{Binding Loc[HelpLibreOffice]}" Margin="0,8,0,0" TextWrapping="Wrap" />
+                    <TextBlock Text="{Binding Loc[HelpLimitations]}" Margin="0,8,0,0" TextWrapping="Wrap" />
+                </StackPanel>
+            </Border>
+        </Grid>
+
+        <Border Grid.Row="2" Grid.ColumnSpan="2" Style="{StaticResource Panel}" Margin="0,14,0,0" Padding="10">
             <Grid>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="*" />
                     <ColumnDefinition Width="Auto" />
                 </Grid.ColumnDefinitions>
-                <TextBlock Text="{Binding SummaryText}"
-                           VerticalAlignment="Center"
-                           Style="{StaticResource MutedText}" />
-                <WrapPanel Grid.Column="1" HorizontalAlignment="Right">
-                    <Button Content="Start Queue" Command="{Binding StartCommand}" Style="{StaticResource PrimaryButton}" />
-                    <Button Content="Cancel" Command="{Binding CancelCommand}" Style="{StaticResource DangerButton}" />
-                    <Button Content="Open Output" Command="{Binding OpenOutputFolderCommand}" />
-                </WrapPanel>
+                <TextBlock Text="{Binding SummaryText}" VerticalAlignment="Center" Style="{StaticResource MutedText}" />
+                <TextBlock Grid.Column="1" Text="{Binding Loc[PrivacyBadge]}" VerticalAlignment="Center" Foreground="{StaticResource SuccessBrush}" FontWeight="SemiBold" />
             </Grid>
         </Border>
     </Grid>

@@ -10,6 +10,11 @@
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <UseWPF>true</UseWPF>
+    <ApplicationIcon Condition="Exists('Assets\app.ico')">Assets\app.ico</ApplicationIcon>
   </PropertyGroup>
+
+  <ItemGroup Condition="Exists('Assets\logo.png')">
+    <None Update="Assets\logo.png" CopyToOutputDirectory="PreserveNewest" />
+  </ItemGroup>
 
 </Project>

@@ -33,8 +33,23 @@ body {
 .nav {
   display: flex;
   justify-content: space-between;
+  align-items: center;
   gap: 16px;
   color: #fff;
+}
+
+.brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  color: #fff;
+  text-decoration: none;
+}
+
+.brand img {
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
 }
 
 .nav span {

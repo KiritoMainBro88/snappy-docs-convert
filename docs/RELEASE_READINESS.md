@@ -9,7 +9,7 @@
 - Code signing: pending
 - Release candidate docs: prepared
 - GitHub Release publication: pending owner approval
-- Public beta: blocked
+- Public beta: blocked pending owner re-test after Phase 8D UI overhaul
 
 ## Verified
 
@@ -26,6 +26,8 @@
 - Release notes helper that prints GitHub Release instructions without creating a release.
 - Owner manual GUI QA result recorded in `docs/manual-qa/v0.1.0-rc1-gui-qa.md`.
 - Release blockers recorded in `docs/manual-qa/v0.1.0-rc1-blockers.md`.
+- Phase 8D UI overhaul adds separate Convert/PDF Tools/Engines/Logs/Help pages, EN/VI strings, unsupported-file feedback, and async UI safeguards.
+- Branding asset handling documented in `docs/BRANDING.md`.
 - Core E2E QA:
   - PDF to PNG
   - PDF to JPEG
@@ -38,9 +40,10 @@
 
 - LibreOffice real smoke unless LibreOffice is installed.
 - PowerPoint real smoke until a safe PPT/PPTX fixture exists.
-- RTF to PDF+Images through GUI.
-- Batch partial failure through GUI.
-- Cancel behavior through GUI.
+- Owner manual GUI re-test on `v0.1.0-rc1-ui`.
+- RTF to PDF+Images through GUI after UI overhaul.
+- Batch partial failure through GUI after UI overhaul.
+- Cancel behavior through GUI after UI overhaul.
 - MSI/MSIX installer.
 - Code signing.
 - GitHub Release publication.
@@ -54,9 +57,9 @@
 - Framework-dependent package requires .NET 9 Desktop Runtime on Windows x64.
 - Manual GUI QA found public-beta blockers.
 - Normal double-click should not spawn a new console; launching from an existing terminal leaves that terminal open by design.
-- PDF to Images via GUI produced output but froze the app during conversion.
-- Unsupported file add did not show clear feedback.
-- Public beta is blocked until GUI blockers are fixed or explicitly accepted as pre-release limitations.
+- Prior manual QA found PDF to Images UI freeze and missing unsupported-file feedback.
+- Phase 8D added async safeguards and visible unsupported-file warnings; owner must re-test before public beta.
+- Public beta is blocked until owner re-test passes or limitations are explicitly accepted.
 - MIT license is draft-only until owner explicitly approves it.
 
 ## Commands
@@ -114,4 +117,4 @@ powershell -ExecutionPolicy Bypass -File .\scripts\prepare-github-release-notes.
 - OK for owner/dev manual use with known blockers.
 - Not public beta ready.
 - Do not create GitHub Release until owner explicitly approves.
-- Recommended next work: fix UI freeze, add unsupported-file feedback, verify RTF/batch/cancel GUI flows, finalize license.
+- Recommended next work: owner re-runs manual GUI QA on `v0.1.0-rc1-ui`, then finalize license.

@@ -1,6 +1,6 @@
 # WPF UI MVP
 
-Phase 6A adds the first runnable Windows desktop app. Phase 6C polishes the MVP into a cleaner desktop utility without changing engine behavior.
+Phase 6A adds the first runnable Windows desktop app. Phase 8D reorganizes the MVP into a clearer mode-based desktop utility without changing engine behavior.
 
 ## Run
 
@@ -54,6 +54,10 @@ The smoke script verifies restore, build, tests, publish output, app executable 
 - Recheck engine setup.
 - Choose `soffice.com` / `soffice.exe` for current session.
 - Open official LibreOffice download page.
+- Use left navigation for Convert, PDF Tools, Engines, Logs, and Help.
+- Switch UI language between English and Vietnamese.
+- See visible warnings for unsupported or missing files.
+- Use owner-provided logo/icon assets when present, with text fallback when missing.
 
 ## Limitations
 
@@ -65,6 +69,7 @@ The smoke script verifies restore, build, tests, publish output, app executable 
 - `--self-check` verifies service wiring and engine availability, not full conversion E2E.
 - Unit tests are not full UI automation.
 - Automated GUI interaction tests are not implemented.
+- Manual GUI QA must be re-run after the Phase 8D UI overhaul.
 
 ## Manual GUI QA
 

@@ -2,7 +2,7 @@
 
 Snappy Docs Convert is planned as a fast local document conversion app for Windows-first workflows.
 
-Current phase: Phase 8C owner GUI QA record and final release prep. This branch contains local Office/PDF conversion, PDF image export, batch conversion, PDF toolbox operations, WPF UI, E2E QA, portable packaging, manual GUI QA recorder, release readiness docs, release-candidate notes, privacy audit, manual GUI QA result with blockers, and static website skeleton. MSI/MSIX installer work is still a later phase.
+Current phase: Phase 8D WPF UI/UX overhaul, bilingual UI, and branding asset prep. This branch contains local Office/PDF conversion, PDF image export, batch conversion, PDF toolbox operations, mode-based WPF UI, English/Vietnamese UI strings, E2E QA, portable packaging, manual GUI QA recorder, release readiness docs, release-candidate notes, privacy audit, manual GUI QA result with blockers, and static website skeleton. MSI/MSIX installer work is still a later phase.
 
 ## Final Goal
 
@@ -126,17 +126,19 @@ Presentation inputs use `slide-001.png`; document/PDF inputs use `page-001.png`.
 
 ## WPF UI MVP
 
-Phase 6A adds the first runnable desktop UI. Phase 6C polishes it into a cleaner dev MVP:
+Phase 6A adds the first runnable desktop UI. Phase 8D reorganizes it into a clearer mode-based app:
 
 - Queue files/folders with drag/drop or dialogs.
 - Choose output folder, target, engine, image format, DPI, and intermediate PDF option.
 - Run/cancel batch conversion through the core pipeline.
 - See queue status, compact logs, output path, and engine setup guidance.
 - See clear local-only privacy wording and engine status cards.
+- Use left navigation: Convert, PDF Tools, Engines, Logs, Help.
+- Switch UI language between English and Vietnamese.
 - Use the manual GUI QA checklist for desktop verification.
-- Use the PDF Tools section for merge/split/extract/rotate/images-to-PDF.
+- Use the PDF Tools page for merge/split/extract/rotate/images-to-PDF.
 
-See `docs/WPF_UI_MVP.md` and `docs/GUI_QA_CHECKLIST.md`.
+See `docs/WPF_UI_MVP.md`, `docs/GUI_QA_CHECKLIST.md`, and `docs/BRANDING.md`.
 
 ## Evidence-Based E2E QA
 
@@ -224,4 +226,4 @@ The packed output is written to `docs/ai-context/repomix-output.md` and is ignor
 
 ## Next Phase Summary
 
-The next recommended step is Phase 8D blocker fixes: keep GUI responsive during conversion, show unsupported-file feedback, verify RTF/batch/cancel GUI flows, and finalize license. Owner-approved push/release comes after those blockers are handled or explicitly accepted as pre-release limitations.
+The next recommended step is owner manual GUI QA on the `v0.1.0-rc1-ui` package, then fix any remaining GUI issues and finalize license. Owner-approved push/release comes after those blockers are handled or explicitly accepted as pre-release limitations.

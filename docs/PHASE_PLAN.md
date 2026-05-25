@@ -118,3 +118,19 @@
 - Implemented: add static website checker for required links/copy and no external CDN/font/script assets.
 - Implemented: expand owner manual GUI QA checklist for packaged app, no-console double-click, and PDF Tools checks.
 - Not implemented: push, GitHub Release creation, manual GUI QA execution, code signing, or installer.
+
+## Phase 8C: Owner Manual GUI QA Record
+
+- Implemented: record owner manual GUI QA for `v0.1.0-rc1`.
+- Implemented: record public-beta blockers for UI freeze, unsupported-file feedback, untested GUI flows, and license approval.
+- Not implemented: release publication, license finalization, or UI bug fixes.
+
+## Phase 8D: UI/UX Overhaul, EN/VI, Branding Prep
+
+- Implemented: reorganize WPF into mode-based navigation: Convert, PDF Tools, Engines, Logs, Help.
+- Implemented: add English/Vietnamese UI string service with runtime toggle.
+- Implemented: move PDF Tools into its own page.
+- Implemented: add visible unsupported-file/rejected-input feedback.
+- Implemented: run batch conversion and PDF tools on background tasks to keep UI responsive.
+- Implemented: add logo/icon asset handling and branding docs.
+- Not implemented: new conversion engines, installer, release publication, image generation, or final GUI QA pass.
