@@ -14,11 +14,25 @@ dist-ssr
 .vinxi
 .tanstack/**
 .nitro
+build
+out
+bin
+obj
+TestResults
+coverage
+docs/ai-context/**
 *.local
 
 # Wrangler / Cloudflare
 .wrangler/
 .dev.vars
+
+# .NET / Visual Studio
+.vs/
+*.user
+*.rsuser
+*.userosscache
+*.sln.docstates
 
 # Editor directories and files
 .vscode/*
@@ -28,5 +42,4 @@ dist-ssr
 *.suo
 *.ntvs*
 *.njsproj
-*.sln
 *.sw?
