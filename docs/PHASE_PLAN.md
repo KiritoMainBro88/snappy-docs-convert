@@ -4,11 +4,14 @@
 
 - Clone and inspect the repository.
 - Create a safe local setup branch.
-- Add agent instructions, context policy, research notes, phase prompts, Repomix config, and local check scripts.
+- Add agent instructions, context policy, research notes, phase prompts, Repomix config, RTK/Caveman token toolchain docs, and local check scripts.
 - Do not implement conversion behavior.
 
 ## Phase 2: LibreOffice Engine
 
+- Activate Caveman if available and use RTK for command output.
+- Use Serena MCP for symbol search if available.
+- Use Repomix only after narrowing context.
 - Discover LibreOffice installation on Windows.
 - Run headless conversion with isolated profile directories.
 - Convert supported Office files to PDF where supported.

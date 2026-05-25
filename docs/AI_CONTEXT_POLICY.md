@@ -5,14 +5,37 @@ Snappy Docs Convert should stay easy for AI agents to inspect without wasting to
 ## Standard Toolkit
 
 - `AGENTS.md` for durable project rules.
-- `git status`, `git diff --stat`, `git ls-files`, and `rg` for targeted local search.
-- Repomix for filtered context packing and token counting.
+- RTK for compact command output, especially git, file reads, grep/search, and test logs.
+- Caveman for compact Codex replies and final reports.
 - Serena MCP for semantic symbol lookup and refactoring when available.
+- Repomix for filtered context packing and token counting after narrowing the target area.
+- `rg`, `git status`, `git diff --stat`, and `git ls-files` as fallback targeted local search.
 - Phase prompts in `.codex/prompts/` for repeatable future work.
+
+## Mandatory Token Toolchain
+
+Use RTK first for command output:
+
+```powershell
+rtk git status
+rtk git diff
+rtk git log
+rtk read AGENTS.md
+rtk grep "Mandatory Token Toolchain" .
+rtk test <command>
+```
+
+Use Caveman for agent output when the skill is available:
+
+```text
+/caveman
+```
+
+Caveman is per-session for Codex by default. If it is not active in the current session, keep reports short, direct, and evidence-based manually.
 
 ## Repomix Usage
 
-Use Repomix only with include/exclude filters. The default config prioritizes project instructions, docs, and future .NET/WPF source files. If a future task needs browser prototype files, add explicit `src/**/*.ts`, `src/**/*.tsx`, and related config includes for that run.
+Use Repomix only with include/exclude filters, and only after RTK or targeted search has narrowed the context. The default config prioritizes project instructions, docs, and future .NET/WPF source files. If a future task needs browser prototype files, add explicit `src/**/*.ts`, `src/**/*.tsx`, and related config includes for that run.
 
 Generated context files belong under `docs/ai-context/` and must not be committed.
 
@@ -27,13 +50,11 @@ Serena MCP is recommended for larger codebase work because it can provide:
 
 Codex should use Serena for code navigation and symbol edits when it is already configured. For simple operations, Codex built-in search and shell commands are enough.
 
-Serena is optional for Phase 0/1. If unavailable, proceed without it. Do not install it globally without owner approval. If the owner already has MCP configured, prefer the configured MCP tools.
+Serena is optional. If unavailable, proceed without it. Do not install it globally without owner approval. If the owner already has MCP configured, prefer the configured MCP tools.
 
-## RTK Naming Note
+## Tool References
 
-The owner mentioned `rtk` as a token-saving or indexing idea, but the exact tool is ambiguous. Do not install any package named `rtk` unless it is already part of the configured tooling or the owner explicitly confirms it.
-
-This repo standardizes on the safe toolkit above until a specific tool is approved.
+See `docs/TOKEN_TOOLCHAIN.md` for install, verify, Windows notes, and fallback commands for RTK and Caveman.
 
 ## Log Budget
 

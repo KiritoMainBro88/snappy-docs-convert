@@ -22,12 +22,36 @@ Final direction:
 ## Token And Context Policy
 
 - Do not read the whole repo unless necessary.
-- Prefer `git status`, `git diff --stat`, `git ls-files`, `rg`, and targeted file reads.
-- Use Repomix only with include/exclude filters.
-- Use Serena MCP semantic tools for symbol overview, reference lookup, and safer refactoring when available.
-- If Serena MCP is unavailable, continue with Codex search/shell tools.
+- Prefer RTK-backed command output when available.
 - Avoid pasting full build logs unless the error needs the surrounding lines.
 - Prefer official docs for current library, framework, SDK, API, CLI, and cloud-service behavior.
+
+## Mandatory Token Toolchain
+
+Input/tool-output compression:
+- Use RTK when available.
+- Prefer:
+  - rtk git status
+  - rtk git diff
+  - rtk git log
+  - rtk read <file>
+  - rtk grep <pattern> .
+  - rtk test <command>
+- If RTK hook is installed and active, normal shell commands may be rewritten automatically.
+- If unsure whether hook is active, call RTK explicitly.
+
+Output compression:
+- Use Caveman when available.
+- Start Codex sessions with `/caveman` when possible.
+- Final reports should be short, blunt, evidence-based.
+- Keep exact command results; omit filler.
+
+Context strategy:
+1. RTK for command output.
+2. Serena MCP for semantic symbol navigation when available.
+3. Repomix for narrowed repo snapshots.
+4. rg/git targeted search when RTK unavailable.
+5. Never read whole repo unnecessarily.
 
 ## Git Rules
 

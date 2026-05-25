@@ -39,6 +39,15 @@ Show-ToolVersion uv --version
 Show-ToolVersion codex --version
 Write-Host ""
 
+Write-Host "Token tools:"
+$tokenToolCheck = Join-Path $PSScriptRoot "check-token-tools.ps1"
+if (Test-Path $tokenToolCheck) {
+  powershell -ExecutionPolicy Bypass -File $tokenToolCheck
+} else {
+  Write-Host "  Missing scripts/check-token-tools.ps1"
+}
+Write-Host ""
+
 Write-Host "Git status:"
 if (Test-Path ".git") {
   git status --short --branch
@@ -89,6 +98,7 @@ if (Get-Command repomix -ErrorAction SilentlyContinue) {
 
 Write-Host ""
 Write-Host "Suggested next commands:"
+Write-Host "  powershell -ExecutionPolicy Bypass -File .\scripts\check-token-tools.ps1"
 Write-Host "  powershell -ExecutionPolicy Bypass -File .\scripts\pack-context.ps1"
 Write-Host "  git status --short"
 Write-Host "  git diff --stat"

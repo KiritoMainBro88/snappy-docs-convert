@@ -10,6 +10,17 @@ Write-Host "Packing AI context with Repomix..."
 Write-Host "Repo: $repoRoot"
 Write-Host "Output: docs/ai-context/repomix-output.md"
 Write-Host ""
+Write-Host "Token strategy:"
+if (Get-Command rtk -ErrorAction SilentlyContinue) {
+  Write-Host "  RTK: FOUND. Use RTK before Repomix for targeted inspection:"
+  Write-Host "    rtk git status"
+  Write-Host "    rtk read <file>"
+  Write-Host "    rtk grep <pattern> ."
+} else {
+  Write-Host "  RTK: MISSING. Use rg/git targeted search before Repomix."
+}
+Write-Host "  Repomix: use only after narrowing context with include/exclude filters."
+Write-Host ""
 
 if (Get-Command repomix -ErrorAction SilentlyContinue) {
   repomix

@@ -1,3 +1,9 @@
+1. Activate Caveman if available: `/caveman`
+2. Use RTK for command output.
+3. Use Serena MCP for symbol search if available.
+4. Use Repomix only after narrowing context.
+5. End with compressed Caveman-style report.
+
 # PHASE 2 - LibreOffice Headless Engine
 
 Role: Codex coding executor.
