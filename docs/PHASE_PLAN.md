@@ -26,6 +26,8 @@
 - Implemented: add Word `.doc`, `.docx`, `.rtf` to PDF export through COM.
 - Implemented: add PowerPoint `.ppt`, `.pptx` to PDF export through COM.
 - Implemented: serialize Office COM conversions, run on STA thread, enforce timeout, and release COM objects.
+- Implemented: add guarded real Office smoke script for Word RTF-to-PDF through the project engine.
+- Implemented: smoke script reports PowerPoint availability and skips PowerPoint conversion until a safe lightweight PPT/PPTX sample is added.
 - Not implemented: slide image export; reserved for later renderer/export phases.
 
 ## Phase 4: PDF Image Renderer

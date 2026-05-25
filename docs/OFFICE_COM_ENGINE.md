@@ -51,6 +51,24 @@ Detection does not launch Office.
 
 Default timeout is 180 seconds.
 
+## Real Smoke
+
+Run:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File .\scripts\smoke-office.ps1
+```
+
+The smoke script:
+
+- Prints Word and PowerPoint COM availability.
+- Uses only temp files under the system temp directory.
+- Creates a tiny RTF sample and converts it through `OfficeComConversionEngine` when Word is available.
+- Cleans generated input/output unless `KEEP_SNAPPY_SMOKE_OUTPUT=1`.
+- Skips cleanly when Office COM apps are missing.
+
+Office must be installed, activated, and usable by the logged-in user for real smoke conversion. PowerPoint availability is reported; a real PowerPoint sample fixture is deferred until a safe lightweight sample is added.
+
 ## Safety
 
 - No cloud upload.

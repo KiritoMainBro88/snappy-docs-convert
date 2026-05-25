@@ -2,7 +2,7 @@
 
 Snappy Docs Convert is planned as a fast local document conversion app for Windows-first workflows.
 
-Current phase: Phase 3A Microsoft Office COM engine. This branch contains a small .NET core library, local LibreOffice document-to-PDF conversion, Microsoft Office availability detection, guarded Office COM PDF export, and core dependency guidance. UI and PDF-to-image rendering are still later phases.
+Current phase: Phase 3B Microsoft Office real smoke coverage. This branch contains a small .NET core library, local LibreOffice document-to-PDF conversion, Microsoft Office availability detection, guarded Office COM PDF export, Office smoke validation, and core dependency guidance. UI and PDF-to-image rendering are still later phases.
 
 ## Final Goal
 
@@ -58,6 +58,14 @@ The app will auto-detect common install paths or accept a manually selected `sof
 Phase 3A detects `Word.Application` and `PowerPoint.Application` COM ProgIDs and adds a guarded local desktop PDF export engine for `.doc`, `.docx`, `.rtf`, `.ppt`, and `.pptx`.
 
 This engine is local desktop user-session automation only. It is not for server, service, or unattended use. See `docs/OFFICE_COM_ENGINE.md`.
+
+Real Office smoke:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File .\scripts\smoke-office.ps1
+```
+
+The smoke script skips cleanly when Office is missing. When Word is installed and activated, it creates a tiny temp RTF and converts it through the project Office COM engine.
 
 To pack a small AI-friendly context bundle:
 
