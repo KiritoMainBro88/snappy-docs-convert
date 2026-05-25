@@ -61,11 +61,7 @@ export async function pdfToImages(
   const buf = await blobToArrayBuffer(file);
   let pdf;
   try {
-    pdf = await pdfjsLib.getDocument({
-      data: new Uint8Array(buf),
-      isEvalSupported: false,
-      disableFontFace: false,
-    }).promise;
+    pdf = await pdfjsLib.getDocument({ data: new Uint8Array(buf) }).promise;
   } catch (e: unknown) {
     const msg = e instanceof Error ? e.message : String(e);
     if (/password|encrypted/i.test(msg)) {
