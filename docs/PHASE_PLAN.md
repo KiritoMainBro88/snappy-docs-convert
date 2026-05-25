@@ -107,3 +107,14 @@
 - Implemented: add static website skeleton with GitHub Releases/source links.
 - Implemented: add open-source prep docs, draft MIT license, security/contributing docs, issue templates, PR template.
 - Not implemented: OCR, compression, encryption/signing, redaction, form filling, installer, publishing GitHub release.
+
+## Phase 8B: Release Candidate Gate And GitHub Release Prep
+
+- Implemented: run release-candidate build, test, E2E, package, release smoke, and no-console smoke checks.
+- Implemented: add privacy audit doc covering local-only behavior, external links, and scan result notes.
+- Implemented: add v0.1.0-rc1 release notes with verified/skipped status and artifact checksum.
+- Implemented: add artifact hash helper.
+- Implemented: add GitHub Release notes/instructions helper that does not publish.
+- Implemented: add static website checker for required links/copy and no external CDN/font/script assets.
+- Implemented: expand owner manual GUI QA checklist for packaged app, no-console double-click, and PDF Tools checks.
+- Not implemented: push, GitHub Release creation, manual GUI QA execution, code signing, or installer.

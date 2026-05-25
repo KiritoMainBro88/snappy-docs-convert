@@ -47,6 +47,31 @@ No-console smoke:
 powershell -ExecutionPolicy Bypass -File .\scripts\smoke-no-console.ps1
 ```
 
+Hash release artifact:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File .\scripts\hash-artifact.ps1 -PackagePath .\artifacts\SnappyDocsConvert-portable-win-x64-<version>.zip
+```
+
+Prepare GitHub release notes/instructions without creating a release:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File .\scripts\prepare-github-release-notes.ps1
+```
+
+## Release Checklist
+
+1. Run QA: `scripts\qa-e2e.ps1`.
+2. Build package: `scripts\package-portable.ps1`.
+3. Smoke release: `scripts\smoke-release.ps1`.
+4. Hash artifact: `scripts\hash-artifact.ps1`.
+5. Push branch only after owner approval.
+6. Merge/review on GitHub.
+7. Tag release candidate.
+8. Create GitHub Release draft.
+9. Upload portable zip.
+10. Update website if release URL or copy changes.
+
 ## Manual GUI QA Session
 
 Create a timestamped owner-fillable QA report:
@@ -79,3 +104,4 @@ Output goes under ignored `docs\qa-output\gui\YYYYMMDD-HHMMSS\`. This recorder d
 - Manual GUI QA remains owner-executed via `docs/GUI_QA_CHECKLIST.md`.
 - Public beta should wait for a completed `MANUAL_GUI_QA_RESULT.md`.
 - Unsigned builds may show Windows SmartScreen warnings until signing exists.
+- GitHub Release upload is manual/owner-approved; packaging scripts do not publish.

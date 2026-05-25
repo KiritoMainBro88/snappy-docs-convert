@@ -32,6 +32,12 @@ dotnet run --project src\SnappyDocsConvert.App
 | 20. Clear log and clear queue. | Log and queue clear; summary updates honestly. |  |  |  |
 | 21. Run PDF Tools merge/split/extract/rotate/images-to-PDF. | Each selected local PDF tool creates output under selected output folder or fails clearly. |  |  |  |
 | 22. Double-click portable exe. | GUI opens without spawning a new console window. Existing terminal staying open is only expected when launched from terminal. |  |  |  |
+| 23. Use PDF Tools merge via packaged app. | Merged PDF exists and source PDFs remain unchanged. |  |  |  |
+| 24. Use PDF Tools split via packaged app. | One PDF per page is created. |  |  |  |
+| 25. Open output folder from packaged app. | Explorer opens expected output location. |  |  |  |
+| 26. Add unsupported file. | App rejects or fails clearly without crash and without blocking valid queued work. |  |  |  |
+| 27. Resize packaged app to 1280x720 and 1440x900. | Controls remain usable; critical actions are not clipped. |  |  |  |
+| 28. Optional screenshot evidence. | Screenshot paths are recorded if taken. |  |  |  |
 
 Known skips:
 

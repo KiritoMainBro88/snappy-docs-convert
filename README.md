@@ -2,7 +2,7 @@
 
 Snappy Docs Convert is planned as a fast local document conversion app for Windows-first workflows.
 
-Current phase: Phase 8A PDF Toolbox V1 and open-source release prep. This branch contains local Office/PDF conversion, PDF image export, batch conversion, PDF toolbox operations, WPF UI, E2E QA, portable packaging, manual GUI QA recorder, release readiness docs, and static website skeleton. MSI/MSIX installer work is still a later phase.
+Current phase: Phase 8B release candidate gate and GitHub Release prep. This branch contains local Office/PDF conversion, PDF image export, batch conversion, PDF toolbox operations, WPF UI, E2E QA, portable packaging, manual GUI QA recorder, release readiness docs, release-candidate notes, privacy audit, and static website skeleton. MSI/MSIX installer work is still a later phase.
 
 ## Final Goal
 
@@ -184,6 +184,20 @@ https://github.com/KiritoMainBro88/snappy-docs-convert
 
 Open-source prep files include `CONTRIBUTING.md`, `SECURITY.md`, issue templates, PR template, `docs/OPEN_SOURCE_PLAN.md`, and draft MIT license file. Final license still needs owner approval.
 
+## Release Candidate Prep
+
+Phase 8B adds release-candidate support docs and scripts:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File .\scripts\check-website-static.ps1
+powershell -ExecutionPolicy Bypass -File .\scripts\hash-artifact.ps1 -PackagePath .\artifacts\SnappyDocsConvert-portable-win-x64-<version>.zip
+powershell -ExecutionPolicy Bypass -File .\scripts\prepare-github-release-notes.ps1
+```
+
+Release notes live under `docs/releases/`. Privacy audit status lives in `docs/PRIVACY_AUDIT.md`.
+
+No GitHub push or release upload is done by these scripts. The owner must approve push and release creation.
+
 ## Manual GUI QA Recorder
 
 Create an owner-fillable manual GUI QA session under ignored `docs\qa-output\gui\`:
@@ -204,4 +218,4 @@ The packed output is written to `docs/ai-context/repomix-output.md` and is ignor
 
 ## Next Phase Summary
 
-The next recommended implementation phase is owner manual GUI QA, then GitHub push/release or installer work. Wait for owner approval before starting it.
+The next recommended step is owner manual GUI QA, then owner-approved GitHub push/release. Installer work remains later.
