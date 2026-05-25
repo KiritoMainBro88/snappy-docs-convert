@@ -30,6 +30,7 @@
 - Vercel production URL: `https://website-sand-xi-15.vercel.app`.
 - Phase 10C demo pipeline adds generated demo inputs, Playwright website screenshots/video, desktop screenshot helper, FFmpeg desktop recording helper, and user-facing demo scripts.
 - Display app name changed to `kmb file tools`; current beta executable/package filenames still use `SnappyDocsConvert` identifiers.
+- Phase 11A trust package adds unsigned-app safety docs, checksum manifest script, false-positive issue template, GitHub Actions CI, and manual release-build workflow with artifact attestation steps.
 - Artifact SHA256 helper.
 - Release notes helper that prints GitHub Release instructions without creating a release.
 - Owner manual GUI QA result recorded in `docs/manual-qa/v0.1.0-rc1-gui-qa.md`.
@@ -65,6 +66,8 @@
 - Office COM depends on installed and activated Microsoft Office in the logged-in user session.
 - LibreOffice fallback has not been real-smoked on this machine because LibreOffice is missing.
 - Unsigned executable may trigger Windows SmartScreen.
+- Current beta is not code-signed. SmartScreen/Unknown Publisher warnings may remain.
+- Checksums and artifact attestations improve transparency but do not replace paid code signing.
 - Framework-dependent package requires .NET 9 Desktop Runtime on Windows x64.
 - Manual GUI QA found public-beta blockers.
 - Normal double-click should not spawn a new console; launching from an existing terminal leaves that terminal open by design.
@@ -169,6 +172,24 @@ powershell -ExecutionPolicy Bypass -File .\scripts\demo-desktop.ps1
 cd website
 npm run demo:website
 cd ..
+```
+
+Write checksums:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File .\scripts\write-checksums.ps1
+```
+
+Trust and false-positive guidance:
+
+```text
+docs/TRUST_AND_SECURITY.md
+```
+
+Manual GitHub Actions release build:
+
+```text
+Actions > Release build > Run workflow > version
 ```
 
 Hash release artifact:

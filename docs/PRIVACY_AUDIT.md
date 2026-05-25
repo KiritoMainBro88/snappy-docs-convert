@@ -47,3 +47,4 @@ RTK could not resolve `rg` through its wrapper in this session, so direct `rg` a
 - This audit is static text/source scanning, not a packet capture.
 - User opening GitHub or LibreOffice links uses the user's browser.
 - Future release should repeat this audit after installer, update, or website changes.
+- Phase 11A adds trust docs, checksum scripts, and GitHub Actions workflows. These do not add app telemetry, backend APIs, upload endpoints, or remote conversion.

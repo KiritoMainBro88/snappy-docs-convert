@@ -85,6 +85,12 @@ Hash release artifact:
 powershell -ExecutionPolicy Bypass -File .\scripts\hash-artifact.ps1 -PackagePath .\artifacts\SnappyDocsConvert-portable-win-x64-<version>.zip
 ```
 
+Write checksum manifests for release ZIP/EXE artifacts:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File .\scripts\write-checksums.ps1
+```
+
 Prepare GitHub release notes/instructions without creating a release:
 
 ```powershell
@@ -105,6 +111,7 @@ powershell -ExecutionPolicy Bypass -File .\scripts\prepare-github-release-notes.
 10. Create GitHub prerelease.
 11. Upload portable zip and installer exe.
 12. Update website if release URL or copy changes.
+13. Publish checksums and artifact attestations when using GitHub Actions release-build workflow.
 
 ## Website And Vercel
 
@@ -194,4 +201,5 @@ Output goes under ignored `docs\qa-output\gui\YYYYMMDD-HHMMSS\`. This recorder d
 - Manual GUI QA remains owner-executed via `docs/GUI_QA_CHECKLIST.md`.
 - Public beta should wait for a completed `MANUAL_GUI_QA_RESULT.md`.
 - Unsigned builds may show Windows SmartScreen warnings until signing exists.
+- Checksum manifests and GitHub artifact attestations improve transparency but do not remove SmartScreen/Unknown Publisher warnings.
 - GitHub Release upload is owner-approved for `v0.1.0-beta.1`; packaging scripts still do not publish by themselves.

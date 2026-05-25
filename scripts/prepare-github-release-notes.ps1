@@ -44,6 +44,17 @@ else {
     Write-Host "Package: not found. Run scripts\\package-portable.ps1 first."
 }
 
+$checksumsDir = Join-Path $repoRoot "artifacts\checksums"
+$checksumsText = Join-Path $checksumsDir "SHA256SUMS.txt"
+$checksumsJson = Join-Path $checksumsDir "SHA256SUMS.json"
+if ((Test-Path -LiteralPath $checksumsText) -and (Test-Path -LiteralPath $checksumsJson)) {
+    Write-Host "Checksums text: $checksumsText"
+    Write-Host "Checksums json: $checksumsJson"
+}
+else {
+    Write-Host "Checksums: not found. Run scripts\\write-checksums.ps1 after packaging."
+}
+
 $gh = Get-Command gh -ErrorAction SilentlyContinue
 if ($gh) {
     Write-Host ""

@@ -252,7 +252,12 @@ export const copy: Record<Language, SiteCopy> = {
       {
         question: "Why does Windows warn about the app?",
         answer:
-          "The beta build is unsigned. Windows SmartScreen can warn about unsigned apps until code signing is added.",
+          "The beta build is unsigned. Windows SmartScreen or Unknown Publisher warnings can appear until code signing is added. Verify the GitHub Release URL and SHA256 checksum before running a download.",
+      },
+      {
+        question: "How do I verify the official download?",
+        answer:
+          "Download only from GitHub Releases, compare SHA256 with release notes or SHA256SUMS.txt, and avoid unofficial mirrors.",
       },
       {
         question: "Can I redistribute it?",
@@ -431,7 +436,12 @@ export const copy: Record<Language, SiteCopy> = {
       {
         question: "Vì sao Windows cảnh báo app?",
         answer:
-          "Bản beta chưa được ký số. Windows SmartScreen có thể cảnh báo app chưa ký cho đến khi có code signing.",
+          "Bản beta chưa được ký số. Windows SmartScreen hoặc Unknown Publisher có thể cảnh báo cho đến khi có code signing. Hãy kiểm tra URL GitHub Release và SHA256 trước khi chạy file.",
+      },
+      {
+        question: "Làm sao kiểm tra bản tải chính thức?",
+        answer:
+          "Chỉ tải từ GitHub Releases, so SHA256 với release notes hoặc SHA256SUMS.txt, và tránh mirror không chính thức.",
       },
       {
         question: "Tôi có được phân phối lại không?",

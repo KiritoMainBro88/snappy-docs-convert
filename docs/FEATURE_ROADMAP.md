@@ -27,11 +27,19 @@
   - Playwright website screenshots/video
   - FFmpeg desktop recording helper
   - User-facing demo script
+- Trust package:
+  - SHA256 checksum manifests
+  - GitHub Actions CI
+  - Manual release-build workflow
+  - Artifact attestation steps
+  - False-positive reporting docs
 
 ## Planned
 
 - Auto-update.
 - Curated website screenshots after owner approval.
+- Winget distribution.
+- Paid code signing when budget exists.
 - PDF compression.
 - OCR.
 - Watermark.

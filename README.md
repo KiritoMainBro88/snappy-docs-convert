@@ -19,6 +19,16 @@ Current phase: Phase 10B website production polish. This branch contains local O
 - No telemetry, analytics, tracking, or remote converter service.
 - Do not print secrets, tokens, credential paths, or private environment values in logs.
 
+## Trust And Official Downloads
+
+- Official downloads are GitHub Release assets only:
+  https://github.com/KiritoMainBro88/snappy-docs-convert/releases
+- Current beta builds are unsigned. Windows SmartScreen or Unknown Publisher warnings may appear.
+- Unsigned warning does not automatically mean malware; it means there is no trusted code-signing certificate/reputation yet.
+- Verify the release URL and SHA256 checksum before running a downloaded file.
+- Do not run unofficial mirrors. Do not disable antivirus globally.
+- See `docs/TRUST_AND_SECURITY.md` for checksum, attestation, and false-positive guidance.
+
 ## Setup
 
 ```powershell
@@ -267,6 +277,7 @@ Phase 8B adds release-candidate support docs and scripts:
 ```powershell
 powershell -ExecutionPolicy Bypass -File .\scripts\check-website-static.ps1
 powershell -ExecutionPolicy Bypass -File .\scripts\hash-artifact.ps1 -PackagePath .\artifacts\SnappyDocsConvert-portable-win-x64-<version>.zip
+powershell -ExecutionPolicy Bypass -File .\scripts\write-checksums.ps1
 powershell -ExecutionPolicy Bypass -File .\scripts\prepare-github-release-notes.ps1
 ```
 

@@ -1,0 +1,119 @@
+name: Release build
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: "Release version, e.g. v0.1.0-beta.2"
+        required: true
+        type: string
+  push:
+    tags:
+      - "v*"
+
+permissions:
+  contents: write
+  id-token: write
+  attestations: write
+
+jobs:
+  build-release:
+    name: Build release artifacts
+    runs-on: windows-latest
+
+    steps:
+      - name: Resolve version
+        id: version
+        shell: pwsh
+        run: |
+          $version = "${{ github.event.inputs.version }}"
+          if ([string]::IsNullOrWhiteSpace($version)) {
+            $version = "${{ github.ref_name }}"
+          }
+          if ([string]::IsNullOrWhiteSpace($version) -or $version -eq "main") {
+            throw "Version input or v* tag is required."
+          }
+          "value=$version" >> $env:GITHUB_OUTPUT
+
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: "9.0.x"
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+          cache-dependency-path: website/package-lock.json
+
+      - name: Install Inno Setup
+        shell: pwsh
+        run: choco install innosetup -y --no-progress
+
+      - name: Restore
+        run: dotnet restore
+
+      - name: Build
+        run: dotnet build --configuration Release --no-restore
+
+      - name: Test
+        run: dotnet test --configuration Release --no-build
+
+      - name: Check website
+        shell: pwsh
+        run: powershell -ExecutionPolicy Bypass -File .\scripts\check-website-vite.ps1
+
+      - name: Package portable
+        shell: pwsh
+        run: powershell -ExecutionPolicy Bypass -File .\scripts\package-portable.ps1 -Version "${{ steps.version.outputs.value }}"
+
+      - name: Package installer
+        shell: pwsh
+        run: powershell -ExecutionPolicy Bypass -File .\scripts\package-installer.ps1 -Version "${{ steps.version.outputs.value }}"
+
+      - name: Smoke portable
+        shell: pwsh
+        run: powershell -ExecutionPolicy Bypass -File .\scripts\smoke-release.ps1 -PackagePath ".\artifacts\SnappyDocsConvert-portable-win-x64-${{ steps.version.outputs.value }}.zip"
+
+      - name: Smoke installer
+        shell: pwsh
+        run: powershell -ExecutionPolicy Bypass -File .\scripts\smoke-installer.ps1 -InstallerPath ".\artifacts\SnappyDocsConvert-setup-win-x64-${{ steps.version.outputs.value }}.exe"
+
+      - name: Write checksums
+        shell: pwsh
+        run: powershell -ExecutionPolicy Bypass -File .\scripts\write-checksums.ps1 -FilePath ".\artifacts\SnappyDocsConvert-portable-win-x64-${{ steps.version.outputs.value }}.zip", ".\artifacts\SnappyDocsConvert-setup-win-x64-${{ steps.version.outputs.value }}.exe"
+
+      - name: Upload release artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: kmb-file-tools-${{ steps.version.outputs.value }}-release-artifacts
+          path: |
+            artifacts/SnappyDocsConvert-portable-win-x64-${{ steps.version.outputs.value }}.zip
+            artifacts/SnappyDocsConvert-setup-win-x64-${{ steps.version.outputs.value }}.exe
+            artifacts/checksums/SHA256SUMS.txt
+            artifacts/checksums/SHA256SUMS.json
+          if-no-files-found: error
+
+      - name: Attest portable ZIP
+        uses: actions/attest@v4
+        with:
+          subject-path: artifacts/SnappyDocsConvert-portable-win-x64-${{ steps.version.outputs.value }}.zip
+
+      - name: Attest installer EXE
+        uses: actions/attest@v4
+        with:
+          subject-path: artifacts/SnappyDocsConvert-setup-win-x64-${{ steps.version.outputs.value }}.exe
+
+      - name: Attest checksum manifest
+        uses: actions/attest@v4
+        with:
+          subject-path: artifacts/checksums/SHA256SUMS.txt
+
+      - name: Attest checksum JSON
+        uses: actions/attest@v4
+        with:
+          subject-path: artifacts/checksums/SHA256SUMS.json

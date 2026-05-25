@@ -175,3 +175,13 @@
 - Implemented: add desktop screenshot helper and FFmpeg desktop recording helper.
 - Implemented: add demo asset policy and English/Vietnamese demo narration script.
 - Not implemented: backend, telemetry, analytics, new GitHub app release, committed generated media, or OBS automation.
+
+## Phase 11A: Trust Package And Attested Build Prep
+
+- Implemented: add unsigned-app trust and security guide with English/Vietnamese SmartScreen, checksum, and false-positive guidance.
+- Implemented: add checksum manifest writer for release ZIP/EXE artifacts.
+- Implemented: add GitHub Actions CI for Windows build/test/website validation.
+- Implemented: add manual GitHub Actions release-build workflow for portable ZIP, installer EXE, checksum manifests, upload-artifact, and artifact attestation steps.
+- Implemented: add antivirus false-positive issue template.
+- Implemented: add Winget distribution prep docs.
+- Not implemented: code signing, paid certificate, updater, backend, telemetry, automatic scanner upload, or new GitHub Release.
