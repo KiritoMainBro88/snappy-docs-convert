@@ -22,6 +22,8 @@ TestResults
 coverage
 docs/ai-context/**
 docs/qa-output/**
+artifacts/
+*.zip
 *.local
 
 # Wrangler / Cloudflare

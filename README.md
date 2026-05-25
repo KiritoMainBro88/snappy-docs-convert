@@ -2,7 +2,7 @@
 
 Snappy Docs Convert is planned as a fast local document conversion app for Windows-first workflows.
 
-Current phase: Phase 6C WPF UI polish. This branch contains a small .NET core library, local LibreOffice document-to-PDF conversion, Microsoft Office availability detection, guarded Office COM PDF export, Office smoke validation, core dependency guidance, PDF page image export, a core batch pipeline, a runnable Windows WPF app, a local E2E QA harness, and a manual GUI QA checklist. Installer work is still a later phase.
+Current phase: Phase 7 portable packaging. This branch contains a small .NET core library, local LibreOffice document-to-PDF conversion, Microsoft Office availability detection, guarded Office COM PDF export, Office smoke validation, core dependency guidance, PDF page image export, a core batch pipeline, a runnable Windows WPF app, a local E2E QA harness, a manual GUI QA checklist, and repeatable portable Windows packaging. MSI/MSIX installer work is still a later phase.
 
 ## Final Goal
 
@@ -135,6 +135,22 @@ powershell -ExecutionPolicy Bypass -File .\scripts\qa-e2e.ps1
 
 The script writes generated evidence under `docs\qa-output\current\`, which is ignored by git. Pass means the command ran and output files/results were verified. Skip means a local dependency such as LibreOffice is missing. Unit tests are not treated as full E2E proof. See `docs/QA_E2E_GATE.md`.
 
+## Portable Packaging
+
+Build a Windows x64 portable folder and zip:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File .\scripts\package-portable.ps1
+```
+
+Smoke the zip:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File .\scripts\smoke-release.ps1 -PackagePath .\artifacts\SnappyDocsConvert-portable-win-x64-<version>.zip
+```
+
+The portable MVP does not bundle Microsoft Office or LibreOffice. Microsoft Office is optional and recommended for best DOCX/PPTX fidelity. LibreOffice is an optional fallback; the app guides users to the official download when needed. See `docs/PACKAGING.md`.
+
 To pack a small AI-friendly context bundle:
 
 ```powershell
@@ -145,4 +161,4 @@ The packed output is written to `docs/ai-context/repomix-output.md` and is ignor
 
 ## Next Phase Summary
 
-The next recommended implementation phase is Phase 7 portable packaging. Wait for owner approval before starting it.
+The next recommended implementation phase is Phase 7B owner manual GUI QA on the packaged app or Phase 8 installer. Wait for owner approval before starting it.

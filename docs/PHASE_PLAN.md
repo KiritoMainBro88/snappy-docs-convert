@@ -85,6 +85,10 @@
 
 ## Phase 7: Packaging And Release
 
-- Package the app for Windows.
-- Document prerequisites for Office and LibreOffice modes.
-- Add release checklist, smoke tests, and signing/update decisions if needed.
+- Implemented: add portable Windows x64 packaging script.
+- Implemented: publish WPF app to `artifacts\SnappyDocsConvert-portable-win-x64-<version>\`.
+- Implemented: create portable zip artifact.
+- Implemented: include quickstart, privacy, and initial third-party notices in release folder.
+- Implemented: add release smoke script for exe, `--self-check`, required docs, and forbidden content.
+- Implemented: document dependency behavior for Microsoft Office and LibreOffice.
+- Not implemented: MSI/MSIX installer, signing, auto-update, or final legal attribution audit.

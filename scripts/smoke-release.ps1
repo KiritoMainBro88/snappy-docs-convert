@@ -1,0 +1,99 @@
+param(
+    [string]$PackagePath = "",
+    [string]$ReleaseDir = ""
+)
+
+$ErrorActionPreference = "Stop"
+
+$repoRoot = (Resolve-Path (Join-Path $PSScriptRoot "..")).Path
+$tempExtract = $null
+$releaseRoot = $null
+
+try {
+    if (-not [string]::IsNullOrWhiteSpace($PackagePath)) {
+        $resolvedPackage = (Resolve-Path -LiteralPath $PackagePath).Path
+        if ([System.IO.Path]::GetExtension($resolvedPackage) -ne ".zip") {
+            throw "PackagePath must be a zip file: $resolvedPackage"
+        }
+
+        $tempExtract = Join-Path ([System.IO.Path]::GetTempPath()) ("SnappyDocsConvertReleaseSmoke-" + [Guid]::NewGuid().ToString("N"))
+        New-Item -ItemType Directory -Force -Path $tempExtract | Out-Null
+        Expand-Archive -LiteralPath $resolvedPackage -DestinationPath $tempExtract -Force
+        $releaseRoot = $tempExtract
+        Write-Host "Release smoke: extracted $resolvedPackage"
+    }
+    elseif (-not [string]::IsNullOrWhiteSpace($ReleaseDir)) {
+        $releaseRoot = (Resolve-Path -LiteralPath $ReleaseDir).Path
+    }
+    else {
+        $latestZip = Get-ChildItem -LiteralPath (Join-Path $repoRoot "artifacts") -Filter "SnappyDocsConvert-portable-*.zip" -File -ErrorAction SilentlyContinue |
+            Sort-Object LastWriteTimeUtc -Descending |
+            Select-Object -First 1
+        if ($null -eq $latestZip) {
+            throw "No PackagePath/ReleaseDir provided and no portable zip found under artifacts."
+        }
+
+        $tempExtract = Join-Path ([System.IO.Path]::GetTempPath()) ("SnappyDocsConvertReleaseSmoke-" + [Guid]::NewGuid().ToString("N"))
+        New-Item -ItemType Directory -Force -Path $tempExtract | Out-Null
+        Expand-Archive -LiteralPath $latestZip.FullName -DestinationPath $tempExtract -Force
+        $releaseRoot = $tempExtract
+        Write-Host "Release smoke: extracted $($latestZip.FullName)"
+    }
+
+    $exe = Get-ChildItem -LiteralPath $releaseRoot -Recurse -Filter "SnappyDocsConvert.App.exe" -File |
+        Select-Object -First 1
+    if ($null -eq $exe) {
+        throw "SnappyDocsConvert.App.exe not found."
+    }
+
+    $appDir = $exe.Directory.FullName
+    Write-Host "Release smoke: exe $($exe.FullName)"
+
+    foreach ($requiredDoc in @("README-QUICKSTART.txt", "PRIVACY.txt", "THIRD-PARTY-NOTICES.txt")) {
+        $docPath = Join-Path $appDir $requiredDoc
+        if (-not (Test-Path -LiteralPath $docPath)) {
+            throw "Required release doc missing: $requiredDoc"
+        }
+    }
+
+    $forbiddenDirectories = @("src", "tests", ".git", "qa-output", "obj", "bin")
+    $foundForbiddenDirectories = Get-ChildItem -LiteralPath $releaseRoot -Recurse -Directory |
+        Where-Object { $forbiddenDirectories -contains $_.Name }
+    if ($foundForbiddenDirectories) {
+        throw "Forbidden directories found: $($foundForbiddenDirectories.FullName -join '; ')"
+    }
+
+    $forbiddenExtensions = @(".pdf", ".png", ".jpg", ".jpeg", ".webp", ".log", ".zip")
+    $foundForbiddenFiles = Get-ChildItem -LiteralPath $releaseRoot -Recurse -File |
+        Where-Object { $forbiddenExtensions -contains $_.Extension.ToLowerInvariant() }
+    if ($foundForbiddenFiles) {
+        throw "Forbidden files found: $($foundForbiddenFiles.FullName -join '; ')"
+    }
+
+    $selfCheckOutput = & $exe.FullName --self-check 2>&1
+    $selfCheckExit = $LASTEXITCODE
+    $selfCheckText = ($selfCheckOutput | Out-String).Trim()
+    if ($selfCheckExit -ne 0) {
+        throw "Self-check failed with exit $selfCheckExit. $selfCheckText"
+    }
+
+    if ($selfCheckText -notmatch '"selfCheck"\s*:\s*"ok"') {
+        throw "Self-check output did not report ok. $selfCheckText"
+    }
+
+    Write-Host "Release smoke: required docs present"
+    Write-Host "Release smoke: forbidden content absent"
+    Write-Host "Release smoke: self-check ok"
+    Write-Host "Release smoke: pass"
+}
+finally {
+    if ($tempExtract -and (Test-Path -LiteralPath $tempExtract)) {
+        if ($env:KEEP_SNAPPY_RELEASE_SMOKE -eq "1") {
+            Write-Host "Release smoke extract kept: $tempExtract"
+        }
+        else {
+            Remove-Item -LiteralPath $tempExtract -Recurse -Force
+            Write-Host "Release smoke extract cleaned."
+        }
+    }
+}
