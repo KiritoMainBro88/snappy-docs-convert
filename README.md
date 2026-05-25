@@ -1,8 +1,8 @@
 # kmb file tools
 
-kmb file tools is a fast local document conversion app for Windows-first workflows. The repository and current beta executable/package filenames still use `SnappyDocsConvert` identifiers for compatibility with the published `v0.1.0-beta.1` assets.
+kmb file tools is a fast local document conversion app for Windows-first workflows. Internal project/executable names still use `SnappyDocsConvert` for .NET compatibility, but public beta.2 package filenames use `kmb-file-tools`.
 
-Current phase: Phase 11B post-release audit. This branch contains local Office/PDF conversion, PDF image export, batch conversion, PDF toolbox operations, mode-based WPF UI, English/Vietnamese UI strings, E2E QA, portable packaging, Inno Setup installer packaging, manual GUI QA recorder, release readiness docs, release notes, privacy audit, public beta GitHub Release assets, GitHub Actions trust workflows, demo tooling, and a frontend-only website. MSI/MSIX packaging and auto-update implementation remain later phases.
+Current phase: Phase 13A beta.2 release. This branch contains local Office/PDF conversion, PDF image export, batch conversion, PDF toolbox operations, mode-based WPF UI, persisted English/Vietnamese language settings, app light/dark/system theme, manual update center, E2E QA, portable packaging, Inno Setup installer packaging, trust docs, GitHub Actions trust workflows, demo tooling, OCR Lite roadmap docs, and a frontend-only Vercel website. Silent auto-update, MSI/MSIX packaging, and code signing remain later phases.
 
 ## Final Goal
 
@@ -11,6 +11,7 @@ Current phase: Phase 11B post-release audit. This branch contains local Office/P
 - Use LibreOffice headless as the no-Office fallback.
 - Export PDF pages and presentation slides as real images through renderer/export APIs, not screenshots.
 - Support batch files and a polished Windows desktop UI in later phases.
+- Provide a manual Settings > Check for updates flow without silent background install.
 
 ## Privacy Promise
 
@@ -185,7 +186,7 @@ powershell -ExecutionPolicy Bypass -File .\scripts\package-portable.ps1
 Smoke the zip:
 
 ```powershell
-powershell -ExecutionPolicy Bypass -File .\scripts\smoke-release.ps1 -PackagePath .\artifacts\SnappyDocsConvert-portable-win-x64-<version>.zip
+powershell -ExecutionPolicy Bypass -File .\scripts\smoke-release.ps1 -PackagePath .\artifacts\kmb-file-tools-portable-win-x64-<version>.zip
 ```
 
 The portable MVP does not bundle Microsoft Office or LibreOffice. Microsoft Office is optional and recommended for best DOCX/PPTX fidelity. LibreOffice is an optional fallback; the app guides users to the official download when needed. See `docs/PACKAGING.md`.
@@ -193,13 +194,13 @@ The portable MVP does not bundle Microsoft Office or LibreOffice. Microsoft Offi
 Build the Windows installer:
 
 ```powershell
-powershell -ExecutionPolicy Bypass -File .\scripts\package-installer.ps1 -Version v0.1.0-beta.1
+powershell -ExecutionPolicy Bypass -File .\scripts\package-installer.ps1 -Version v0.1.0-beta.2
 ```
 
 Smoke the installer:
 
 ```powershell
-powershell -ExecutionPolicy Bypass -File .\scripts\smoke-installer.ps1 -InstallerPath .\artifacts\SnappyDocsConvert-setup-win-x64-v0.1.0-beta.1.exe
+powershell -ExecutionPolicy Bypass -File .\scripts\smoke-installer.ps1 -InstallerPath .\artifacts\kmb-file-tools-setup-win-x64-v0.1.0-beta.2.exe
 ```
 
 Normal double-click launch should open the GUI without a console because the WPF project uses `OutputType=WinExe`. If launched from an existing terminal, that terminal staying open is normal. `--self-check` remains available for smoke scripts, but WinExe console output can be unavailable under automation; smoke checks rely on exit code when needed.
@@ -231,7 +232,7 @@ Validate from repo root:
 powershell -ExecutionPolicy Bypass -File .\scripts\check-website-vite.ps1
 ```
 
-The website is Vite + React + TypeScript. It has dark mode, English/Vietnamese copy, Discord support links, GitHub Release download buttons, source links, and screenshot placeholders for owner-provided app screenshots. It has no backend, no API routes, no upload flow, no telemetry, and no external CDN fonts/scripts. Vercel preview deploy can use:
+The website is Vite + React + TypeScript. It has system/light/dark mode, browser language detection with persisted EN/VI selection, Discord support links, beta.2 GitHub Release download buttons, source links, and curated static demo screenshots/video. It has no backend, no API routes, no upload flow, no telemetry, and no external CDN fonts/scripts. Vercel preview deploy can use:
 
 ```powershell
 vercel --cwd website
@@ -251,7 +252,7 @@ website-static\
 
 Primary release link:
 
-https://github.com/KiritoMainBro88/snappy-docs-convert/releases/tag/v0.1.0-beta.1
+https://github.com/KiritoMainBro88/snappy-docs-convert/releases/tag/v0.1.0-beta.2
 
 All releases:
 
@@ -290,7 +291,7 @@ Phase 8B adds release-candidate support docs and scripts:
 
 ```powershell
 powershell -ExecutionPolicy Bypass -File .\scripts\check-website-static.ps1
-powershell -ExecutionPolicy Bypass -File .\scripts\hash-artifact.ps1 -PackagePath .\artifacts\SnappyDocsConvert-portable-win-x64-<version>.zip
+powershell -ExecutionPolicy Bypass -File .\scripts\hash-artifact.ps1 -PackagePath .\artifacts\kmb-file-tools-portable-win-x64-<version>.zip
 powershell -ExecutionPolicy Bypass -File .\scripts\write-checksums.ps1
 powershell -ExecutionPolicy Bypass -File .\scripts\prepare-github-release-notes.ps1
 ```
@@ -299,7 +300,7 @@ Release notes live under `docs/releases/`. Privacy audit status lives in `docs/P
 
 No GitHub push or release upload is done by these scripts. The owner must approve push and release creation.
 
-Owner manual GUI QA for `v0.1.0-rc1` is recorded under `docs/manual-qa/`. Public beta is blocked by GUI responsiveness/feedback issues, untested GUI flows, and missing final license approval.
+Owner manual GUI QA for `v0.1.0-rc1` is recorded under `docs/manual-qa/`. Public beta remains prerelease: unsigned app warnings, LibreOffice smoke, PowerPoint fixture, and full auto-update are still known gaps.
 
 ## License
 

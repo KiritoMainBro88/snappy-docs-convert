@@ -1,0 +1,13 @@
+<Project>
+  <PropertyGroup>
+    <VersionPrefix>0.1.0</VersionPrefix>
+    <VersionSuffix>beta.2</VersionSuffix>
+    <Version>0.1.0-beta.2</Version>
+    <AssemblyVersion>0.1.0.0</AssemblyVersion>
+    <FileVersion>0.1.0.0</FileVersion>
+    <InformationalVersion>0.1.0-beta.2</InformationalVersion>
+    <Authors>KiritoMainBro88</Authors>
+    <Company>KiritoMainBro88</Company>
+    <Product>kmb file tools</Product>
+  </PropertyGroup>
+</Project>

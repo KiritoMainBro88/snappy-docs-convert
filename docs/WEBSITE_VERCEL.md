@@ -1,8 +1,8 @@
 # Website And Vercel
 
-Phase 9A adds a polished frontend-only website under `website/`. Phase 10B adds dark mode, direct release download links, Discord support, app screenshot placeholders, and clearer open-source/community copy. Phase 11B redeploys the frontend-only site to Vercel production and updates GitHub repository homepage metadata.
+Phase 9A adds a polished frontend-only website under `website/`. Phase 13A keeps it frontend-only and adds system/light/dark mode, browser language detection with persisted EN/VI selection, direct beta.2 release download links, Discord support, curated static demo screenshots/video, and clearer open-source/community copy.
 
-Display app name: `kmb file tools`. Current repository and beta artifact filenames still use `SnappyDocsConvert` identifiers for compatibility with the published release assets.
+Display app name: `kmb file tools`. Internal executable/project identifiers still use `SnappyDocsConvert`, but beta.2 public package filenames use `kmb-file-tools`.
 
 ## Rules
 
@@ -101,7 +101,7 @@ Current repository homepage metadata points to `https://website-sand-xi-15.verce
 
 ## Links
 
-- Release: https://github.com/KiritoMainBro88/snappy-docs-convert/releases/tag/v0.1.0-beta.1
+- Release: https://github.com/KiritoMainBro88/snappy-docs-convert/releases/tag/v0.1.0-beta.2
 - All releases: https://github.com/KiritoMainBro88/snappy-docs-convert/releases
 - Source: https://github.com/KiritoMainBro88/snappy-docs-convert
 - Discord: https://discord.gg/kZ3U36ncun

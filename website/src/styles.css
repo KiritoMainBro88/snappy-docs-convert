@@ -167,8 +167,7 @@ p {
   background: var(--panel);
 }
 
-.toggle-group button,
-.theme-toggle {
+.toggle-group button {
   min-height: 32px;
   border: 0;
   border-radius: 999px;
@@ -179,18 +178,17 @@ p {
 
 .toggle-group button {
   min-width: 38px;
+  padding: 0 10px;
   background: transparent;
 }
 
-.toggle-group button.active,
-.theme-toggle {
+.toggle-group button.active {
   background: var(--ink);
   color: var(--bg);
 }
 
-.theme-toggle {
-  min-width: 72px;
-  padding: 0 14px;
+.theme-group button {
+  min-width: 58px;
 }
 
 .hero-grid {
@@ -544,6 +542,30 @@ main {
   padding: 20px;
 }
 
+.demo-video-card {
+  display: grid;
+  grid-template-columns: minmax(220px, 0.36fr) minmax(0, 0.64fr);
+  gap: 18px;
+  align-items: center;
+  margin-top: 18px;
+  padding: 22px;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  background: var(--panel);
+}
+
+.demo-video-card p {
+  color: var(--muted);
+  line-height: 1.6;
+}
+
+.demo-video-card video {
+  width: 100%;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: var(--panel-strong);
+}
+
 .split-section {
   display: grid;
   grid-template-columns: 0.65fr 1.35fr;
@@ -607,7 +629,8 @@ footer a {
   .hero-grid,
   .download-section,
   .support-section,
-  .split-section {
+  .split-section,
+  .demo-video-card {
     grid-template-columns: 1fr;
   }
 

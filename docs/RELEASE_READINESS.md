@@ -8,7 +8,7 @@
 - Installer: Inno Setup EXE pass
 - Code signing: pending
 - Release candidate docs: prepared
-- GitHub Release publication: pass for `v0.1.0-beta.1`
+- GitHub Release publication: pass for `v0.1.0-beta.1`; `v0.1.0-beta.2` in progress
 - Public beta: approved as prerelease with known limitations
 - Vercel website production deploy: pass
 
@@ -26,7 +26,7 @@
 - PDF Toolbox V1 unit tests for merge, split, extract, rotate, images-to-PDF, path safety, and page ranges.
 - Static website check for local-only copy, release link, source link, and no external CDN/font/script assets.
 - Vite website check for frontend-only build, EN/VI copy, release/source links, and no API/functions folders.
-- Phase 10B website polish adds dark mode, direct `v0.1.0-beta.1` release links, Discord support, screenshot placeholders, MIT license wording, and anti-misleading-repackage wording.
+- Phase 13A adds app Settings, persisted language/theme preferences, manual update center, direct `v0.1.0-beta.2` release links, Discord support, curated website demo assets, MIT license wording, and anti-misleading-repackage wording.
 - Vercel production URL: `https://website-sand-xi-15.vercel.app`.
 - Phase 10C demo pipeline adds generated demo inputs, Playwright website screenshots/video, desktop screenshot helper, FFmpeg desktop recording helper, and user-facing demo scripts.
 - Display app name changed to `kmb file tools`; current beta executable/package filenames still use `SnappyDocsConvert` identifiers.
@@ -85,7 +85,7 @@ powershell -ExecutionPolicy Bypass -File .\scripts\package-portable.ps1
 Smoke release zip:
 
 ```powershell
-powershell -ExecutionPolicy Bypass -File .\scripts\smoke-release.ps1 -PackagePath .\artifacts\SnappyDocsConvert-portable-win-x64-<version>.zip
+powershell -ExecutionPolicy Bypass -File .\scripts\smoke-release.ps1 -PackagePath .\artifacts\kmb-file-tools-portable-win-x64-<version>.zip
 ```
 
 Run core E2E QA:
@@ -109,13 +109,13 @@ powershell -ExecutionPolicy Bypass -File .\scripts\smoke-no-console.ps1
 Build installer:
 
 ```powershell
-powershell -ExecutionPolicy Bypass -File .\scripts\package-installer.ps1 -Version v0.1.0-beta.1
+powershell -ExecutionPolicy Bypass -File .\scripts\package-installer.ps1 -Version v0.1.0-beta.2
 ```
 
 Smoke installer:
 
 ```powershell
-powershell -ExecutionPolicy Bypass -File .\scripts\smoke-installer.ps1 -InstallerPath .\artifacts\SnappyDocsConvert-setup-win-x64-v0.1.0-beta.1.exe
+powershell -ExecutionPolicy Bypass -File .\scripts\smoke-installer.ps1 -InstallerPath .\artifacts\kmb-file-tools-setup-win-x64-v0.1.0-beta.2.exe
 ```
 
 Check static website:
@@ -152,7 +152,7 @@ vercel --cwd website --prod
 Official release:
 
 ```text
-https://github.com/KiritoMainBro88/snappy-docs-convert/releases/tag/v0.1.0-beta.1
+https://github.com/KiritoMainBro88/snappy-docs-convert/releases/tag/v0.1.0-beta.2
 ```
 
 Discord support:
@@ -201,7 +201,7 @@ The workflow publishes workflow artifacts and attestations only. It does not cre
 Hash release artifact:
 
 ```powershell
-powershell -ExecutionPolicy Bypass -File .\scripts\hash-artifact.ps1 -PackagePath .\artifacts\SnappyDocsConvert-portable-win-x64-<version>.zip
+powershell -ExecutionPolicy Bypass -File .\scripts\hash-artifact.ps1 -PackagePath .\artifacts\kmb-file-tools-portable-win-x64-<version>.zip
 ```
 
 Prepare release notes/instructions:
@@ -213,5 +213,5 @@ powershell -ExecutionPolicy Bypass -File .\scripts\prepare-github-release-notes.
 ## Recommendation
 
 - OK for public beta prerelease with known limitations.
-- GitHub Release allowed for `v0.1.0-beta.1`.
+- GitHub Release allowed for `v0.1.0-beta.2` as prerelease after validation/build/smoke pass.
 - Recommended next work: owner downloads GitHub Release assets and performs manual installer/UI verification.

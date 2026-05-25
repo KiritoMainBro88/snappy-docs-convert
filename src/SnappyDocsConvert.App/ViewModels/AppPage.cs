@@ -6,5 +6,6 @@ public enum AppPage
     PdfTools,
     Engines,
     Logs,
+    Settings,
     Help
 }

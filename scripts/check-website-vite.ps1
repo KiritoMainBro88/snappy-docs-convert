@@ -80,7 +80,7 @@ foreach ($pattern in $providerPatterns) {
 
 $distText = ($builtFiles | ForEach-Object { Get-Content -LiteralPath $_.FullName -Raw }) -join "`n"
 $required = @(
-    "https://github.com/KiritoMainBro88/snappy-docs-convert/releases/tag/v0.1.0-beta.1",
+    "https://github.com/KiritoMainBro88/snappy-docs-convert/releases/tag/v0.1.0-beta.2",
     "https://github.com/KiritoMainBro88/snappy-docs-convert",
     "https://discord.gg/kZ3U36ncun",
     "No upload",
@@ -88,12 +88,28 @@ $required = @(
     "Free and open-source Windows desktop app",
     "EN/VI",
     "Dark",
+    "System",
     "Portable ZIP"
 )
 
 foreach ($text in $required) {
     if ($distText -notlike "*$text*") {
         throw "Required website text/link missing from dist: $text"
+    }
+}
+
+$sourceText = ($sourceFiles | ForEach-Object { Get-Content -LiteralPath $_.FullName -Raw }) -join "`n"
+$sourceRequired = @(
+    "navigator.language",
+    "localStorage",
+    "prefers-color-scheme",
+    "website-demo.webm",
+    "/demo/home-light-en.png"
+)
+
+foreach ($text in $sourceRequired) {
+    if ($sourceText -notlike "*$text*") {
+        throw "Required website source behavior missing: $text"
     }
 }
 
@@ -104,5 +120,5 @@ Write-Host "Website Vite check: no api/functions folder"
 Write-Host "Website Vite check: no external CDN/font/script references"
 Write-Host "Website Vite check: no analytics provider integration markers"
 Write-Host "Website Vite check: release/source/Discord links exist"
-Write-Host "Website Vite check: EN/VI local-only/no-upload/theme copy exists"
+Write-Host "Website Vite check: EN/VI language detect, local-only/no-upload/theme/demo copy exists"
 Write-Host "Website Vite check: pass"

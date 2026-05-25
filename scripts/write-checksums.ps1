@@ -47,6 +47,8 @@ foreach ($path in $FilePath) {
 
 if ($files.Count -eq 0) {
     $patterns = @(
+        "kmb-file-tools-portable-win-x64-*.zip",
+        "kmb-file-tools-setup-win-x64-*.exe",
         "SnappyDocsConvert-portable-win-x64-*.zip",
         "SnappyDocsConvert-setup-win-x64-*.exe"
     )

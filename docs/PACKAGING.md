@@ -12,8 +12,8 @@ Default output:
 
 ```text
 artifacts\
-  SnappyDocsConvert-portable-win-x64-<version>\
-  SnappyDocsConvert-portable-win-x64-<version>.zip
+  kmb-file-tools-portable-win-x64-<version>\
+  kmb-file-tools-portable-win-x64-<version>.zip
 ```
 
 The package is framework-dependent by default and requires the .NET 9 Desktop Runtime on Windows x64.
@@ -31,13 +31,13 @@ powershell -ExecutionPolicy Bypass -File .\scripts\package-portable.ps1 -SelfCon
 The beta installer uses Inno Setup and installs per-user by default.
 
 ```powershell
-powershell -ExecutionPolicy Bypass -File .\scripts\package-installer.ps1 -Version v0.1.0-beta.1
+powershell -ExecutionPolicy Bypass -File .\scripts\package-installer.ps1 -Version v0.1.0-beta.2
 ```
 
 Expected output:
 
 ```text
-artifacts\SnappyDocsConvert-setup-win-x64-v0.1.0-beta.1.exe
+artifacts\kmb-file-tools-setup-win-x64-v0.1.0-beta.2.exe
 ```
 
 Installer metadata:
@@ -52,7 +52,7 @@ Installer metadata:
 Smoke installer:
 
 ```powershell
-powershell -ExecutionPolicy Bypass -File .\scripts\smoke-installer.ps1 -InstallerPath .\artifacts\SnappyDocsConvert-setup-win-x64-v0.1.0-beta.1.exe
+powershell -ExecutionPolicy Bypass -File .\scripts\smoke-installer.ps1 -InstallerPath .\artifacts\kmb-file-tools-setup-win-x64-v0.1.0-beta.2.exe
 ```
 
 The smoke script verifies the EXE, reports signature status, silently installs to a temp folder, runs installed `SnappyDocsConvert.App.exe --self-check`, and uninstalls silently.
@@ -60,7 +60,7 @@ The smoke script verifies the EXE, reports signature status, silently installs t
 ## Smoke Release Package
 
 ```powershell
-powershell -ExecutionPolicy Bypass -File .\scripts\smoke-release.ps1 -PackagePath .\artifacts\SnappyDocsConvert-portable-win-x64-<version>.zip
+powershell -ExecutionPolicy Bypass -File .\scripts\smoke-release.ps1 -PackagePath .\artifacts\kmb-file-tools-portable-win-x64-<version>.zip
 ```
 
 The smoke check verifies:
@@ -82,7 +82,7 @@ powershell -ExecutionPolicy Bypass -File .\scripts\smoke-no-console.ps1
 Hash release artifact:
 
 ```powershell
-powershell -ExecutionPolicy Bypass -File .\scripts\hash-artifact.ps1 -PackagePath .\artifacts\SnappyDocsConvert-portable-win-x64-<version>.zip
+powershell -ExecutionPolicy Bypass -File .\scripts\hash-artifact.ps1 -PackagePath .\artifacts\kmb-file-tools-portable-win-x64-<version>.zip
 ```
 
 Write checksum manifests for release ZIP/EXE artifacts:
@@ -160,7 +160,7 @@ The site links downloads to GitHub Releases. It must remain frontend-only: no ba
 Current public beta release:
 
 ```text
-https://github.com/KiritoMainBro88/snappy-docs-convert/releases/tag/v0.1.0-beta.1
+https://github.com/KiritoMainBro88/snappy-docs-convert/releases/tag/v0.1.0-beta.2
 ```
 
 Support/Discord:
@@ -169,9 +169,9 @@ Support/Discord:
 https://discord.gg/kZ3U36ncun
 ```
 
-The website includes dark mode, English/Vietnamese copy, direct installer/portable download buttons, and placeholders for owner-provided screenshots. Official downloads are free. Because the project uses MIT, documentation should say redistribution is allowed with attribution/license notice; it should warn against misleading paid repackages without claiming resale is prohibited.
+The website includes system/light/dark mode, browser language detection with persisted EN/VI selection, direct installer/portable download buttons, and curated demo screenshots/video. Official downloads are free. Because the project uses MIT, documentation should say redistribution is allowed with attribution/license notice; it should warn against misleading paid repackages without claiming resale is prohibited.
 
-Display app name is `kmb file tools`. Current beta package filenames still use `SnappyDocsConvert` for compatibility with published assets.
+Display app name is `kmb file tools`. Public beta.2 package filenames use `kmb-file-tools`; internal executable/project names still use `SnappyDocsConvert` for .NET compatibility.
 
 Demo assets:
 
@@ -218,4 +218,4 @@ Output goes under ignored `docs\qa-output\gui\YYYYMMDD-HHMMSS\`. This recorder d
 - Public beta should wait for a completed `MANUAL_GUI_QA_RESULT.md`.
 - Unsigned builds may show Windows SmartScreen warnings until signing exists.
 - Checksum manifests and GitHub artifact attestations improve transparency but do not remove SmartScreen/Unknown Publisher warnings.
-- GitHub Release upload is owner-approved for `v0.1.0-beta.1`; packaging scripts still do not publish by themselves.
+- GitHub Release upload is owner-approved for `v0.1.0-beta.2`; packaging scripts still do not publish by themselves.

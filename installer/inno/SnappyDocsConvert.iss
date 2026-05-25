@@ -10,7 +10,7 @@
 #endif
 
 #ifndef SourceDir
-#define SourceDir "..\..\artifacts\SnappyDocsConvert-portable-win-x64-v0.1.0-beta.1"
+#define SourceDir "..\..\artifacts\kmb-file-tools-portable-win-x64-v0.1.0-beta.1"
 #endif
 
 [Setup]
@@ -26,7 +26,7 @@ DefaultGroupName=kmb file tools
 DisableProgramGroupPage=yes
 PrivilegesRequired=lowest
 OutputDir=..\..\artifacts
-OutputBaseFilename=SnappyDocsConvert-setup-win-x64-{#ReleaseVersion}
+OutputBaseFilename=kmb-file-tools-setup-win-x64-{#ReleaseVersion}
 Compression=lzma2
 SolidCompression=yes
 WizardStyle=modern

@@ -39,7 +39,7 @@ else {
     Join-Path $repoRoot $OutputRoot
 }
 
-$packageName = "SnappyDocsConvert-portable-$Runtime-$Version"
+$packageName = "kmb-file-tools-portable-$Runtime-$Version"
 $portableDir = Join-Path $outputRootPath $packageName
 $zipPath = Join-Path $outputRootPath "$packageName.zip"
 $selfContainedValue = if ($SelfContained.IsPresent) { "true" } else { "false" }

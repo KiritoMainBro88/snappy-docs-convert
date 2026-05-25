@@ -4,11 +4,18 @@ using SnappyDocsConvert.Core.Services.LibreOffice;
 using SnappyDocsConvert.Core.Services.Office;
 using SnappyDocsConvert.Core.Services.Pdf;
 using SnappyDocsConvert.Core.Services.PdfTools;
+using SnappyDocsConvert.Core.Services.Updates;
 
 namespace SnappyDocsConvert.App.Services;
 
 public sealed class AppServiceFactory
 {
+    public AppSettingsService CreateAppSettingsService() => new();
+
+    public ThemeService CreateThemeService() => new();
+
+    public AppUpdateService CreateAppUpdateService() => new();
+
     public FilePickerService CreateFilePickerService() => new();
 
     public FolderPickerService CreateFolderPickerService() => new();

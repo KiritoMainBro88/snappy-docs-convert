@@ -20,7 +20,9 @@ public static class SelfCheckRunner
 
         var payload = new
         {
-            app = "SnappyDocsConvert.App",
+            app = AppVersionInfo.AppName,
+            version = AppVersionInfo.Version,
+            commit = AppVersionInfo.Commit,
             selfCheck = "ok",
             wordAvailable = office.WordAvailable,
             powerPointAvailable = office.PowerPointAvailable,

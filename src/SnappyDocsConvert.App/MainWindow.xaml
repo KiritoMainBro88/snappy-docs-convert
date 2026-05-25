@@ -37,7 +37,7 @@
                         BorderBrush="#BFDBFE"
                         BorderThickness="1">
                     <Grid>
-                        <TextBlock Text="SDC" Style="{StaticResource LogoInitials}" />
+                        <TextBlock Text="KMB" Style="{StaticResource LogoInitials}" />
                         <Image Source="{Binding LogoPath}" Stretch="UniformToFill">
                             <Image.Style>
                                 <Style TargetType="Image">
@@ -83,6 +83,7 @@
                 <Button Content="{Binding Loc[NavPdfTools]}" Command="{Binding ShowPdfToolsCommand}" Style="{StaticResource NavButton}" />
                 <Button Content="{Binding Loc[NavEngines]}" Command="{Binding ShowEnginesCommand}" Style="{StaticResource NavButton}" />
                 <Button Content="{Binding Loc[NavLogs]}" Command="{Binding ShowLogsCommand}" Style="{StaticResource NavButton}" />
+                <Button Content="{Binding Loc[NavSettings]}" Command="{Binding ShowSettingsCommand}" Style="{StaticResource NavButton}" />
                 <Button Content="{Binding Loc[NavHelp]}" Command="{Binding ShowHelpCommand}" Style="{StaticResource NavButton}" />
 
                 <Border Style="{StaticResource SettingsGroup}" Margin="0,16,0,0">
@@ -304,6 +305,100 @@
                     </WrapPanel>
                 </Grid>
             </Grid>
+        </Grid>
+
+        <Grid Grid.Row="1" Grid.Column="1">
+            <Grid.Style>
+                <Style TargetType="Grid">
+                    <Setter Property="Visibility" Value="Collapsed" />
+                    <Style.Triggers>
+                        <DataTrigger Binding="{Binding SelectedPage}" Value="Settings">
+                            <Setter Property="Visibility" Value="Visible" />
+                        </DataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </Grid.Style>
+            <ScrollViewer VerticalScrollBarVisibility="Auto">
+                <StackPanel>
+                    <Border Style="{StaticResource Panel}" Margin="0,0,0,14">
+                        <StackPanel>
+                            <TextBlock Text="{Binding Loc[SettingsAppearance]}" Style="{StaticResource SectionTitle}" />
+                            <TextBlock Text="{Binding Loc[Theme]}" Style="{StaticResource FieldLabel}" />
+                            <WrapPanel>
+                                <Button Content="{Binding Loc[ThemeSystem]}" Command="{Binding UseSystemThemeCommand}" Style="{StaticResource SmallButton}" />
+                                <Button Content="{Binding Loc[ThemeLight]}" Command="{Binding UseLightThemeCommand}" Style="{StaticResource SmallButton}" />
+                                <Button Content="{Binding Loc[ThemeDark]}" Command="{Binding UseDarkThemeCommand}" Style="{StaticResource SmallButton}" />
+                            </WrapPanel>
+                            <TextBlock Margin="0,8,0,0" Style="{StaticResource TinyMutedText}">
+                                <Run Text="{Binding Loc[EffectiveTheme]}" />
+                                <Run Text=": " />
+                                <Run Text="{Binding EffectiveThemeText}" />
+                            </TextBlock>
+                        </StackPanel>
+                    </Border>
+
+                    <Border Style="{StaticResource Panel}" Margin="0,0,0,14">
+                        <StackPanel>
+                            <TextBlock Text="{Binding Loc[SettingsLanguage]}" Style="{StaticResource SectionTitle}" />
+                            <WrapPanel>
+                                <Button Content="{Binding Loc[LanguageAuto]}" Command="{Binding UseSystemLanguageCommand}" Style="{StaticResource SmallButton}" />
+                                <Button Content="{Binding Loc[LanguageEnglish]}" Command="{Binding UseEnglishCommand}" Style="{StaticResource SmallButton}" />
+                                <Button Content="{Binding Loc[LanguageVietnamese]}" Command="{Binding UseVietnameseCommand}" Style="{StaticResource SmallButton}" />
+                            </WrapPanel>
+                        </StackPanel>
+                    </Border>
+
+                    <Border Style="{StaticResource Panel}" Margin="0,0,0,14">
+                        <StackPanel>
+                            <TextBlock Text="{Binding Loc[SettingsUpdates]}" Style="{StaticResource SectionTitle}" />
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="*" />
+                                </Grid.ColumnDefinitions>
+                                <StackPanel>
+                                    <TextBlock Text="{Binding Loc[CurrentVersion]}" Style="{StaticResource FieldLabel}" />
+                                    <TextBlock Text="{Binding CurrentVersion}" />
+                                    <TextBlock Text="{Binding Loc[CurrentCommit]}" Style="{StaticResource FieldLabel}" />
+                                    <TextBlock Text="{Binding CurrentCommit}" />
+                                </StackPanel>
+                                <StackPanel Grid.Column="1">
+                                    <TextBlock Text="{Binding Loc[UpdateChannel]}" Style="{StaticResource FieldLabel}" />
+                                    <WrapPanel>
+                                        <Button Content="{Binding Loc[UpdateChannelStable]}" Command="{Binding UseStableUpdatesCommand}" Style="{StaticResource SmallButton}" />
+                                        <Button Content="{Binding Loc[UpdateChannelPrerelease]}" Command="{Binding UsePrereleaseUpdatesCommand}" Style="{StaticResource SmallButton}" />
+                                    </WrapPanel>
+                                    <TextBlock Text="{Binding SelectedUpdateChannel}" Style="{StaticResource TinyMutedText}" Margin="6,8,0,0" />
+                                </StackPanel>
+                            </Grid>
+
+                            <WrapPanel Margin="0,14,0,0">
+                                <Button Content="{Binding Loc[CheckForUpdates]}" Command="{Binding CheckForUpdatesCommand}" Style="{StaticResource PrimaryButton}" />
+                                <Button Content="{Binding Loc[DownloadUpdate]}" Command="{Binding DownloadUpdateCommand}" />
+                                <Button Content="{Binding Loc[InstallRestart]}" Command="{Binding InstallUpdateCommand}" />
+                                <Button Content="{Binding Loc[OpenReleasePage]}" Command="{Binding OpenReleasePageCommand}" />
+                            </WrapPanel>
+                            <TextBlock Text="{Binding UpdateStatus}" TextWrapping="Wrap" Margin="0,12,0,0" />
+                            <ProgressBar Minimum="0" Maximum="100" Value="{Binding UpdateDownloadProgress}" Height="12" Margin="0,8,0,0" />
+                            <TextBlock Text="{Binding LatestVersion}" Style="{StaticResource TinyMutedText}" Margin="0,8,0,0" />
+                            <TextBlock Text="{Binding Loc[ReleaseNotes]}" Style="{StaticResource FieldLabel}" />
+                            <TextBox Text="{Binding ReleaseNotesPreview}" MinHeight="110" TextWrapping="Wrap" AcceptsReturn="True" IsReadOnly="True" />
+                        </StackPanel>
+                    </Border>
+
+                    <Border Style="{StaticResource Panel}">
+                        <StackPanel>
+                            <TextBlock Text="{Binding Loc[SettingsAbout]}" Style="{StaticResource SectionTitle}" />
+                            <TextBlock Text="{Binding Loc[AboutLocal]}" TextWrapping="Wrap" />
+                            <TextBlock Text="{Binding Loc[AboutLicense]}" TextWrapping="Wrap" Margin="0,8,0,0" />
+                            <WrapPanel Margin="0,14,0,0">
+                                <Button Content="{Binding Loc[OpenSource]}" Command="{Binding OpenSourceCommand}" />
+                                <Button Content="{Binding Loc[OpenDiscord]}" Command="{Binding OpenDiscordCommand}" />
+                            </WrapPanel>
+                        </StackPanel>
+                    </Border>
+                </StackPanel>
+            </ScrollViewer>
         </Grid>
 
         <Grid Grid.Row="1" Grid.Column="1">

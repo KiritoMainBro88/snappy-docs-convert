@@ -12,19 +12,45 @@ import {
   sourceUrl,
 } from "./content";
 
-type Theme = "light" | "dark";
+type ThemePreference = "system" | "light" | "dark";
+type ResolvedTheme = "light" | "dark";
 
-const getInitialTheme = (): Theme => {
+const resolveTheme = (preference: ThemePreference): ResolvedTheme => {
+  if (preference === "light" || preference === "dark") {
+    return preference;
+  }
+
   if (typeof window === "undefined") {
     return "light";
   }
 
+  return window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+};
+
+const getInitialThemePreference = (): ThemePreference => {
+  if (typeof window === "undefined") {
+    return "system";
+  }
+
   const saved = window.localStorage.getItem("snappy-theme");
-  if (saved === "light" || saved === "dark") {
+  if (saved === "system" || saved === "light" || saved === "dark") {
     return saved;
   }
 
-  return window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+  return "system";
+};
+
+const getInitialLanguage = (): Language => {
+  if (typeof window === "undefined") {
+    return "en";
+  }
+
+  const saved = window.localStorage.getItem("snappy-language");
+  if (saved === "en" || saved === "vi") {
+    return saved;
+  }
+
+  return window.navigator.language.toLowerCase().startsWith("vi") ? "vi" : "en";
 };
 
 function ScreenshotCard({ item }: { item: ScreenshotCopy }) {
@@ -49,19 +75,32 @@ function ScreenshotCard({ item }: { item: ScreenshotCopy }) {
 }
 
 function App() {
-  const [language, setLanguage] = useState<Language>("en");
-  const [theme, setTheme] = useState<Theme>(getInitialTheme);
+  const [language, setLanguage] = useState<Language>(getInitialLanguage);
+  const [themePreference, setThemePreference] = useState<ThemePreference>(getInitialThemePreference);
   const [logoOk, setLogoOk] = useState(true);
   const text = copy[language];
   const currentYear = useMemo(() => new Date().getFullYear(), []);
+  const resolvedTheme = resolveTheme(themePreference);
 
   useEffect(() => {
-    document.documentElement.dataset.theme = theme;
+    document.documentElement.dataset.theme = resolvedTheme;
     document.documentElement.lang = language;
-    window.localStorage.setItem("snappy-theme", theme);
-  }, [language, theme]);
+    window.localStorage.setItem("snappy-theme", themePreference);
+    window.localStorage.setItem("snappy-language", language);
+  }, [language, resolvedTheme, themePreference]);
 
-  const toggleTheme = () => setTheme((current) => (current === "dark" ? "light" : "dark"));
+  useEffect(() => {
+    if (themePreference !== "system") {
+      return;
+    }
+
+    const query = window.matchMedia("(prefers-color-scheme: dark)");
+    const onChange = () => {
+      document.documentElement.dataset.theme = resolveTheme("system");
+    };
+    query.addEventListener("change", onChange);
+    return () => query.removeEventListener("change", onChange);
+  }, [themePreference]);
 
   return (
     <div className="site-shell">
@@ -104,9 +143,32 @@ function App() {
                 VI
               </button>
             </div>
-            <button className="theme-toggle" type="button" onClick={toggleTheme}>
-              {theme === "dark" ? text.controls.light : text.controls.dark}
-            </button>
+            <div className="toggle-group theme-group" aria-label="Theme">
+              <button
+                type="button"
+                className={themePreference === "system" ? "active" : ""}
+                onClick={() => setThemePreference("system")}
+                aria-pressed={themePreference === "system"}
+              >
+                {text.controls.system}
+              </button>
+              <button
+                type="button"
+                className={themePreference === "light" ? "active" : ""}
+                onClick={() => setThemePreference("light")}
+                aria-pressed={themePreference === "light"}
+              >
+                {text.controls.light}
+              </button>
+              <button
+                type="button"
+                className={themePreference === "dark" ? "active" : ""}
+                onClick={() => setThemePreference("dark")}
+                aria-pressed={themePreference === "dark"}
+              >
+                {text.controls.dark}
+              </button>
+            </div>
           </div>
         </nav>
 
@@ -234,6 +296,13 @@ function App() {
             {text.screenshots.map((item) => (
               <ScreenshotCard item={item} key={item.title} />
             ))}
+          </div>
+          <div className="demo-video-card">
+            <div>
+              <h3>Website demo</h3>
+              <p>{language === "vi" ? "Video demo ngắn, chạy từ asset tĩnh." : "Short static demo video generated from the website."}</p>
+            </div>
+            <video controls preload="metadata" src="/demo/website-demo.webm" />
           </div>
         </section>
 

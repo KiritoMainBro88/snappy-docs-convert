@@ -207,3 +207,13 @@
 - Implemented: document PaddleOCR as future optional advanced plugin/model pack only.
 - Implemented: update website roadmap copy to say OCR Lite is planned, local-first, and not available yet.
 - Not implemented: OCR engine, OCR UI, model download, PaddleOCR, benchmark, release.
+
+## Phase 13A: Settings, Update Center, Website Demo, Beta.2
+
+- Implemented: add app Settings page with Appearance, Language, Updates, and About sections.
+- Implemented: app supports System/Light/Dark theme and persists selected theme under user local settings.
+- Implemented: app detects system UI language on first run, supports Auto/System, English, Vietnamese, and persists selected language.
+- Implemented: add manual update center that checks GitHub Releases, supports Stable or Prerelease/Beta channel, downloads selected asset with progress, verifies GitHub SHA256 digest when present, and launches installer or opens ZIP folder only after user action.
+- Implemented: update website to link `v0.1.0-beta.2`, detect browser language, persist language/theme in localStorage, keep frontend-only/no telemetry constraints, and show curated demo screenshots/video.
+- Implemented: rename public beta package output to `kmb-file-tools-portable-*` and `kmb-file-tools-setup-*`.
+- Not implemented: silent background auto-update, Velopack, code signing, LibreOffice smoke, PowerPoint smoke, OCR engine.

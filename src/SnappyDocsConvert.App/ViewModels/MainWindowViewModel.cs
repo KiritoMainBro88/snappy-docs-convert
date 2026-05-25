@@ -5,7 +5,9 @@ using System.Windows;
 using SnappyDocsConvert.App.Localization;
 using SnappyDocsConvert.App.Services;
 using SnappyDocsConvert.Core.Models;
+using SnappyDocsConvert.Core.Models.Updates;
 using SnappyDocsConvert.Core.Services.Batch;
+using SnappyDocsConvert.Core.Services.Updates;
 
 namespace SnappyDocsConvert.App.ViewModels;
 
@@ -28,6 +30,10 @@ public sealed class MainWindowViewModel : ObservableObject
     private readonly IBatchInputScanner _inputScanner;
     private readonly UiBatchRunner _batchRunner;
     private readonly AppServiceFactory _serviceFactory;
+    private readonly AppSettingsService _settingsService;
+    private readonly ThemeService _themeService;
+    private readonly AppUpdateService _updateService;
+    private readonly AppSettingsData _settings;
 
     private QueueItemViewModel? _selectedQueueItem;
     private string _outputFolder = "";
@@ -52,10 +58,29 @@ public sealed class MainWindowViewModel : ObservableObject
     private bool _powerPointAvailable;
     private bool _libreOfficeAvailable;
     private bool _engineStatusKnown;
+    private AppLanguagePreference _selectedLanguagePreference;
+    private AppThemePreference _selectedThemePreference;
+    private UpdateChannel _selectedUpdateChannel;
+    private string _effectiveThemeText = "";
+    private string _latestVersion = "";
+    private string _releaseNotesPreview = "";
+    private string _updateStatus = "";
+    private double _updateDownloadProgress;
+    private string _downloadedUpdatePath = "";
+    private AppUpdateAsset? _selectedUpdateAsset;
+    private string _releasePageUrl = AppVersionInfo.ReleasesPage;
 
     public MainWindowViewModel(AppServiceFactory serviceFactory)
     {
         _serviceFactory = serviceFactory;
+        _settingsService = serviceFactory.CreateAppSettingsService();
+        _themeService = serviceFactory.CreateThemeService();
+        _updateService = serviceFactory.CreateAppUpdateService();
+        _settings = _settingsService.Load();
+        _selectedLanguagePreference = _settings.Language;
+        _selectedThemePreference = _settings.Theme;
+        _selectedUpdateChannel = _settings.UpdateChannel;
+        ApplyPersistedAppearance();
         _filePicker = serviceFactory.CreateFilePickerService();
         _folderPicker = serviceFactory.CreateFolderPickerService();
         _inputScanner = serviceFactory.CreateBatchInputScanner();
@@ -85,11 +110,25 @@ public sealed class MainWindowViewModel : ObservableObject
         ShowPdfToolsCommand = new RelayCommand(() => SelectedPage = AppPage.PdfTools);
         ShowEnginesCommand = new RelayCommand(() => SelectedPage = AppPage.Engines);
         ShowLogsCommand = new RelayCommand(() => SelectedPage = AppPage.Logs);
+        ShowSettingsCommand = new RelayCommand(() => SelectedPage = AppPage.Settings);
         ShowHelpCommand = new RelayCommand(() => SelectedPage = AppPage.Help);
-        UseEnglishCommand = new RelayCommand(() => SetLanguage(Language.English));
-        UseVietnameseCommand = new RelayCommand(() => SetLanguage(Language.Vietnamese));
+        UseSystemLanguageCommand = new RelayCommand(() => SetLanguagePreference(AppLanguagePreference.System));
+        UseEnglishCommand = new RelayCommand(() => SetLanguagePreference(AppLanguagePreference.English));
+        UseVietnameseCommand = new RelayCommand(() => SetLanguagePreference(AppLanguagePreference.Vietnamese));
+        UseSystemThemeCommand = new RelayCommand(() => SetThemePreference(AppThemePreference.System));
+        UseLightThemeCommand = new RelayCommand(() => SetThemePreference(AppThemePreference.Light));
+        UseDarkThemeCommand = new RelayCommand(() => SetThemePreference(AppThemePreference.Dark));
+        UseStableUpdatesCommand = new RelayCommand(() => SetUpdateChannel(UpdateChannel.Stable));
+        UsePrereleaseUpdatesCommand = new RelayCommand(() => SetUpdateChannel(UpdateChannel.Prerelease));
+        CheckForUpdatesCommand = new AsyncRelayCommand(CheckForUpdatesAsync, () => !IsRunning);
+        DownloadUpdateCommand = new AsyncRelayCommand(DownloadUpdateAsync, () => !IsRunning && _selectedUpdateAsset is not null);
+        InstallUpdateCommand = new RelayCommand(InstallUpdate, () => !IsRunning && !string.IsNullOrWhiteSpace(DownloadedUpdatePath));
+        OpenReleasePageCommand = new RelayCommand(() => OpenUrl(_releasePageUrl));
+        OpenSourceCommand = new RelayCommand(() => OpenUrl(AppVersionInfo.SourceRepository));
+        OpenDiscordCommand = new RelayCommand(() => OpenUrl(AppVersionInfo.DiscordUrl));
 
         LogoPath = FindLogoPath();
+        _updateStatus = Loc["UpdateReady"];
         RefreshChoices();
         RefreshEngineStatusLabels();
         RefreshSelectedEngineGuidance();
@@ -160,11 +199,37 @@ public sealed class MainWindowViewModel : ObservableObject
 
     public RelayCommand ShowLogsCommand { get; }
 
+    public RelayCommand ShowSettingsCommand { get; }
+
     public RelayCommand ShowHelpCommand { get; }
+
+    public RelayCommand UseSystemLanguageCommand { get; }
 
     public RelayCommand UseEnglishCommand { get; }
 
     public RelayCommand UseVietnameseCommand { get; }
+
+    public RelayCommand UseSystemThemeCommand { get; }
+
+    public RelayCommand UseLightThemeCommand { get; }
+
+    public RelayCommand UseDarkThemeCommand { get; }
+
+    public RelayCommand UseStableUpdatesCommand { get; }
+
+    public RelayCommand UsePrereleaseUpdatesCommand { get; }
+
+    public AsyncRelayCommand CheckForUpdatesCommand { get; }
+
+    public AsyncRelayCommand DownloadUpdateCommand { get; }
+
+    public RelayCommand InstallUpdateCommand { get; }
+
+    public RelayCommand OpenReleasePageCommand { get; }
+
+    public RelayCommand OpenSourceCommand { get; }
+
+    public RelayCommand OpenDiscordCommand { get; }
 
     public string LogoPath { get; }
 
@@ -229,10 +294,13 @@ public sealed class MainWindowViewModel : ObservableObject
         {
             if (SetProperty(ref _isRunning, value))
             {
+                OnPropertyChanged(nameof(IsNotRunning));
                 RaiseCommandStates();
             }
         }
     }
+
+    public bool IsNotRunning => !IsRunning;
 
     public string SummaryText
     {
@@ -315,6 +383,7 @@ public sealed class MainWindowViewModel : ObservableObject
         AppPage.PdfTools => Loc["ModePdfToolsTitle"],
         AppPage.Engines => Loc["ModeEnginesTitle"],
         AppPage.Logs => Loc["ModeLogsTitle"],
+        AppPage.Settings => Loc["ModeSettingsTitle"],
         AppPage.Help => Loc["ModeHelpTitle"],
         _ => Loc["ModeConvertTitle"]
     };
@@ -324,9 +393,68 @@ public sealed class MainWindowViewModel : ObservableObject
         AppPage.PdfTools => Loc["ModePdfToolsDescription"],
         AppPage.Engines => Loc["ModeEnginesDescription"],
         AppPage.Logs => Loc["ModeLogsDescription"],
+        AppPage.Settings => Loc["ModeSettingsDescription"],
         AppPage.Help => Loc["ModeHelpDescription"],
         _ => Loc["ModeConvertDescription"]
     };
+
+    public string CurrentVersion => AppVersionInfo.Version;
+
+    public string CurrentCommit => AppVersionInfo.Commit;
+
+    public AppLanguagePreference SelectedLanguagePreference
+    {
+        get => _selectedLanguagePreference;
+        private set => SetProperty(ref _selectedLanguagePreference, value);
+    }
+
+    public AppThemePreference SelectedThemePreference
+    {
+        get => _selectedThemePreference;
+        private set => SetProperty(ref _selectedThemePreference, value);
+    }
+
+    public UpdateChannel SelectedUpdateChannel
+    {
+        get => _selectedUpdateChannel;
+        private set => SetProperty(ref _selectedUpdateChannel, value);
+    }
+
+    public string EffectiveThemeText
+    {
+        get => _effectiveThemeText;
+        private set => SetProperty(ref _effectiveThemeText, value);
+    }
+
+    public string LatestVersion
+    {
+        get => _latestVersion;
+        private set => SetProperty(ref _latestVersion, value);
+    }
+
+    public string ReleaseNotesPreview
+    {
+        get => _releaseNotesPreview;
+        private set => SetProperty(ref _releaseNotesPreview, value);
+    }
+
+    public string UpdateStatus
+    {
+        get => _updateStatus;
+        private set => SetProperty(ref _updateStatus, value);
+    }
+
+    public double UpdateDownloadProgress
+    {
+        get => _updateDownloadProgress;
+        private set => SetProperty(ref _updateDownloadProgress, value);
+    }
+
+    public string DownloadedUpdatePath
+    {
+        get => _downloadedUpdatePath;
+        private set => SetProperty(ref _downloadedUpdatePath, value);
+    }
 
     public bool IsPdfToolPageRangeVisible =>
         SelectedPdfToolOperation is PdfToolOperation.ExtractPages or PdfToolOperation.RotatePages;
@@ -889,6 +1017,181 @@ public sealed class MainWindowViewModel : ObservableObject
         EngineStatus.PdfRendererStatus = Loc["Available"];
     }
 
+    private void ApplyPersistedAppearance()
+    {
+        SetLanguage(AppSettingsService.ResolveLanguage(_settings.Language));
+        _themeService.Apply(_settings.Theme);
+        EffectiveThemeText = _themeService.EffectiveTheme == AppThemePreference.Dark
+            ? Loc["ThemeDark"]
+            : Loc["ThemeLight"];
+    }
+
+    private void SetLanguagePreference(AppLanguagePreference preference)
+    {
+        SelectedLanguagePreference = preference;
+        _settings.Language = preference;
+        _settingsService.Save(_settings);
+        SetLanguage(AppSettingsService.ResolveLanguage(preference));
+        Log($"Language preference set: {preference}.");
+    }
+
+    private void SetThemePreference(AppThemePreference preference)
+    {
+        SelectedThemePreference = preference;
+        _settings.Theme = preference;
+        _settingsService.Save(_settings);
+        _themeService.Apply(preference);
+        EffectiveThemeText = _themeService.EffectiveTheme == AppThemePreference.Dark
+            ? Loc["ThemeDark"]
+            : Loc["ThemeLight"];
+        Log($"Theme preference set: {preference}; effective: {_themeService.EffectiveTheme}.");
+    }
+
+    private void SetUpdateChannel(UpdateChannel channel)
+    {
+        SelectedUpdateChannel = channel;
+        _settings.UpdateChannel = channel;
+        _settingsService.Save(_settings);
+        UpdateStatus = channel == UpdateChannel.Prerelease
+            ? Loc["UpdateChannelPrerelease"]
+            : Loc["UpdateChannelStable"];
+    }
+
+    private async Task CheckForUpdatesAsync()
+    {
+        UpdateStatus = Loc["UpdateChecking"];
+        LatestVersion = "";
+        ReleaseNotesPreview = "";
+        DownloadedUpdatePath = "";
+        _selectedUpdateAsset = null;
+        DownloadUpdateCommand.RaiseCanExecuteChanged();
+        InstallUpdateCommand.RaiseCanExecuteChanged();
+
+        var result = await _updateService
+            .CheckAsync(CurrentVersion, SelectedUpdateChannel, CancellationToken.None)
+            .ConfigureAwait(true);
+
+        if (!result.Success)
+        {
+            UpdateStatus = result.ErrorMessage ?? Loc["UpdateCheckFailed"];
+            ShowAlert(UpdateStatus);
+            Log(UpdateStatus);
+            return;
+        }
+
+        if (!result.UpdateAvailable)
+        {
+            UpdateStatus = Loc["UpdateNone"];
+            Log(UpdateStatus);
+            return;
+        }
+
+        LatestVersion = result.LatestVersion ?? "";
+        _releasePageUrl = result.ReleasePageUrl ?? AppVersionInfo.ReleasesPage;
+        ReleaseNotesPreview = TrimReleaseNotes(result.ReleaseNotes);
+        _selectedUpdateAsset = result.PreferredAsset;
+        UpdateStatus = _selectedUpdateAsset is null
+            ? Loc["UpdateFoundNoAsset"]
+            : string.Format(Loc["UpdateFound"], LatestVersion, _selectedUpdateAsset.Name);
+        Log(UpdateStatus);
+        DownloadUpdateCommand.RaiseCanExecuteChanged();
+    }
+
+    private async Task DownloadUpdateAsync()
+    {
+        if (_selectedUpdateAsset is null)
+        {
+            UpdateStatus = Loc["UpdateFoundNoAsset"];
+            return;
+        }
+
+        UpdateDownloadProgress = 0d;
+        UpdateStatus = Loc["UpdateDownloading"];
+        var versionFolder = string.IsNullOrWhiteSpace(LatestVersion) ? "latest" : LatestVersion;
+        var targetDirectory = Path.Combine(
+            Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
+            "kmb-file-tools",
+            "updates",
+            SanitizePathSegment(versionFolder));
+
+        try
+        {
+            var progress = new Progress<double>(value => UpdateDownloadProgress = value);
+            DownloadedUpdatePath = await _updateService
+                .DownloadAsync(_selectedUpdateAsset, targetDirectory, progress, CancellationToken.None)
+                .ConfigureAwait(true);
+            UpdateStatus = string.Format(Loc["UpdateDownloaded"], DownloadedUpdatePath);
+            Log(UpdateStatus);
+        }
+        catch (Exception ex)
+        {
+            UpdateStatus = $"Download failed: {ex.Message}";
+            ShowAlert(UpdateStatus);
+            Log(UpdateStatus);
+        }
+        finally
+        {
+            InstallUpdateCommand.RaiseCanExecuteChanged();
+        }
+    }
+
+    private void InstallUpdate()
+    {
+        if (string.IsNullOrWhiteSpace(DownloadedUpdatePath) || !File.Exists(DownloadedUpdatePath))
+        {
+            UpdateStatus = Loc["UpdateDownloadFirst"];
+            ShowAlert(UpdateStatus);
+            return;
+        }
+
+        if (DownloadedUpdatePath.EndsWith(".exe", StringComparison.OrdinalIgnoreCase))
+        {
+            Process.Start(new ProcessStartInfo
+            {
+                FileName = DownloadedUpdatePath,
+                UseShellExecute = true
+            });
+            Application.Current.Shutdown();
+            return;
+        }
+
+        Process.Start(new ProcessStartInfo
+        {
+            FileName = Path.GetDirectoryName(DownloadedUpdatePath) ?? DownloadedUpdatePath,
+            UseShellExecute = true
+        });
+        UpdateStatus = Loc["UpdateZipInstruction"];
+    }
+
+    private static string TrimReleaseNotes(string? notes)
+    {
+        if (string.IsNullOrWhiteSpace(notes))
+        {
+            return "";
+        }
+
+        var normalized = notes.Replace("\r\n", "\n", StringComparison.Ordinal);
+        return normalized.Length <= 1200 ? normalized : normalized[..1200] + "...";
+    }
+
+    private static string SanitizePathSegment(string value)
+    {
+        var invalid = Path.GetInvalidFileNameChars();
+        return new string(value.Select(ch => invalid.Contains(ch) ? '_' : ch).ToArray());
+    }
+
+    private void OpenUrl(string url)
+    {
+        try
+        {
+            Process.Start(new ProcessStartInfo { FileName = url, UseShellExecute = true });
+        }
+        catch (Exception ex)
+        {
+            ShowAlert($"Open failed: {ex.Message}");
+        }
+    }
+
     private void SetLanguage(Language language)
     {
         Loc.SetLanguage(language);
@@ -897,9 +1200,14 @@ public sealed class MainWindowViewModel : ObservableObject
         RefreshSelectedEngineGuidance();
         OnPropertyChanged(nameof(CurrentModeTitle));
         OnPropertyChanged(nameof(CurrentModeDescription));
+        OnPropertyChanged(nameof(EffectiveThemeText));
         if (PdfToolStatus == LocalizedStrings.Get(language == Language.English ? Language.Vietnamese : Language.English, "PdfToolsReady"))
         {
             PdfToolStatus = Loc["PdfToolsReady"];
+        }
+        if (UpdateStatus == LocalizedStrings.Get(language == Language.English ? Language.Vietnamese : Language.English, "UpdateReady"))
+        {
+            UpdateStatus = Loc["UpdateReady"];
         }
     }
 
@@ -1036,6 +1344,9 @@ public sealed class MainWindowViewModel : ObservableObject
         AddPdfToolFilesCommand.RaiseCanExecuteChanged();
         ClearPdfToolInputsCommand.RaiseCanExecuteChanged();
         RunPdfToolCommand.RaiseCanExecuteChanged();
+        CheckForUpdatesCommand.RaiseCanExecuteChanged();
+        DownloadUpdateCommand.RaiseCanExecuteChanged();
+        InstallUpdateCommand.RaiseCanExecuteChanged();
     }
 
     private static string FindLogoPath()

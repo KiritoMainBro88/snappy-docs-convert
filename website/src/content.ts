@@ -30,6 +30,7 @@ export type SiteCopy = {
   };
   controls: {
     language: string;
+    system: string;
     light: string;
     dark: string;
   };
@@ -81,12 +82,12 @@ export type SiteCopy = {
 
 export const appName = "kmb file tools";
 export const releaseTagUrl =
-  "https://github.com/KiritoMainBro88/snappy-docs-convert/releases/tag/v0.1.0-beta.1";
+  "https://github.com/KiritoMainBro88/snappy-docs-convert/releases/tag/v0.1.0-beta.2";
 export const releasesUrl = "https://github.com/KiritoMainBro88/snappy-docs-convert/releases";
 export const installerUrl =
-  "https://github.com/KiritoMainBro88/snappy-docs-convert/releases/download/v0.1.0-beta.1/SnappyDocsConvert-setup-win-x64-v0.1.0-beta.1.exe";
+  "https://github.com/KiritoMainBro88/snappy-docs-convert/releases/download/v0.1.0-beta.2/kmb-file-tools-setup-win-x64-v0.1.0-beta.2.exe";
 export const portableUrl =
-  "https://github.com/KiritoMainBro88/snappy-docs-convert/releases/download/v0.1.0-beta.1/SnappyDocsConvert-portable-win-x64-v0.1.0-beta.1.zip";
+  "https://github.com/KiritoMainBro88/snappy-docs-convert/releases/download/v0.1.0-beta.2/kmb-file-tools-portable-win-x64-v0.1.0-beta.2.zip";
 export const sourceUrl = "https://github.com/KiritoMainBro88/snappy-docs-convert";
 export const discordUrl = "https://discord.gg/kZ3U36ncun";
 
@@ -105,12 +106,13 @@ export const copy: Record<Language, SiteCopy> = {
     },
     controls: {
       language: "Language",
+      system: "System",
       light: "Light",
       dark: "Dark",
     },
     hero: {
       eyebrow: "Free and open-source Windows desktop app",
-      title: "Snappy document conversion without uploading your files.",
+      title: "kmb file tools converts documents without uploading your files.",
       subtitle:
         "Convert Office documents, PDFs, images, pages, and slides locally on your PC. The website is only a download and project page for kmb file tools.",
       proof: "No upload · No telemetry · No account · MIT licensed",
@@ -119,7 +121,7 @@ export const copy: Record<Language, SiteCopy> = {
       releaseCta: "View GitHub Release",
       sourceCta: "View source",
       releaseNote:
-        "Public beta v0.1.0-beta.1. Unsigned builds may show a Windows SmartScreen warning.",
+        "Public beta v0.1.0-beta.2. Unsigned builds may show a Windows SmartScreen warning.",
     },
     download: {
       title: "Official free downloads",
@@ -181,7 +183,7 @@ export const copy: Record<Language, SiteCopy> = {
       },
       {
         title: "English and Vietnamese",
-        text: "Switch the desktop UI and website copy between English and Vietnamese.",
+        text: "The desktop app and website detect system/browser language, then remember your choice.",
       },
     ],
     toolboxTitle: "PDF Toolbox V1",
@@ -196,22 +198,22 @@ export const copy: Record<Language, SiteCopy> = {
     ],
     screenshotsTitle: "App screenshots",
     screenshotsIntro:
-      "Owner screenshots can be placed in website/public/screenshots. The site keeps working if screenshots are not present yet.",
+      "Demo screenshots and short videos show the website and desktop app flow. The site keeps working if media is not present.",
     screenshots: [
       {
         title: "App home",
         text: "Files, target, engine, output folder, and progress in one focused page.",
-        src: "/screenshots/app-home.png",
+        src: "/demo/home-light-en.png",
       },
       {
         title: "PDF tools",
         text: "Merge, split, extract, rotate, and images-to-PDF actions separated from conversion.",
-        src: "/screenshots/pdf-tools.png",
+        src: "/demo/home-light-vi.png",
       },
       {
         title: "Website dark mode",
         text: "Dark landing page variant for release notes, social sharing, and user guides.",
-        src: "/screenshots/website-dark.png",
+        src: "/demo/home-dark-en.png",
       },
     ],
     openSourceTitle: "Open source and community",
@@ -233,7 +235,7 @@ export const copy: Record<Language, SiteCopy> = {
     ],
     roadmapTitle: "Roadmap",
     roadmap: [
-      { title: "Auto-update", text: "Planned. Not implemented in this beta." },
+      { title: "Update center", text: "Manual check/download/install flow is available from app settings. Silent background auto-update is not enabled." },
       {
         title: "Planned OCR Lite",
         text:
@@ -294,12 +296,13 @@ export const copy: Record<Language, SiteCopy> = {
     },
     controls: {
       language: "Ngôn ngữ",
+      system: "Hệ thống",
       light: "Sáng",
       dark: "Tối",
     },
     hero: {
       eyebrow: "Ứng dụng Windows miễn phí và mã nguồn mở",
-      title: "Chuyển đổi tài liệu nhanh mà không tải tệp lên máy chủ.",
+      title: "kmb file tools chuyển đổi tài liệu mà không tải tệp lên máy chủ.",
       subtitle:
         "Chuyển đổi tài liệu Office, PDF, hình ảnh, trang và slide cục bộ trên máy tính của bạn. Website chỉ là trang tải xuống và giới thiệu kmb file tools.",
       proof: "Chạy cục bộ · Không tải lên · Không tài khoản · Giấy phép MIT",
@@ -308,7 +311,7 @@ export const copy: Record<Language, SiteCopy> = {
       releaseCta: "Xem GitHub Release",
       sourceCta: "Xem mã nguồn",
       releaseNote:
-        "Public beta v0.1.0-beta.1. Bản chưa ký có thể bị Windows SmartScreen cảnh báo.",
+        "Public beta v0.1.0-beta.2. Bản chưa ký có thể bị Windows SmartScreen cảnh báo.",
     },
     download: {
       title: "Tải bản chính thức miễn phí",
@@ -370,7 +373,7 @@ export const copy: Record<Language, SiteCopy> = {
       },
       {
         title: "Tiếng Anh và tiếng Việt",
-        text: "Đổi giao diện desktop và website giữa tiếng Anh và tiếng Việt.",
+        text: "App desktop và website tự nhận ngôn ngữ hệ thống/trình duyệt, rồi nhớ lựa chọn của bạn.",
       },
     ],
     toolboxTitle: "Công cụ PDF V1",
@@ -385,22 +388,22 @@ export const copy: Record<Language, SiteCopy> = {
     ],
     screenshotsTitle: "Ảnh giao diện app",
     screenshotsIntro:
-      "Ảnh chụp do owner cung cấp có thể đặt trong website/public/screenshots. Website vẫn build được nếu chưa có ảnh.",
+      "Ảnh và video demo ngắn cho thấy luồng website và desktop app. Website vẫn build được nếu chưa có media.",
     screenshots: [
       {
         title: "Trang chính của app",
         text: "Tệp, định dạng đích, engine, thư mục xuất và tiến trình nằm trong một trang rõ ràng.",
-        src: "/screenshots/app-home.png",
+        src: "/demo/home-light-en.png",
       },
       {
         title: "Công cụ PDF",
         text: "Gộp, tách, trích, xoay và ảnh-sang-PDF được tách khỏi luồng chuyển đổi.",
-        src: "/screenshots/pdf-tools.png",
+        src: "/demo/home-light-vi.png",
       },
       {
         title: "Website dark mode",
         text: "Giao diện tối của landing page để dùng cho release note, chia sẻ và hướng dẫn người dùng.",
-        src: "/screenshots/website-dark.png",
+        src: "/demo/home-dark-en.png",
       },
     ],
     openSourceTitle: "Mã nguồn mở và cộng đồng",
@@ -422,7 +425,7 @@ export const copy: Record<Language, SiteCopy> = {
     ],
     roadmapTitle: "Lộ trình",
     roadmap: [
-      { title: "Tự cập nhật", text: "Đã lên kế hoạch. Chưa có trong beta này." },
+      { title: "Trung tâm cập nhật", text: "Đã có luồng kiểm tra/tải/cài thủ công trong Cài đặt. Chưa có cập nhật nền tự động." },
       {
         title: "OCR Lite dự kiến",
         text:

@@ -17,11 +17,11 @@
   - Portable ZIP
   - Inno Setup installer EXE
 - Frontend-only website:
-  - Dark mode
-  - English/Vietnamese copy
-  - GitHub Release download links
+  - System/light/dark mode
+  - Browser language detection and persisted English/Vietnamese copy
+  - GitHub Release beta.2 download links
   - Discord support link
-  - Screenshot placeholders
+  - Curated demo screenshots/video
 - Demo asset pipeline:
   - Generated demo inputs
   - Playwright website screenshots/video
@@ -36,11 +36,14 @@
 - Auto-update design doc:
   - future Velopack + GitHub Releases direction
   - beta-safe manual check-for-updates first
+- App update center V1:
+  - manual check/download/install from Settings
+  - Stable or Prerelease/Beta channel
+  - SHA256 digest verification when GitHub provides release asset digest
 
 ## Planned
 
-- Auto-update implementation.
-- Curated website screenshots after owner approval.
+- Full Velopack auto-update implementation after manual update flow stabilizes.
 - Winget distribution.
 - Paid code signing when budget exists.
 - PDF compression.

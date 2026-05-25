@@ -10,8 +10,8 @@ $repoRoot = (Resolve-Path (Join-Path $PSScriptRoot "..")).Path
 $portableScript = Join-Path $repoRoot "scripts\package-portable.ps1"
 $issPath = Join-Path $repoRoot "installer\inno\SnappyDocsConvert.iss"
 $artifactsRoot = Join-Path $repoRoot "artifacts"
-$portableDir = Join-Path $artifactsRoot "SnappyDocsConvert-portable-$Runtime-$Version"
-$installerPath = Join-Path $artifactsRoot "SnappyDocsConvert-setup-$Runtime-$Version.exe"
+$portableDir = Join-Path $artifactsRoot "kmb-file-tools-portable-$Runtime-$Version"
+$installerPath = Join-Path $artifactsRoot "kmb-file-tools-setup-$Runtime-$Version.exe"
 $appVersion = $Version.TrimStart("v")
 
 if (-not (Test-Path -LiteralPath $portableScript)) {
