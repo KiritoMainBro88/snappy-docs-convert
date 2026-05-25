@@ -1,6 +1,6 @@
 # Architecture Notes
 
-These diagrams show the intended final direction. Phase 2 adds LibreOffice headless document-to-PDF conversion. Phase 2C adds core setup guidance. Phase 3A adds Microsoft Office COM detection and guarded PDF export for local desktop user sessions.
+These diagrams show the intended final direction. Phase 2 adds LibreOffice headless document-to-PDF conversion. Phase 2C adds core setup guidance. Phase 3A adds Microsoft Office COM detection and guarded PDF export for local desktop user sessions. Phase 4 adds PDF page rendering to real image files.
 
 ## Phase 2 LibreOffice Engine
 
@@ -48,6 +48,22 @@ flowchart LR
 ```
 
 Office COM conversions are serialized. The engine only quits the COM app instance it created. It is not intended for server/service/unattended automation.
+
+## Phase 4 PDF Image Renderer
+
+```mermaid
+flowchart LR
+  Request["PdfRenderRequest"] --> Validate["Validate PDF, output, DPI, format"]
+  Validate --> Count["Get PDF page count"]
+  Count --> Names["Plan safe page output names"]
+  Names --> Serialize["PDFium semaphore"]
+  Serialize --> Render["Render page bitmap"]
+  Render --> Encode["Encode PNG / JPEG / WebP"]
+  Encode --> Verify["Verify non-empty image"]
+  Verify --> Result["PdfRenderResult"]
+```
+
+PDF rendering uses PDFtoImage, PDFium, and SkiaSharp. Pages render sequentially; no screenshots are used. PDFium calls are serialized because the native renderer is not thread-safe in-process.
 
 ## Final Desktop Architecture
 

@@ -32,9 +32,13 @@
 
 ## Phase 4: PDF Image Renderer
 
-- Choose a maintained local PDF renderer.
-- Export PDF pages to real images at selected DPI.
-- Add tests for page counts, output naming, and invalid PDFs.
+- Implemented: choose PDFtoImage for MVP PDF rendering.
+- Implemented: export PDF pages to PNG, JPEG, and WebP when runtime supports WebP.
+- Implemented: configurable DPI with default 200, validation, and high-DPI warning.
+- Implemented: safe page naming with prefix, zero padding, and overwrite policies.
+- Implemented: serialize PDFium calls and render pages sequentially.
+- Implemented: add tests for missing/non-PDF input, naming, overwrite policy, DPI/quality validation, cancellation, and tiny PDF rendering.
+- Not implemented: batch/UI folder orchestration for multiple source PDFs.
 
 ## Phase 5: WPF UI Polish
 

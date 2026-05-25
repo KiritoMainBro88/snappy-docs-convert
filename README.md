@@ -2,7 +2,7 @@
 
 Snappy Docs Convert is planned as a fast local document conversion app for Windows-first workflows.
 
-Current phase: Phase 3B Microsoft Office real smoke coverage. This branch contains a small .NET core library, local LibreOffice document-to-PDF conversion, Microsoft Office availability detection, guarded Office COM PDF export, Office smoke validation, and core dependency guidance. UI and PDF-to-image rendering are still later phases.
+Current phase: Phase 4 PDF image renderer. This branch contains a small .NET core library, local LibreOffice document-to-PDF conversion, Microsoft Office availability detection, guarded Office COM PDF export, Office smoke validation, core dependency guidance, and PDF page image export. UI and installer work are still later phases.
 
 ## Final Goal
 
@@ -35,7 +35,7 @@ dotnet build
 dotnet test
 ```
 
-Normal unit tests use fake process runners. They do not require LibreOffice.
+Normal unit tests use fake process runners where external document engines are involved. They do not require LibreOffice or Microsoft Office.
 
 ## LibreOffice Engine
 
@@ -67,6 +67,18 @@ powershell -ExecutionPolicy Bypass -File .\scripts\smoke-office.ps1
 
 The smoke script skips cleanly when Office is missing. When Word is installed and activated, it creates a tiny temp RTF and converts it through the project Office COM engine.
 
+## PDF Image Renderer
+
+Phase 4 renders PDF pages to real image files through PDFtoImage/PDFium/SkiaSharp. It does not use screenshots.
+
+Supported output formats:
+
+- PNG
+- JPEG
+- WebP when supported by the runtime
+
+Default DPI is 200. The renderer validates DPI, warns above 300 DPI, writes sequential page files such as `page-001.png`, and serializes PDFium calls because PDFium is not thread-safe. See `docs/PDF_IMAGE_RENDERER.md`.
+
 To pack a small AI-friendly context bundle:
 
 ```powershell
@@ -77,4 +89,4 @@ The packed output is written to `docs/ai-context/repomix-output.md` and is ignor
 
 ## Next Phase Summary
 
-The next recommended implementation phase is Phase 4: PDF image renderer. Wait for owner approval before starting it.
+The next recommended implementation phase is Phase 5: batch pipeline or WPF UI. Wait for owner approval before starting it.
