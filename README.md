@@ -2,7 +2,7 @@
 
 Snappy Docs Convert is planned as a fast local document conversion app for Windows-first workflows.
 
-Current phase: Phase 7 portable packaging. This branch contains a small .NET core library, local LibreOffice document-to-PDF conversion, Microsoft Office availability detection, guarded Office COM PDF export, Office smoke validation, core dependency guidance, PDF page image export, a core batch pipeline, a runnable Windows WPF app, a local E2E QA harness, a manual GUI QA checklist, and repeatable portable Windows packaging. MSI/MSIX installer work is still a later phase.
+Current phase: Phase 7B manual GUI QA readiness. This branch contains a small .NET core library, local LibreOffice document-to-PDF conversion, Microsoft Office availability detection, guarded Office COM PDF export, Office smoke validation, core dependency guidance, PDF page image export, a core batch pipeline, a runnable Windows WPF app, a local E2E QA harness, a manual GUI QA checklist/recorder, release readiness docs, and repeatable portable Windows packaging. MSI/MSIX installer work is still a later phase.
 
 ## Final Goal
 
@@ -151,6 +151,16 @@ powershell -ExecutionPolicy Bypass -File .\scripts\smoke-release.ps1 -PackagePat
 
 The portable MVP does not bundle Microsoft Office or LibreOffice. Microsoft Office is optional and recommended for best DOCX/PPTX fidelity. LibreOffice is an optional fallback; the app guides users to the official download when needed. See `docs/PACKAGING.md`.
 
+## Manual GUI QA Recorder
+
+Create an owner-fillable manual GUI QA session under ignored `docs\qa-output\gui\`:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File .\scripts\new-gui-qa-session.ps1
+```
+
+This does not run the app or claim GUI pass. The owner fills `MANUAL_GUI_QA_RESULT.md` with output paths, screenshots, and pass/fail notes. Release readiness status is tracked in `docs/RELEASE_READINESS.md`.
+
 To pack a small AI-friendly context bundle:
 
 ```powershell
@@ -161,4 +171,4 @@ The packed output is written to `docs/ai-context/repomix-output.md` and is ignor
 
 ## Next Phase Summary
 
-The next recommended implementation phase is Phase 7B owner manual GUI QA on the packaged app or Phase 8 installer. Wait for owner approval before starting it.
+The next recommended implementation phase is owner manual GUI QA on the packaged app, then Phase 8 installer or bugfixes. Wait for owner approval before starting it.

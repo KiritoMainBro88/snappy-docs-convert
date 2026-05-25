@@ -91,4 +91,7 @@
 - Implemented: include quickstart, privacy, and initial third-party notices in release folder.
 - Implemented: add release smoke script for exe, `--self-check`, required docs, and forbidden content.
 - Implemented: document dependency behavior for Microsoft Office and LibreOffice.
+- Implemented: add manual GUI QA session recorder and result template.
+- Implemented: add release readiness report for owner/dev use versus public beta.
 - Not implemented: MSI/MSIX installer, signing, auto-update, or final legal attribution audit.
+- Not implemented: completed owner manual GUI QA result.

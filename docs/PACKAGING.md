@@ -37,6 +37,16 @@ The smoke check verifies:
 - `README-QUICKSTART.txt`, `PRIVACY.txt`, and `THIRD-PARTY-NOTICES.txt` exist.
 - Source folders, tests, QA output, logs, generated PDFs/images, and nested zips are absent.
 
+## Manual GUI QA Session
+
+Create a timestamped owner-fillable QA report:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File .\scripts\new-gui-qa-session.ps1
+```
+
+Output goes under ignored `docs\qa-output\gui\YYYYMMDD-HHMMSS\`. This recorder does not launch the app and does not claim a GUI pass.
+
 ## Dependency Behavior
 
 - Microsoft Office is optional and recommended for best DOCX/PPTX fidelity.
@@ -57,3 +67,4 @@ The smoke check verifies:
 - LibreOffice real smoke depends on installed LibreOffice.
 - PowerPoint real smoke fixture pending.
 - Manual GUI QA remains owner-executed via `docs/GUI_QA_CHECKLIST.md`.
+- Public beta should wait for a completed `MANUAL_GUI_QA_RESULT.md`.
