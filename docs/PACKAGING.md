@@ -18,6 +18,8 @@ artifacts\
 
 The package is framework-dependent by default and requires the .NET 9 Desktop Runtime on Windows x64.
 
+The WPF app uses `OutputType=WinExe`, so normal double-click launch should open the GUI without spawning a console. If the app is launched from an existing terminal, that terminal staying open is normal.
+
 Optional self-contained build:
 
 ```powershell
@@ -36,6 +38,14 @@ The smoke check verifies:
 - `SnappyDocsConvert.App.exe --self-check` exits successfully and reports `selfCheck: ok`.
 - `README-QUICKSTART.txt`, `PRIVACY.txt`, and `THIRD-PARTY-NOTICES.txt` exist.
 - Source folders, tests, QA output, logs, generated PDFs/images, and nested zips are absent.
+
+With `WinExe`, console output from `--self-check` can be unavailable under automation. Release smoke treats exit code 0 as valid when JSON output is not captured.
+
+No-console smoke:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File .\scripts\smoke-no-console.ps1
+```
 
 ## Manual GUI QA Session
 
@@ -68,3 +78,4 @@ Output goes under ignored `docs\qa-output\gui\YYYYMMDD-HHMMSS\`. This recorder d
 - PowerPoint real smoke fixture pending.
 - Manual GUI QA remains owner-executed via `docs/GUI_QA_CHECKLIST.md`.
 - Public beta should wait for a completed `MANUAL_GUI_QA_RESULT.md`.
+- Unsigned builds may show Windows SmartScreen warnings until signing exists.

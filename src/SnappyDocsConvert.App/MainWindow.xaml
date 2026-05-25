@@ -273,6 +273,57 @@
                                         Margin="0,4,0,0" />
                             </StackPanel>
                         </Border>
+
+                        <Border Style="{StaticResource SettingsGroup}" Margin="0,12,0,0">
+                            <StackPanel>
+                                <TextBlock Text="PDF Tools" Style="{StaticResource SectionTitle}" />
+                                <TextBlock Text="Local tools: merge, split, extract, rotate, images to PDF."
+                                           Style="{StaticResource TinyMutedText}"
+                                           TextWrapping="Wrap" />
+
+                                <TextBlock Text="Operation" Style="{StaticResource FieldLabel}" />
+                                <ComboBox ItemsSource="{Binding PdfToolOperations}"
+                                          SelectedItem="{Binding SelectedPdfToolOperation}" />
+
+                                <TextBlock Text="Inputs" Style="{StaticResource FieldLabel}" />
+                                <ListBox ItemsSource="{Binding PdfToolInputs}"
+                                         Height="74"
+                                         BorderBrush="{StaticResource BorderBrushSoft}"
+                                         Background="{StaticResource PanelBrush}" />
+                                <WrapPanel Margin="0,8,0,0">
+                                    <Button Content="Add PDFs / Images"
+                                            Command="{Binding AddPdfToolFilesCommand}"
+                                            Margin="0,0,6,6" />
+                                    <Button Content="Clear Inputs"
+                                            Command="{Binding ClearPdfToolInputsCommand}"
+                                            Margin="0,0,6,6" />
+                                </WrapPanel>
+
+                                <TextBlock Text="Output file name (optional)" Style="{StaticResource FieldLabel}" />
+                                <TextBox Text="{Binding PdfToolOutputFileName, UpdateSourceTrigger=PropertyChanged}" />
+                                <TextBlock Text="Output folder uses the main Output folder above."
+                                           Style="{StaticResource TinyMutedText}"
+                                           TextWrapping="Wrap"
+                                           Margin="0,6,0,0" />
+
+                                <TextBlock Text="Page range for Extract/Rotate" Style="{StaticResource FieldLabel}" />
+                                <TextBox Text="{Binding PdfToolPageRanges, UpdateSourceTrigger=PropertyChanged}"
+                                         ToolTip="Example: 1,3-5,8" />
+
+                                <TextBlock Text="Rotation" Style="{StaticResource FieldLabel}" />
+                                <ComboBox ItemsSource="{Binding PdfRotationAngles}"
+                                          SelectedItem="{Binding SelectedPdfRotationAngle}" />
+
+                                <Button Content="Start Tool"
+                                        Command="{Binding RunPdfToolCommand}"
+                                        Style="{StaticResource PrimaryButton}"
+                                        Margin="0,12,0,0" />
+                                <TextBlock Text="{Binding PdfToolStatus}"
+                                           Style="{StaticResource TinyMutedText}"
+                                           TextWrapping="Wrap"
+                                           Margin="0,8,0,0" />
+                            </StackPanel>
+                        </Border>
                     </StackPanel>
                 </ScrollViewer>
             </Border>

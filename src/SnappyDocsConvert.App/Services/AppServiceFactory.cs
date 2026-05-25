@@ -3,6 +3,7 @@ using SnappyDocsConvert.Core.Services.Batch;
 using SnappyDocsConvert.Core.Services.LibreOffice;
 using SnappyDocsConvert.Core.Services.Office;
 using SnappyDocsConvert.Core.Services.Pdf;
+using SnappyDocsConvert.Core.Services.PdfTools;
 
 namespace SnappyDocsConvert.App.Services;
 
@@ -32,4 +33,6 @@ public sealed class AppServiceFactory
             new LibreOfficeConversionEngine(),
             new OfficeComConversionEngine(),
             new PdfToImageRenderer()));
+
+    public IPdfToolService CreatePdfToolService() => new PdfToolService();
 }

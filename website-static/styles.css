@@ -1,0 +1,144 @@
+:root {
+  color-scheme: light;
+  --bg: #f6f7f9;
+  --panel: #ffffff;
+  --text: #111827;
+  --muted: #5b6472;
+  --line: #d7dce3;
+  --accent: #1d4ed8;
+  --accent-dark: #173fba;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: "Segoe UI", Arial, sans-serif;
+  color: var(--text);
+  background: var(--bg);
+}
+
+.hero {
+  min-height: 540px;
+  padding: 28px clamp(20px, 5vw, 72px);
+  background:
+    linear-gradient(rgba(8, 18, 35, 0.48), rgba(8, 18, 35, 0.62)),
+    url("assets/hero.png");
+  background-size: cover;
+  background-position: center;
+}
+
+.nav {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  color: #fff;
+}
+
+.nav span {
+  color: #dbeafe;
+}
+
+.hero-content {
+  max-width: 720px;
+  padding-top: 110px;
+  color: #fff;
+}
+
+.eyebrow {
+  margin: 0 0 12px;
+  color: #bfdbfe;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0;
+}
+
+h1 {
+  margin: 0;
+  font-size: clamp(44px, 7vw, 76px);
+  line-height: 1;
+  letter-spacing: 0;
+}
+
+.lead {
+  max-width: 620px;
+  font-size: 20px;
+  line-height: 1.5;
+  color: #eef2ff;
+}
+
+.actions {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-top: 28px;
+}
+
+.button {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  padding: 0 18px;
+  border: 1px solid #cbd5e1;
+  border-radius: 8px;
+  background: #fff;
+  color: var(--text);
+  text-decoration: none;
+  font-weight: 700;
+}
+
+.button.primary {
+  border-color: var(--accent);
+  background: var(--accent);
+  color: #fff;
+}
+
+.button.primary:hover {
+  background: var(--accent-dark);
+}
+
+main {
+  max-width: 1120px;
+  margin: 0 auto;
+  padding: 44px 20px 64px;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 16px;
+}
+
+article,
+.notice {
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 20px;
+}
+
+h2 {
+  margin: 0 0 10px;
+  font-size: 20px;
+}
+
+p {
+  color: var(--muted);
+  line-height: 1.6;
+}
+
+.notice {
+  margin-top: 18px;
+}
+
+@media (max-width: 700px) {
+  .nav {
+    display: block;
+  }
+
+  .hero-content {
+    padding-top: 72px;
+  }
+}

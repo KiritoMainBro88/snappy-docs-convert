@@ -34,11 +34,9 @@ try {
 
     Write-Host "App smoke: executable found"
     Write-Host "App smoke: self-check"
-    $selfCheckOutput = & $exePath --self-check 2>&1
-    $exitCode = $LASTEXITCODE
-    $selfCheckOutput | ForEach-Object { Write-Host $_ }
-    if ($exitCode -ne 0) {
-        throw "App self-check failed with exit code $exitCode."
+    $selfCheck = Start-Process -FilePath $exePath -ArgumentList "--self-check" -Wait -PassThru -WindowStyle Hidden
+    if ($selfCheck.ExitCode -ne 0) {
+        throw "App self-check failed with exit code $($selfCheck.ExitCode)."
     }
 
     Write-Host "App smoke: pass"

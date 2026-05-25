@@ -68,11 +68,17 @@ try {
     Invoke-Captured "Build" "dotnet build exits 0" "build.log" { dotnet build } | Out-Null
     Invoke-Captured "Tests" "dotnet test exits 0" "test.log" { dotnet test } | Out-Null
 
-    $selfCheck = Invoke-Captured "Self-check" "selfCheck ok JSON" "self-check.log" {
+    $selfCheck = Invoke-Captured "Self-check" "self-check exits 0" "self-check.log" {
         dotnet run --project .\src\SnappyDocsConvert.App -- --self-check
     }
-    if ($selfCheck.ExitCode -eq 0 -and (($selfCheck.Output -join "`n") -match '"selfCheck"\s*:\s*"ok"')) {
-        $rows[$rows.Count - 1].Evidence = "selfCheck=ok; log=$($selfCheck.LogPath)"
+    if ($selfCheck.ExitCode -eq 0) {
+        $text = ($selfCheck.Output -join "`n")
+        $rows[$rows.Count - 1].Evidence = if ($text -match '"selfCheck"\s*:\s*"ok"') {
+            "selfCheck=ok; log=$($selfCheck.LogPath)"
+        }
+        else {
+            "exit 0; WinExe console output may be unavailable; log=$($selfCheck.LogPath)"
+        }
     }
     else {
         $rows[$rows.Count - 1].Result = "Fail"

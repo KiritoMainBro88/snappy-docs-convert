@@ -30,6 +30,8 @@ dotnet run --project src\SnappyDocsConvert.App
 | 18. Resize to 1280x720. | Controls remain readable; no clipped critical buttons. |  |  |  |
 | 19. Resize to 1440x900. | Layout expands cleanly; queue/settings/log remain usable. |  |  |  |
 | 20. Clear log and clear queue. | Log and queue clear; summary updates honestly. |  |  |  |
+| 21. Run PDF Tools merge/split/extract/rotate/images-to-PDF. | Each selected local PDF tool creates output under selected output folder or fails clearly. |  |  |  |
+| 22. Double-click portable exe. | GUI opens without spawning a new console window. Existing terminal staying open is only expected when launched from terminal. |  |  |  |
 
 Known skips:
 

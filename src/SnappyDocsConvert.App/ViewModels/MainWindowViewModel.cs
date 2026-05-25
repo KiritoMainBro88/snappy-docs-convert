@@ -4,6 +4,7 @@ using System.IO;
 using SnappyDocsConvert.App.Services;
 using SnappyDocsConvert.Core.Models;
 using SnappyDocsConvert.Core.Services.Batch;
+using SnappyDocsConvert.Core.Services.PdfTools;
 
 namespace SnappyDocsConvert.App.ViewModels;
 
@@ -26,6 +27,11 @@ public sealed class MainWindowViewModel : ObservableObject
     private string? _customLibreOfficePath;
     private string _summaryText = "Ready. Add files or folders.";
     private string _selectedEngineGuidance = "Auto uses Microsoft Office when available, then LibreOffice fallback. No cloud upload.";
+    private PdfToolOperation _selectedPdfToolOperation = PdfToolOperation.Merge;
+    private PdfRotationAngle _selectedPdfRotationAngle = PdfRotationAngle.Degrees90;
+    private string _pdfToolPageRanges = "";
+    private string _pdfToolOutputFileName = "";
+    private string _pdfToolStatus = "PDF tools ready. Add local PDF/image files.";
     private CancellationTokenSource? _runCancellation;
 
     public MainWindowViewModel(AppServiceFactory serviceFactory)
@@ -46,6 +52,9 @@ public sealed class MainWindowViewModel : ObservableObject
         OpenOutputFolderCommand = new RelayCommand(OpenOutputFolder);
         OpenItemOutputCommand = new RelayCommand<QueueItemViewModel>(OpenItemOutput, item => !IsRunning && item is not null && !string.IsNullOrWhiteSpace(item.Output));
         ClearLogCommand = new RelayCommand(ClearLog, () => LogLines.Count > 0);
+        AddPdfToolFilesCommand = new RelayCommand(AddPdfToolFiles, () => !IsRunning);
+        ClearPdfToolInputsCommand = new RelayCommand(ClearPdfToolInputs, () => !IsRunning && PdfToolInputs.Count > 0);
+        RunPdfToolCommand = new AsyncRelayCommand(RunPdfToolAsync, () => !IsRunning);
         RecheckEnginesCommand = new AsyncRelayCommand(RecheckEnginesAsync);
         ChooseLibreOfficeCommand = new AsyncRelayCommand(ChooseLibreOfficeAsync, () => !IsRunning);
         OpenLibreOfficeDownloadCommand = new RelayCommand(OpenLibreOfficeDownload);
@@ -57,6 +66,8 @@ public sealed class MainWindowViewModel : ObservableObject
 
     public ObservableCollection<string> LogLines { get; } = new();
 
+    public ObservableCollection<string> PdfToolInputs { get; } = new();
+
     public EngineStatusViewModel EngineStatus { get; } = new();
 
     public IReadOnlyList<BatchConversionTarget> Targets { get; } = Enum.GetValues<BatchConversionTarget>();
@@ -64,6 +75,10 @@ public sealed class MainWindowViewModel : ObservableObject
     public IReadOnlyList<BatchConversionEnginePreference> Engines { get; } = Enum.GetValues<BatchConversionEnginePreference>();
 
     public IReadOnlyList<ImageOutputFormat> ImageFormats { get; } = Enum.GetValues<ImageOutputFormat>();
+
+    public IReadOnlyList<PdfToolOperation> PdfToolOperations { get; } = Enum.GetValues<PdfToolOperation>();
+
+    public IReadOnlyList<PdfRotationAngle> PdfRotationAngles { get; } = Enum.GetValues<PdfRotationAngle>();
 
     public RelayCommand AddFilesCommand { get; }
 
@@ -84,6 +99,12 @@ public sealed class MainWindowViewModel : ObservableObject
     public RelayCommand<QueueItemViewModel> OpenItemOutputCommand { get; }
 
     public RelayCommand ClearLogCommand { get; }
+
+    public RelayCommand AddPdfToolFilesCommand { get; }
+
+    public RelayCommand ClearPdfToolInputsCommand { get; }
+
+    public AsyncRelayCommand RunPdfToolCommand { get; }
 
     public AsyncRelayCommand RecheckEnginesCommand { get; }
 
@@ -167,6 +188,36 @@ public sealed class MainWindowViewModel : ObservableObject
     {
         get => _selectedEngineGuidance;
         set => SetProperty(ref _selectedEngineGuidance, value);
+    }
+
+    public PdfToolOperation SelectedPdfToolOperation
+    {
+        get => _selectedPdfToolOperation;
+        set => SetProperty(ref _selectedPdfToolOperation, value);
+    }
+
+    public PdfRotationAngle SelectedPdfRotationAngle
+    {
+        get => _selectedPdfRotationAngle;
+        set => SetProperty(ref _selectedPdfRotationAngle, value);
+    }
+
+    public string PdfToolPageRanges
+    {
+        get => _pdfToolPageRanges;
+        set => SetProperty(ref _pdfToolPageRanges, value);
+    }
+
+    public string PdfToolOutputFileName
+    {
+        get => _pdfToolOutputFileName;
+        set => SetProperty(ref _pdfToolOutputFileName, value);
+    }
+
+    public string PdfToolStatus
+    {
+        get => _pdfToolStatus;
+        set => SetProperty(ref _pdfToolStatus, value);
     }
 
     public void AddPaths(IEnumerable<string> paths)
@@ -332,6 +383,100 @@ public sealed class MainWindowViewModel : ObservableObject
             IsRunning = false;
             _runCancellation.Dispose();
             _runCancellation = null;
+        }
+    }
+
+    private void AddPdfToolFiles()
+    {
+        var existing = PdfToolInputs.ToHashSet(StringComparer.OrdinalIgnoreCase);
+        var added = 0;
+        foreach (var path in _filePicker.PickPdfToolFiles())
+        {
+            if (!existing.Add(path))
+            {
+                Log($"PDF tool duplicate ignored: {path}");
+                continue;
+            }
+
+            PdfToolInputs.Add(path);
+            added++;
+        }
+
+        PdfToolStatus = $"{PdfToolInputs.Count} PDF tool input(s) ready.";
+        Log($"PDF tools added {added} input(s).");
+        RaiseCommandStates();
+    }
+
+    private void ClearPdfToolInputs()
+    {
+        PdfToolInputs.Clear();
+        PdfToolStatus = "PDF tool inputs cleared.";
+        Log("PDF tool inputs cleared.");
+        RaiseCommandStates();
+    }
+
+    private async Task RunPdfToolAsync()
+    {
+        if (PdfToolInputs.Count == 0)
+        {
+            PdfToolStatus = "Add PDF/image inputs first.";
+            Log("PDF tool blocked: no inputs.");
+            return;
+        }
+
+        if (string.IsNullOrWhiteSpace(OutputFolder))
+        {
+            PdfToolStatus = "Choose output folder first.";
+            Log("PDF tool blocked: output folder is required.");
+            return;
+        }
+
+        IsRunning = true;
+        try
+        {
+            Directory.CreateDirectory(OutputFolder);
+            var request = new PdfToolRequest
+            {
+                Operation = SelectedPdfToolOperation,
+                InputPaths = PdfToolInputs.ToArray(),
+                OutputDirectory = OutputFolder,
+                OutputFileName = string.IsNullOrWhiteSpace(PdfToolOutputFileName)
+                    ? null
+                    : PdfToolOutputFileName,
+                PageRanges = string.IsNullOrWhiteSpace(PdfToolPageRanges)
+                    ? null
+                    : PdfToolPageRanges,
+                RotationAngle = SelectedPdfRotationAngle
+            };
+
+            Log($"PDF tool started: {SelectedPdfToolOperation}.");
+            var result = await _serviceFactory.CreatePdfToolService()
+                .RunAsync(request, CancellationToken.None)
+                .ConfigureAwait(true);
+
+            if (!result.Success)
+            {
+                PdfToolStatus = result.ErrorMessage ?? "PDF tool failed.";
+                Log($"PDF tool failed: {PdfToolStatus}");
+                return;
+            }
+
+            var firstOutput = result.OutputFiles.FirstOrDefault() ?? OutputFolder;
+            PdfToolStatus = $"PDF tool done. {result.OutputFiles.Count} output file(s). First: {firstOutput}";
+            Log(PdfToolStatus);
+            foreach (var warning in result.Warnings.Take(3))
+            {
+                Log($"PDF tool warning: {warning}");
+            }
+        }
+        catch (Exception ex)
+        {
+            PdfToolStatus = $"PDF tool error: {ex.Message}";
+            Log(PdfToolStatus);
+        }
+        finally
+        {
+            IsRunning = false;
         }
     }
 
@@ -541,5 +686,8 @@ public sealed class MainWindowViewModel : ObservableObject
         ChooseLibreOfficeCommand.RaiseCanExecuteChanged();
         OpenItemOutputCommand.RaiseCanExecuteChanged();
         ClearLogCommand.RaiseCanExecuteChanged();
+        AddPdfToolFilesCommand.RaiseCanExecuteChanged();
+        ClearPdfToolInputsCommand.RaiseCanExecuteChanged();
+        RunPdfToolCommand.RaiseCanExecuteChanged();
     }
 }

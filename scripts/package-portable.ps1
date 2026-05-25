@@ -117,6 +117,8 @@ $runtimeNote
 
 PDF rendering uses PDFtoImage at a high level, backed by PDFium and SkiaSharp runtime components.
 
+PDF toolbox operations use PDFsharp for local PDF manipulation.
+
 LibreOffice is not bundled. If needed, install LibreOffice from the official site:
 https://www.libreoffice.org/download/download-libreoffice/
 

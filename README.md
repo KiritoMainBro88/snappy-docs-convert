@@ -2,7 +2,7 @@
 
 Snappy Docs Convert is planned as a fast local document conversion app for Windows-first workflows.
 
-Current phase: Phase 7B manual GUI QA readiness. This branch contains a small .NET core library, local LibreOffice document-to-PDF conversion, Microsoft Office availability detection, guarded Office COM PDF export, Office smoke validation, core dependency guidance, PDF page image export, a core batch pipeline, a runnable Windows WPF app, a local E2E QA harness, a manual GUI QA checklist/recorder, release readiness docs, and repeatable portable Windows packaging. MSI/MSIX installer work is still a later phase.
+Current phase: Phase 8A PDF Toolbox V1 and open-source release prep. This branch contains local Office/PDF conversion, PDF image export, batch conversion, PDF toolbox operations, WPF UI, E2E QA, portable packaging, manual GUI QA recorder, release readiness docs, and static website skeleton. MSI/MSIX installer work is still a later phase.
 
 ## Final Goal
 
@@ -91,6 +91,18 @@ Supported output formats:
 
 Default DPI is 200. The renderer validates DPI, warns above 300 DPI, writes sequential page files such as `page-001.png`, and serializes PDFium calls because PDFium is not thread-safe. See `docs/PDF_IMAGE_RENDERER.md`.
 
+## PDF Toolbox
+
+Phase 8A adds local PDF tools:
+
+- Merge PDFs
+- Split PDF into page PDFs
+- Extract page ranges such as `1,3-5,8`
+- Rotate selected pages
+- Convert PNG/JPEG/WebP images to one PDF
+
+These tools run locally and do not add OCR, compression, encryption, signing, or redaction yet. See `docs/PDF_TOOLBOX.md`.
+
 ## Batch Pipeline
 
 Phase 5A adds a core pipeline for one or many files. It orchestrates existing engines only:
@@ -122,6 +134,7 @@ Phase 6A adds the first runnable desktop UI. Phase 6C polishes it into a cleaner
 - See queue status, compact logs, output path, and engine setup guidance.
 - See clear local-only privacy wording and engine status cards.
 - Use the manual GUI QA checklist for desktop verification.
+- Use the PDF Tools section for merge/split/extract/rotate/images-to-PDF.
 
 See `docs/WPF_UI_MVP.md` and `docs/GUI_QA_CHECKLIST.md`.
 
@@ -151,6 +164,26 @@ powershell -ExecutionPolicy Bypass -File .\scripts\smoke-release.ps1 -PackagePat
 
 The portable MVP does not bundle Microsoft Office or LibreOffice. Microsoft Office is optional and recommended for best DOCX/PPTX fidelity. LibreOffice is an optional fallback; the app guides users to the official download when needed. See `docs/PACKAGING.md`.
 
+Normal double-click launch should open the GUI without a console because the WPF project uses `OutputType=WinExe`. If launched from an existing terminal, that terminal staying open is normal. `--self-check` remains available for smoke scripts, but WinExe console output can be unavailable under automation; smoke checks rely on exit code when needed.
+
+## Website And Open Source Prep
+
+Static website skeleton:
+
+```text
+website-static\
+```
+
+Download link points to:
+
+https://github.com/KiritoMainBro88/snappy-docs-convert/releases/latest
+
+Source link points to:
+
+https://github.com/KiritoMainBro88/snappy-docs-convert
+
+Open-source prep files include `CONTRIBUTING.md`, `SECURITY.md`, issue templates, PR template, `docs/OPEN_SOURCE_PLAN.md`, and draft MIT license file. Final license still needs owner approval.
+
 ## Manual GUI QA Recorder
 
 Create an owner-fillable manual GUI QA session under ignored `docs\qa-output\gui\`:
@@ -171,4 +204,4 @@ The packed output is written to `docs/ai-context/repomix-output.md` and is ignor
 
 ## Next Phase Summary
 
-The next recommended implementation phase is owner manual GUI QA on the packaged app, then Phase 8 installer or bugfixes. Wait for owner approval before starting it.
+The next recommended implementation phase is owner manual GUI QA, then GitHub push/release or installer work. Wait for owner approval before starting it.

@@ -95,3 +95,15 @@
 - Implemented: add release readiness report for owner/dev use versus public beta.
 - Not implemented: MSI/MSIX installer, signing, auto-update, or final legal attribution audit.
 - Not implemented: completed owner manual GUI QA result.
+
+## Phase 8A: PDF Toolbox V1 And Open Source Prep
+
+- Implemented: set WPF app `OutputType` to `WinExe` for normal double-click no-console GUI launch.
+- Implemented: keep `--self-check` usable for smoke scripts; console output may be unavailable under WinExe automation, so scripts accept exit code.
+- Implemented: add smoke-no-console script.
+- Implemented: add PDF Toolbox V1 core operations: merge, split, extract pages, rotate pages, and images to PDF.
+- Implemented: add WPF PDF Tools section.
+- Implemented: add tests for PDF toolbox parsing and operations.
+- Implemented: add static website skeleton with GitHub Releases/source links.
+- Implemented: add open-source prep docs, draft MIT license, security/contributing docs, issue templates, PR template.
+- Not implemented: OCR, compression, encryption/signing, redaction, form filling, installer, publishing GitHub release.

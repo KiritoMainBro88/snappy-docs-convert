@@ -7,6 +7,9 @@ public sealed class FilePickerService
     private const string InputFilter =
         "Supported documents|*.pdf;*.doc;*.docx;*.rtf;*.odt;*.ppt;*.pptx;*.odp|All files|*.*";
 
+    private const string PdfToolFilter =
+        "PDF and image files|*.pdf;*.png;*.jpg;*.jpeg;*.webp|All files|*.*";
+
     public IReadOnlyList<string> PickInputFiles()
     {
         var dialog = new OpenFileDialog
@@ -31,5 +34,19 @@ public sealed class FilePickerService
         };
 
         return dialog.ShowDialog() == true ? dialog.FileName : null;
+    }
+
+    public IReadOnlyList<string> PickPdfToolFiles()
+    {
+        var dialog = new OpenFileDialog
+        {
+            Filter = PdfToolFilter,
+            Multiselect = true,
+            Title = "Add PDF tool inputs"
+        };
+
+        return dialog.ShowDialog() == true
+            ? dialog.FileNames
+            : Array.Empty<string>();
     }
 }

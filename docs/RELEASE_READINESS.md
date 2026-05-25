@@ -16,6 +16,8 @@
 - App `--self-check`
 - Portable package creation
 - Release smoke from zip
+- No-console smoke verifies `OutputType=WinExe`, exe exists, and self-check exits 0.
+- PDF Toolbox V1 unit tests for merge, split, extract, rotate, images-to-PDF, path safety, and page ranges.
 - Core E2E QA:
   - PDF to PNG
   - PDF to JPEG
@@ -31,6 +33,7 @@
 - Manual GUI execution until owner fills a generated `MANUAL_GUI_QA_RESULT.md`.
 - MSI/MSIX installer.
 - Code signing.
+- GitHub Release publication.
 
 ## Known Risks
 
@@ -39,6 +42,7 @@
 - Unsigned executable may trigger Windows SmartScreen.
 - Framework-dependent package requires .NET 9 Desktop Runtime on Windows x64.
 - Manual GUI behavior is not proven until owner completes checklist with evidence.
+- Normal double-click should not spawn a new console; launching from an existing terminal leaves that terminal open by design.
 
 ## Commands
 
@@ -66,7 +70,13 @@ Create manual GUI QA session:
 powershell -ExecutionPolicy Bypass -File .\scripts\new-gui-qa-session.ps1
 ```
 
+Run no-console smoke:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File .\scripts\smoke-no-console.ps1
+```
+
 ## Recommendation
 
 - OK for owner/dev manual use.
-- Not yet public beta without completed manual GUI QA result plus packaging/signing decision.
+- Not yet public beta without completed manual GUI QA result plus packaging/signing/release decision.
