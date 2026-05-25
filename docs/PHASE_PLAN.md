@@ -197,3 +197,13 @@
 - Implemented: document manual GitHub Actions `release-build` run steps.
 - Implemented: add auto-update design doc only.
 - Not implemented: auto-update code, backend/API routes, telemetry, new GitHub Release, new release assets, LibreOffice smoke, or PowerPoint smoke.
+
+## Phase 12A-Lite: Low-End OCR Strategy
+
+- Implemented: define OCR Lite, OCR Balanced, and OCR Advanced tiers.
+- Implemented: choose OCR Lite as recommended MVP default for low-end Windows machines.
+- Implemented: document Windows OCR first, Tesseract `tessdata_fast` fallback, Vietnamese + English first, DPI 150/200, sequential page processing, cancellation, and progress.
+- Implemented: document packaging rules: no traineddata/model files in repo and no heavy OCR bundled by default.
+- Implemented: document PaddleOCR as future optional advanced plugin/model pack only.
+- Implemented: update website roadmap copy to say OCR Lite is planned, local-first, and not available yet.
+- Not implemented: OCR engine, OCR UI, model download, PaddleOCR, benchmark, release.

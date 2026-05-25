@@ -234,8 +234,13 @@ export const copy: Record<Language, SiteCopy> = {
     roadmapTitle: "Roadmap",
     roadmap: [
       { title: "Auto-update", text: "Planned. Not implemented in this beta." },
+      {
+        title: "Planned OCR Lite",
+        text:
+          "Scan, image, and PDF to text is planned with a low-end friendly local design. Vietnamese and English first. Not available yet.",
+      },
       { title: "Installer polish", text: "Code signing and MSI/MSIX packaging are future work." },
-      { title: "More PDF tools", text: "Compression, OCR, watermarking, metadata, and password features are planned." },
+      { title: "More PDF tools", text: "Compression, watermarking, metadata, and password features are planned." },
       { title: "More smoke coverage", text: "LibreOffice and PowerPoint real smoke tests are pending suitable local setup." },
     ],
     faqTitle: "FAQ",
@@ -418,8 +423,13 @@ export const copy: Record<Language, SiteCopy> = {
     roadmapTitle: "Lộ trình",
     roadmap: [
       { title: "Tự cập nhật", text: "Đã lên kế hoạch. Chưa có trong beta này." },
+      {
+        title: "OCR Lite dự kiến",
+        text:
+          "Scan, ảnh và PDF sang text đã được lên kế hoạch theo hướng chạy cục bộ, nhẹ cho máy yếu. Ưu tiên tiếng Việt và tiếng Anh. Chưa có trong bản hiện tại.",
+      },
       { title: "Hoàn thiện installer", text: "Code signing và MSI/MSIX là việc cho các phiên bản sau." },
-      { title: "Thêm công cụ PDF", text: "Nén, OCR, watermark, metadata và mật khẩu sẽ được xem xét." },
+      { title: "Thêm công cụ PDF", text: "Nén, watermark, metadata và mật khẩu sẽ được xem xét." },
       { title: "Thêm kiểm thử thật", text: "LibreOffice và PowerPoint real smoke còn chờ môi trường phù hợp." },
     ],
     faqTitle: "Hỏi đáp",

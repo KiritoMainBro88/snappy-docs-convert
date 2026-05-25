@@ -44,7 +44,11 @@
 - Winget distribution.
 - Paid code signing when budget exists.
 - PDF compression.
-- OCR.
+- OCR Lite:
+  - local scan/image/PDF to text
+  - Vietnamese + English first
+  - low-end machine profile
+  - Windows OCR or Tesseract Fast
 - Watermark.
 - Metadata editing.
 - Password/encryption support.
@@ -53,6 +57,14 @@
 - Code signing.
 - PowerPoint real smoke fixture.
 - LibreOffice real smoke on a machine with LibreOffice installed.
+
+## OCR Strategy
+
+- OCR is planned, not released.
+- First implementation should be OCR Lite, not heavy OCR.
+- Default should prefer Windows OCR when available, otherwise Tesseract with `tessdata_fast`.
+- `tessdata_best`, PaddleOCR, layout/table/formula handling, and handwriting are future advanced work only after benchmark.
+- No OCR model or traineddata files should be committed to the repo.
 
 ## Not Planned For Current MVP
 

@@ -113,6 +113,20 @@ Phase 8A adds local PDF tools:
 
 These tools run locally and do not add OCR, compression, encryption, signing, or redaction yet. See `docs/PDF_TOOLBOX.md`.
 
+## Planned OCR Lite
+
+OCR is planned but not shipped yet. The first OCR work should target low-end Windows machines:
+
+- OCR Lite first, not heavy OCR.
+- Vietnamese + English first.
+- Windows OCR when available, otherwise Tesseract with `tessdata_fast`.
+- No GPU requirement.
+- No cloud OCR.
+- No large OCR model or traineddata files committed to the repo.
+- No claims for handwriting, formulas, tables, or complex layout until benchmarked.
+
+See `docs/OCR_RESEARCH.md`, `docs/OCR_ARCHITECTURE.md`, and `docs/OCR_LOW_END_STRATEGY.md`.
+
 ## Batch Pipeline
 
 Phase 5A adds a core pipeline for one or many files. It orchestrates existing engines only:
