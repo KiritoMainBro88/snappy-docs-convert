@@ -2,7 +2,7 @@
 
 Snappy Docs Convert is planned as a fast local document conversion app for Windows-first workflows.
 
-Current phase: Phase 8B release candidate gate and GitHub Release prep. This branch contains local Office/PDF conversion, PDF image export, batch conversion, PDF toolbox operations, WPF UI, E2E QA, portable packaging, manual GUI QA recorder, release readiness docs, release-candidate notes, privacy audit, and static website skeleton. MSI/MSIX installer work is still a later phase.
+Current phase: Phase 8C owner GUI QA record and final release prep. This branch contains local Office/PDF conversion, PDF image export, batch conversion, PDF toolbox operations, WPF UI, E2E QA, portable packaging, manual GUI QA recorder, release readiness docs, release-candidate notes, privacy audit, manual GUI QA result with blockers, and static website skeleton. MSI/MSIX installer work is still a later phase.
 
 ## Final Goal
 
@@ -198,6 +198,12 @@ Release notes live under `docs/releases/`. Privacy audit status lives in `docs/P
 
 No GitHub push or release upload is done by these scripts. The owner must approve push and release creation.
 
+Owner manual GUI QA for `v0.1.0-rc1` is recorded under `docs/manual-qa/`. Public beta is blocked by GUI responsiveness/feedback issues, untested GUI flows, and missing final license approval.
+
+## License Status
+
+Current license status: draft only. `LICENSE-DRAFT-MIT.txt` exists, but the owner has not explicitly approved MIT in this session. Do not publish a public release until a final license is approved and committed.
+
 ## Manual GUI QA Recorder
 
 Create an owner-fillable manual GUI QA session under ignored `docs\qa-output\gui\`:
@@ -218,4 +224,4 @@ The packed output is written to `docs/ai-context/repomix-output.md` and is ignor
 
 ## Next Phase Summary
 
-The next recommended step is owner manual GUI QA, then owner-approved GitHub push/release. Installer work remains later.
+The next recommended step is Phase 8D blocker fixes: keep GUI responsive during conversion, show unsupported-file feedback, verify RTF/batch/cancel GUI flows, and finalize license. Owner-approved push/release comes after those blockers are handled or explicitly accepted as pre-release limitations.
