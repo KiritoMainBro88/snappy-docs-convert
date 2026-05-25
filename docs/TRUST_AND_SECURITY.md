@@ -44,6 +44,27 @@ Do not run files from unofficial mirrors. Do not disable antivirus globally. Onl
 - SHA256 checksum manifests.
 - Planned GitHub artifact attestations for release-build workflow artifacts.
 
+## GitHub Actions Release Build
+
+The release-build workflow is manual. It builds the portable ZIP, installer EXE, checksum manifests, uploads them as workflow artifacts, and creates GitHub artifact attestations.
+
+GitHub UI:
+
+1. Open the repository on GitHub.
+2. Go to **Actions**.
+3. Select **Release build**.
+4. Click **Run workflow**.
+5. Enter a version such as `v0.1.0-beta.2`.
+6. Download workflow artifacts after the run completes.
+
+GitHub CLI:
+
+```powershell
+gh workflow run release-build.yml -f version=v0.1.0-beta.2 --repo KiritoMainBro88/snappy-docs-convert
+```
+
+This does not create a GitHub Release automatically.
+
 ## What The Project Does Not Do
 
 - No code signing yet.

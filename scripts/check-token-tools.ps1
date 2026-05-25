@@ -47,7 +47,12 @@ if ($null -ne $rtk) {
 
 $rg = Show-Command "rg"
 if ($null -ne $rtk -and $null -ne $rg) {
-  Write-Host "rtk grep: available when RTK can resolve rg from PATH"
+  Show-FirstLines "rg --version" { rg --version } 2
+  Show-FirstLines "rtk grep probe" { rtk grep "Mandatory Token Toolchain" AGENTS.md } 6
+} elseif ($null -ne $rtk) {
+  Write-Host "rtk grep: missing rg/grep dependency"
+  Write-Host "Windows install: winget install BurntSushi.ripgrep.MSVC -e --accept-package-agreements --accept-source-agreements"
+  Write-Host "Restart Codex/terminal after PATH changes."
 }
 Write-Host ""
 

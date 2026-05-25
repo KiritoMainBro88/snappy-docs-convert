@@ -26,6 +26,14 @@ rtk read AGENTS.md
 rtk grep "pattern" .
 ```
 
+`rtk grep` needs `rg` / ripgrep or `grep` visible to RTK. On Windows:
+
+```powershell
+winget install BurntSushi.ripgrep.MSVC -e --accept-package-agreements --accept-source-agreements
+```
+
+Restart Codex/terminal after PATH changes. If `rg --version` works but `rtk grep` still fails, copy the winget `rg.exe` into `C:\Users\<you>\.local\bin`, the same user-local tools folder used by RTK.
+
 Verify token tools:
 
 ```powershell

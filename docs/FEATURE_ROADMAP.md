@@ -33,10 +33,13 @@
   - Manual release-build workflow
   - Artifact attestation steps
   - False-positive reporting docs
+- Auto-update design doc:
+  - future Velopack + GitHub Releases direction
+  - beta-safe manual check-for-updates first
 
 ## Planned
 
-- Auto-update.
+- Auto-update implementation.
 - Curated website screenshots after owner approval.
 - Winget distribution.
 - Paid code signing when budget exists.

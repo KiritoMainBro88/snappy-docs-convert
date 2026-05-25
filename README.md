@@ -2,7 +2,7 @@
 
 kmb file tools is a fast local document conversion app for Windows-first workflows. The repository and current beta executable/package filenames still use `SnappyDocsConvert` identifiers for compatibility with the published `v0.1.0-beta.1` assets.
 
-Current phase: Phase 10B website production polish. This branch contains local Office/PDF conversion, PDF image export, batch conversion, PDF toolbox operations, mode-based WPF UI, English/Vietnamese UI strings, E2E QA, portable packaging, Inno Setup installer packaging, manual GUI QA recorder, release readiness docs, release notes, privacy audit, public beta GitHub Release assets, and a frontend-only website. MSI/MSIX packaging remains a later phase.
+Current phase: Phase 11B post-release audit. This branch contains local Office/PDF conversion, PDF image export, batch conversion, PDF toolbox operations, mode-based WPF UI, English/Vietnamese UI strings, E2E QA, portable packaging, Inno Setup installer packaging, manual GUI QA recorder, release readiness docs, release notes, privacy audit, public beta GitHub Release assets, GitHub Actions trust workflows, demo tooling, and a frontend-only website. MSI/MSIX packaging and auto-update implementation remain later phases.
 
 ## Final Goal
 

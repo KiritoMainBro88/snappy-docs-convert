@@ -35,12 +35,26 @@ Current Windows machine notes:
 - `rtk gain` works, so this is Rust Token Killer, not the unrelated Rust Type Kit package.
 - `rtk init -g --codex` configured Codex instructions at `C:\Users\Kirito\.codex\RTK.md`.
 - The current session may still need explicit `rtk ...` commands if hook rewriting is not active.
-- If `rtk grep` cannot resolve `rg` while `rg --version` works, normalize the current process `PATH` before retrying:
+- `rtk grep` requires either `rg` / ripgrep or `grep` to be resolvable by RTK. On Windows, install ripgrep with winget if needed:
+
+```powershell
+winget install BurntSushi.ripgrep.MSVC -e --accept-package-agreements --accept-source-agreements
+```
+
+- Restart Codex/terminal after winget changes PATH. If `rtk grep` still cannot resolve `rg` while `rg --version` works, normalize the current process `PATH` before retrying:
 
 ```powershell
 $rg = (Get-Command rg).Source
 $env:PATH = (Split-Path $rg) + ';' + $env:PATH
 $env:Path = $env:PATH
+rtk grep "pattern" .
+```
+
+- If RTK still misses app-local aliases, copy the winget-installed `rg.exe` into the same user-local tools folder as RTK:
+
+```powershell
+$source = Get-ChildItem "$env:LOCALAPPDATA\Microsoft\WinGet\Packages" -Recurse -Filter rg.exe | Select-Object -First 1 -ExpandProperty FullName
+Copy-Item -LiteralPath $source -Destination "$env:USERPROFILE\.local\bin\rg.exe" -Force
 rtk grep "pattern" .
 ```
 

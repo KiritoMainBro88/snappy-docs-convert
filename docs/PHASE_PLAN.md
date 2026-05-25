@@ -185,3 +185,15 @@
 - Implemented: add antivirus false-positive issue template.
 - Implemented: add Winget distribution prep docs.
 - Not implemented: code signing, paid certificate, updater, backend, telemetry, automatic scanner upload, or new GitHub Release.
+
+## Phase 11B: Post-Release Audit, Website Deploy, Tooling Hygiene
+
+- Implemented: verify GitHub Release `v0.1.0-beta.1` still has portable ZIP and installer EXE assets.
+- Implemented: fix local `rtk grep` by installing ripgrep and placing `rg.exe` in the user-local RTK tools folder.
+- Implemented: document RTK grep/ripgrep dependency and Windows recovery steps.
+- Implemented: verify frontend-only website content for dark mode, EN/VI, release links, Discord, screenshots placeholders, open-source/community copy, no upload, and no telemetry.
+- Implemented: deploy Vercel preview and production website.
+- Implemented: update GitHub repository homepage metadata to the Vercel production URL.
+- Implemented: document manual GitHub Actions `release-build` run steps.
+- Implemented: add auto-update design doc only.
+- Not implemented: auto-update code, backend/API routes, telemetry, new GitHub Release, new release assets, LibreOffice smoke, or PowerPoint smoke.

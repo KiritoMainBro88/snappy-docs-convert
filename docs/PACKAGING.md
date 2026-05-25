@@ -113,6 +113,22 @@ powershell -ExecutionPolicy Bypass -File .\scripts\prepare-github-release-notes.
 12. Update website if release URL or copy changes.
 13. Publish checksums and artifact attestations when using GitHub Actions release-build workflow.
 
+## GitHub Actions Release Build
+
+Manual remote release build:
+
+```powershell
+gh workflow run release-build.yml -f version=v0.1.0-beta.2 --repo KiritoMainBro88/snappy-docs-convert
+```
+
+Or use GitHub UI:
+
+```text
+Repository > Actions > Release build > Run workflow > version
+```
+
+The workflow builds, tests, packages, smoke-tests, writes checksums, uploads workflow artifacts, and creates artifact attestations. It does not create or mutate GitHub Releases automatically.
+
 ## Website And Vercel
 
 The polished website lives under `website/` and builds to `website\dist\`.

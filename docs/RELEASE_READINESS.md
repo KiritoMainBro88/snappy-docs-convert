@@ -8,7 +8,7 @@
 - Installer: Inno Setup EXE pass
 - Code signing: pending
 - Release candidate docs: prepared
-- GitHub Release publication: approved for `v0.1.0-beta.1`
+- GitHub Release publication: pass for `v0.1.0-beta.1`
 - Public beta: approved as prerelease with known limitations
 - Vercel website production deploy: pass
 
@@ -31,6 +31,7 @@
 - Phase 10C demo pipeline adds generated demo inputs, Playwright website screenshots/video, desktop screenshot helper, FFmpeg desktop recording helper, and user-facing demo scripts.
 - Display app name changed to `kmb file tools`; current beta executable/package filenames still use `SnappyDocsConvert` identifiers.
 - Phase 11A trust package adds unsigned-app safety docs, checksum manifest script, false-positive issue template, GitHub Actions CI, and manual release-build workflow with artifact attestation steps.
+- Phase 11B post-release audit verifies the release still has portable ZIP and installer EXE assets, fixes local `rtk grep` by installing/copying ripgrep, redeploys the frontend-only website to Vercel production, updates GitHub repo homepage metadata, and adds an auto-update design doc.
 - Artifact SHA256 helper.
 - Release notes helper that prints GitHub Release instructions without creating a release.
 - Owner manual GUI QA result recorded in `docs/manual-qa/v0.1.0-rc1-gui-qa.md`.
@@ -49,17 +50,14 @@
 
 - LibreOffice real smoke unless LibreOffice is installed.
 - PowerPoint real smoke until a safe PPT/PPTX fixture exists.
-- Owner manual GUI re-test on `v0.1.0-rc1-ui`.
+- Owner manual GUI re-test on the latest beta package.
 - RTF to PDF+Images through GUI after UI overhaul.
 - Batch partial failure through GUI after UI overhaul.
 - Cancel behavior through GUI after UI overhaul.
 - MSI/MSIX installer.
 - Code signing.
-- GitHub Release publication.
-- Final license approval.
 - Owner review of Vercel production website.
 - Owner review of generated demo screenshots/video.
-- GitHub prerelease upload for `v0.1.0-beta.1`.
 
 ## Known Risks
 
@@ -191,6 +189,14 @@ Manual GitHub Actions release build:
 ```text
 Actions > Release build > Run workflow > version
 ```
+
+CLI equivalent:
+
+```powershell
+gh workflow run release-build.yml -f version=v0.1.0-beta.2 --repo KiritoMainBro88/snappy-docs-convert
+```
+
+The workflow publishes workflow artifacts and attestations only. It does not create a GitHub Release.
 
 Hash release artifact:
 

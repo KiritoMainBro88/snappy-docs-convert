@@ -1,6 +1,6 @@
 # Website And Vercel
 
-Phase 9A adds a polished frontend-only website under `website/`. Phase 10B adds dark mode, direct release download links, Discord support, app screenshot placeholders, and clearer open-source/community copy.
+Phase 9A adds a polished frontend-only website under `website/`. Phase 10B adds dark mode, direct release download links, Discord support, app screenshot placeholders, and clearer open-source/community copy. Phase 11B redeploys the frontend-only site to Vercel production and updates GitHub repository homepage metadata.
 
 Display app name: `kmb file tools`. Current repository and beta artifact filenames still use `SnappyDocsConvert` identifiers for compatibility with the published release assets.
 
@@ -88,6 +88,16 @@ Current production URL:
 ```text
 https://website-sand-xi-15.vercel.app
 ```
+
+Latest Phase 11B deploy:
+
+```text
+Preview: https://website-7mbufm22x-kiritomainbro88s-projects.vercel.app
+Production deployment: https://website-2v6dq1ywv-kiritomainbro88s-projects.vercel.app
+Production alias: https://website-sand-xi-15.vercel.app
+```
+
+Current repository homepage metadata points to `https://website-sand-xi-15.vercel.app`.
 
 ## Links
 
