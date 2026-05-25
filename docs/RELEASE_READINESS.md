@@ -10,6 +10,7 @@
 - Release candidate docs: prepared
 - GitHub Release publication: pending owner approval
 - Public beta: blocked pending owner re-test after Phase 8D UI overhaul
+- Vercel website preview: pending Phase 9A deploy check
 
 ## Verified
 
@@ -22,6 +23,7 @@
 - No-console smoke verifies `OutputType=WinExe`, exe exists, and self-check exits 0.
 - PDF Toolbox V1 unit tests for merge, split, extract, rotate, images-to-PDF, path safety, and page ranges.
 - Static website check for local-only copy, release link, source link, and no external CDN/font/script assets.
+- Vite website check for frontend-only build, EN/VI copy, release/source links, and no API/functions folders.
 - Artifact SHA256 helper.
 - Release notes helper that prints GitHub Release instructions without creating a release.
 - Owner manual GUI QA result recorded in `docs/manual-qa/v0.1.0-rc1-gui-qa.md`.
@@ -48,6 +50,7 @@
 - Code signing.
 - GitHub Release publication.
 - Final license approval.
+- Owner review of Vercel preview website.
 
 ## Known Risks
 
@@ -100,6 +103,24 @@ Check static website:
 powershell -ExecutionPolicy Bypass -File .\scripts\check-website-static.ps1
 ```
 
+Check Vite website:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File .\scripts\check-website-vite.ps1
+```
+
+Deploy Vercel preview:
+
+```powershell
+vercel --cwd website
+```
+
+Production Vercel deploy requires explicit owner approval:
+
+```powershell
+vercel --cwd website --prod
+```
+
 Hash release artifact:
 
 ```powershell
@@ -117,4 +138,4 @@ powershell -ExecutionPolicy Bypass -File .\scripts\prepare-github-release-notes.
 - OK for owner/dev manual use with known blockers.
 - Not public beta ready.
 - Do not create GitHub Release until owner explicitly approves.
-- Recommended next work: owner re-runs manual GUI QA on `v0.1.0-rc1-ui`, then finalize license.
+- Recommended next work: owner reviews Vercel preview, owner re-runs manual GUI QA on `v0.1.0-rc1-ui`, then finalize license.

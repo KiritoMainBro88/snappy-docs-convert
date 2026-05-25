@@ -1,6 +1,8 @@
-# Static Website
+# Static Website Fallback
 
 This folder contains a no-build static website skeleton for Snappy Docs Convert.
+
+The newer polished frontend-only website lives under `website/` and uses Vite + React + TypeScript. Keep this folder as a simple fallback only.
 
 Open locally:
 

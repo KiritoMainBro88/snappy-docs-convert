@@ -134,3 +134,13 @@
 - Implemented: run batch conversion and PDF tools on background tasks to keep UI responsive.
 - Implemented: add logo/icon asset handling and branding docs.
 - Not implemented: new conversion engines, installer, release publication, image generation, or final GUI QA pass.
+
+## Phase 9A: Static Marketing Website And Vercel Preview
+
+- Implemented: add `website/` Vite + React + TypeScript frontend-only marketing site.
+- Implemented: use owner-provided local logo/favicon/hero assets where present.
+- Implemented: add English/Vietnamese website content toggle.
+- Implemented: link downloads to GitHub Releases and source to GitHub repository.
+- Implemented: document Vercel preview and production deploy commands.
+- Implemented: add Vite website checker for build, required links/copy, no API/functions folders, and no external CDN/font/script references.
+- Not implemented: backend, API routes, telemetry, analytics, production Vercel deploy, GitHub Release creation, or GitHub push.

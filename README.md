@@ -2,7 +2,7 @@
 
 Snappy Docs Convert is planned as a fast local document conversion app for Windows-first workflows.
 
-Current phase: Phase 8D WPF UI/UX overhaul, bilingual UI, and branding asset prep. This branch contains local Office/PDF conversion, PDF image export, batch conversion, PDF toolbox operations, mode-based WPF UI, English/Vietnamese UI strings, E2E QA, portable packaging, manual GUI QA recorder, release readiness docs, release-candidate notes, privacy audit, manual GUI QA result with blockers, and static website skeleton. MSI/MSIX installer work is still a later phase.
+Current phase: Phase 9A static marketing website and Vercel preview prep. This branch contains local Office/PDF conversion, PDF image export, batch conversion, PDF toolbox operations, mode-based WPF UI, English/Vietnamese UI strings, E2E QA, portable packaging, manual GUI QA recorder, release readiness docs, release-candidate notes, privacy audit, manual GUI QA result with blockers, and a frontend-only website. MSI/MSIX installer work is still a later phase.
 
 ## Final Goal
 
@@ -170,15 +170,48 @@ Normal double-click launch should open the GUI without a console because the WPF
 
 ## Website And Open Source Prep
 
-Static website skeleton:
+Polished frontend-only website:
+
+```text
+website\
+```
+
+Run locally:
+
+```powershell
+cd website
+npm install
+npm run dev
+npm run build
+```
+
+Validate from repo root:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File .\scripts\check-website-vite.ps1
+```
+
+The website is Vite + React + TypeScript. It has no backend, no API routes, no upload flow, no telemetry, and no external CDN fonts/scripts. Vercel preview deploy can use:
+
+```powershell
+vercel --cwd website
+```
+
+Production deploy requires explicit owner approval:
+
+```powershell
+vercel --cwd website --prod
+```
+
+Legacy no-build fallback:
 
 ```text
 website-static\
 ```
 
-Download link points to:
+Primary download link points to:
 
-https://github.com/KiritoMainBro88/snappy-docs-convert/releases/latest
+https://github.com/KiritoMainBro88/snappy-docs-convert/releases
 
 Source link points to:
 

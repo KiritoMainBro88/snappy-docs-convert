@@ -73,6 +73,28 @@ powershell -ExecutionPolicy Bypass -File .\scripts\prepare-github-release-notes.
 9. Upload portable zip.
 10. Update website if release URL or copy changes.
 
+## Website And Vercel
+
+The polished website lives under `website/` and builds to `website\dist\`.
+
+```powershell
+powershell -ExecutionPolicy Bypass -File .\scripts\check-website-vite.ps1
+```
+
+Preview deploy after local validation:
+
+```powershell
+vercel --cwd website
+```
+
+Production deploy requires explicit owner approval:
+
+```powershell
+vercel --cwd website --prod
+```
+
+The site links downloads to GitHub Releases. It must remain frontend-only: no backend, no API routes, no telemetry, no analytics, and no file upload flow.
+
 ## Manual GUI QA Session
 
 Create a timestamped owner-fillable QA report:
