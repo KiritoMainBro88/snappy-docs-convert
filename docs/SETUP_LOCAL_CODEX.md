@@ -48,6 +48,22 @@ The script:
 
 No global install is performed by the script.
 
+## .NET Core Checks
+
+Phase 2 adds a .NET solution for the local conversion engine:
+
+```powershell
+dotnet restore
+dotnet build
+dotnet test
+```
+
+LibreOffice is optional for unit tests. To verify a real local install:
+
+```powershell
+soffice --version
+```
+
 ## Git Safety
 
 Use feature branches for all work. Do not commit to `main`, do not force-push, and do not use `git add -A`.

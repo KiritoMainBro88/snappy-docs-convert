@@ -2,7 +2,7 @@
 
 Snappy Docs Convert is planned as a fast local document conversion app for Windows-first workflows.
 
-Current phase: Phase 0/1 local Codex workspace setup. This branch only adds agent instructions, research notes, context-packing workflow, phase prompts, and lightweight local checks. It does not implement or expand converter behavior.
+Current phase: Phase 2 LibreOffice headless engine. This branch now contains a small .NET core library plus unit tests for local document-to-PDF conversion through LibreOffice. UI, Microsoft Office COM, and PDF-to-image rendering are still later phases.
 
 ## Final Goal
 
@@ -27,6 +27,28 @@ git switch ai/phase-00-local-agent-setup
 powershell -ExecutionPolicy Bypass -File .\scripts\check-local.ps1
 ```
 
+## Build And Test
+
+```powershell
+dotnet restore
+dotnet build
+dotnet test
+```
+
+Normal unit tests use fake process runners. They do not require LibreOffice.
+
+## LibreOffice Engine
+
+Phase 2 discovers `soffice.com` or `soffice.exe`, runs LibreOffice headless with an isolated temp profile, and verifies that a PDF was produced in the requested output directory.
+
+Manual LibreOffice verify:
+
+```powershell
+soffice --version
+```
+
+See `docs/LIBREOFFICE_ENGINE.md` for supported formats, troubleshooting, and limitations.
+
 To pack a small AI-friendly context bundle:
 
 ```powershell
@@ -37,4 +59,4 @@ The packed output is written to `docs/ai-context/repomix-output.md` and is ignor
 
 ## Next Phase Summary
 
-The next recommended implementation phase is Phase 2: LibreOffice headless engine discovery and conversion pipeline. Wait for owner approval before starting it.
+The next recommended implementation phase is Phase 3: Microsoft Office COM engine. Wait for owner approval before starting it.

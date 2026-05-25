@@ -12,10 +12,11 @@
 - Activate Caveman if available and use RTK for command output.
 - Use Serena MCP for symbol search if available.
 - Use Repomix only after narrowing context.
-- Discover LibreOffice installation on Windows.
-- Run headless conversion with isolated profile directories.
-- Convert supported Office files to PDF where supported.
-- Add timeouts, cancellation, and structured result reporting.
+- Implemented: discover LibreOffice installation on Windows.
+- Implemented: run headless conversion with isolated profile directories.
+- Implemented: convert supported Office files to PDF where supported.
+- Implemented: add timeouts, cancellation, and structured result reporting.
+- Implemented: add unit tests with fake process runner; no LibreOffice install required for normal tests.
 
 ## Phase 3: Office COM Engine
 

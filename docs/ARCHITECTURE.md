@@ -1,6 +1,21 @@
 # Architecture Notes
 
-These diagrams show the intended final direction. Phase 0/1 only sets up the local workspace.
+These diagrams show the intended final direction. Phase 2 now adds the first .NET core conversion engine for LibreOffice headless document-to-PDF conversion.
+
+## Phase 2 LibreOffice Engine
+
+```mermaid
+flowchart LR
+  Request["ConversionRequest"] --> Validate["Validate input and output"]
+  Validate --> Locate["Locate soffice.com or soffice.exe"]
+  Locate --> Profile["Create isolated temp profile"]
+  Profile --> Process["Run LibreOffice headless"]
+  Process --> Verify["Verify output PDF"]
+  Verify --> Cleanup["Best-effort temp cleanup"]
+  Cleanup --> Result["ConversionResult"]
+```
+
+Phase 2 code lives in `src/SnappyDocsConvert.Core`. Tests live in `tests/SnappyDocsConvert.Tests` and use fake process runners so LibreOffice is not required for the normal suite.
 
 ## Final Desktop Architecture
 
