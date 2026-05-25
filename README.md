@@ -2,7 +2,7 @@
 
 Snappy Docs Convert is planned as a fast local document conversion app for Windows-first workflows.
 
-Current phase: Phase 6B evidence-based E2E QA gate. This branch contains a small .NET core library, local LibreOffice document-to-PDF conversion, Microsoft Office availability detection, guarded Office COM PDF export, Office smoke validation, core dependency guidance, PDF page image export, a core batch pipeline, a runnable Windows WPF app, and a local E2E QA harness. Installer work is still a later phase.
+Current phase: Phase 6C WPF UI polish. This branch contains a small .NET core library, local LibreOffice document-to-PDF conversion, Microsoft Office availability detection, guarded Office COM PDF export, Office smoke validation, core dependency guidance, PDF page image export, a core batch pipeline, a runnable Windows WPF app, a local E2E QA harness, and a manual GUI QA checklist. Installer work is still a later phase.
 
 ## Final Goal
 
@@ -114,14 +114,16 @@ Presentation inputs use `slide-001.png`; document/PDF inputs use `page-001.png`.
 
 ## WPF UI MVP
 
-Phase 6A adds the first runnable desktop UI:
+Phase 6A adds the first runnable desktop UI. Phase 6C polishes it into a cleaner dev MVP:
 
 - Queue files/folders with drag/drop or dialogs.
 - Choose output folder, target, engine, image format, DPI, and intermediate PDF option.
 - Run/cancel batch conversion through the core pipeline.
 - See queue status, compact logs, output path, and engine setup guidance.
+- See clear local-only privacy wording and engine status cards.
+- Use the manual GUI QA checklist for desktop verification.
 
-See `docs/WPF_UI_MVP.md`.
+See `docs/WPF_UI_MVP.md` and `docs/GUI_QA_CHECKLIST.md`.
 
 ## Evidence-Based E2E QA
 
@@ -143,4 +145,4 @@ The packed output is written to `docs/ai-context/repomix-output.md` and is ignor
 
 ## Next Phase Summary
 
-The next recommended implementation phase is Phase 6C UI polish or Phase 7 packaging. Wait for owner approval before starting it.
+The next recommended implementation phase is Phase 7 portable packaging. Wait for owner approval before starting it.

@@ -76,8 +76,12 @@
 
 ## Phase 6C: WPF UI Polish
 
-- Build the Windows desktop UI around queue, engine status, progress, cancellation, and output browsing.
-- Keep the UI local-first and privacy-preserving.
+- Implemented: polish WPF header, local-only badge, drop zone, queue table, settings groups, engine cards, action bar, and log panel.
+- Implemented: show Word, PowerPoint, LibreOffice, and PDF renderer status with text labels.
+- Implemented: add clearer engine guidance for Auto, Microsoft Office, and LibreOffice selection.
+- Implemented: add row-level output open action and clear-log action.
+- Implemented: add manual GUI QA checklist.
+- Not implemented: automated GUI interaction tests, installer, packaging, or new engine behavior.
 
 ## Phase 7: Packaging And Release
 

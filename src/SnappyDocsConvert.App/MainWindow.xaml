@@ -3,9 +3,9 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         Title="Snappy Docs Convert"
         MinHeight="720"
-        MinWidth="1120"
-        Height="780"
-        Width="1240"
+        MinWidth="1180"
+        Height="820"
+        Width="1360"
         Background="{StaticResource AppBackgroundBrush}"
         Foreground="{StaticResource AppForegroundBrush}"
         AllowDrop="True"
@@ -15,32 +15,49 @@
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
             <RowDefinition Height="*" />
-            <RowDefinition Height="170" />
+            <RowDefinition Height="154" />
             <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
 
-        <DockPanel Grid.Row="0" Margin="0,0,0,14">
-            <StackPanel DockPanel.Dock="Left">
-                <TextBlock Text="Snappy Docs Convert" Style="{StaticResource TitleText}" />
-                <TextBlock Text="Local batch document conversion. No cloud upload." Style="{StaticResource MutedText}" />
+        <Grid Grid.Row="0" Margin="0,0,0,14">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="Auto" />
+            </Grid.ColumnDefinitions>
+
+            <StackPanel>
+                <StackPanel Orientation="Horizontal">
+                    <TextBlock Text="Snappy Docs Convert" Style="{StaticResource TitleText}" />
+                    <Border Style="{StaticResource PrivacyBadge}" Margin="14,3,0,0">
+                        <TextBlock Text="Local only · No upload"
+                                   Foreground="{StaticResource SuccessBrush}"
+                                   FontWeight="SemiBold"
+                                   FontSize="12" />
+                    </Border>
+                </StackPanel>
+                <TextBlock Text="Local document converter"
+                           Style="{StaticResource SubtitleText}" />
             </StackPanel>
-            <StackPanel DockPanel.Dock="Right" Orientation="Horizontal" HorizontalAlignment="Right">
+
+            <WrapPanel Grid.Column="1"
+                       HorizontalAlignment="Right"
+                       VerticalAlignment="Center">
                 <Button Content="Add Files" Command="{Binding AddFilesCommand}" Style="{StaticResource PrimaryButton}" />
                 <Button Content="Add Folder" Command="{Binding AddFolderCommand}" />
                 <Button Content="Remove Selected" Command="{Binding RemoveSelectedCommand}" />
-                <Button Content="Clear" Command="{Binding ClearCommand}" />
-            </StackPanel>
-        </DockPanel>
+                <Button Content="Clear Queue" Command="{Binding ClearCommand}" />
+            </WrapPanel>
+        </Grid>
 
         <Grid Grid.Row="1">
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="*" />
-                <ColumnDefinition Width="360" />
+                <ColumnDefinition Width="*" MinWidth="680" />
+                <ColumnDefinition Width="388" />
             </Grid.ColumnDefinitions>
 
             <Grid Grid.Column="0" Margin="0,0,14,0">
                 <Grid.RowDefinitions>
-                    <RowDefinition Height="96" />
+                    <RowDefinition Height="118" />
                     <RowDefinition Height="*" />
                 </Grid.RowDefinitions>
 
@@ -48,10 +65,39 @@
                         Style="{StaticResource DropZone}"
                         Drop="Window_Drop"
                         DragOver="Window_DragOver">
-                    <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
-                        <TextBlock Text="Drop files or folders here" HorizontalAlignment="Center" FontSize="18" FontWeight="SemiBold" />
-                        <TextBlock Text=".pdf .doc .docx .rtf .odt .ppt .pptx .odp" HorizontalAlignment="Center" Style="{StaticResource MutedText}" />
-                    </StackPanel>
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
+                        <Border Width="52"
+                                Height="52"
+                                CornerRadius="26"
+                                Background="{StaticResource PanelBrush}"
+                                BorderBrush="#BFDBFE"
+                                BorderThickness="1"
+                                VerticalAlignment="Center">
+                            <TextBlock Text="+"
+                                       FontSize="30"
+                                       FontWeight="SemiBold"
+                                       Foreground="{StaticResource AccentBrush}"
+                                       HorizontalAlignment="Center"
+                                       VerticalAlignment="Center" />
+                        </Border>
+                        <StackPanel Grid.Column="1"
+                                    Margin="16,0,0,0"
+                                    VerticalAlignment="Center">
+                            <TextBlock Text="Drop files or folders here"
+                                       FontSize="19"
+                                       FontWeight="SemiBold" />
+                            <TextBlock Text="Supported: PDF, DOC, DOCX, RTF, ODT, PPT, PPTX, ODP"
+                                       Style="{StaticResource MutedText}"
+                                       Margin="0,4,0,0" />
+                            <TextBlock Text="Empty queue? Use Add Files, Add Folder, or drag content into this area."
+                                       Style="{StaticResource TinyMutedText}"
+                                       Margin="0,8,0,0" />
+                        </StackPanel>
+                    </Grid>
                 </Border>
 
                 <DataGrid Grid.Row="1"
@@ -62,16 +108,68 @@
                           CanUserAddRows="False"
                           IsReadOnly="True"
                           HeadersVisibility="Column"
-                          GridLinesVisibility="None"
+                          GridLinesVisibility="Horizontal"
+                          AlternationCount="2"
                           RowHeaderWidth="0">
                     <DataGrid.Columns>
-                        <DataGridTextColumn Header="File name" Binding="{Binding FileName}" Width="2*" />
-                        <DataGridTextColumn Header="Type" Binding="{Binding Type}" Width="70" />
-                        <DataGridTextColumn Header="Target" Binding="{Binding Target}" Width="110" />
-                        <DataGridTextColumn Header="Engine" Binding="{Binding Engine}" Width="130" />
-                        <DataGridTextColumn Header="Status" Binding="{Binding Status}" Width="100" />
-                        <DataGridTextColumn Header="Message" Binding="{Binding Message}" Width="2*" />
-                        <DataGridTextColumn Header="Output" Binding="{Binding Output}" Width="2*" />
+                        <DataGridTemplateColumn Header="File" Width="2.2*" MinWidth="190">
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <StackPanel>
+                                        <TextBlock Text="{Binding FileName}"
+                                                   FontWeight="SemiBold"
+                                                   TextTrimming="CharacterEllipsis"
+                                                   ToolTip="{Binding InputPath}" />
+                                        <TextBlock Text="{Binding InputPath}"
+                                                   Style="{StaticResource TinyMutedText}"
+                                                   TextTrimming="CharacterEllipsis"
+                                                   ToolTip="{Binding InputPath}" />
+                                    </StackPanel>
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+                        <DataGridTextColumn Header="Type" Binding="{Binding Type}" Width="66" />
+                        <DataGridTextColumn Header="Target" Binding="{Binding Target}" Width="115" />
+                        <DataGridTextColumn Header="Engine" Binding="{Binding Engine}" Width="126" />
+                        <DataGridTemplateColumn Header="Status" Width="118">
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <Border Style="{StaticResource StatusPillBorder}">
+                                        <TextBlock Text="{Binding Status}" Style="{StaticResource StatusPillText}" />
+                                    </Border>
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+                        <DataGridTemplateColumn Header="Message" Width="1.8*" MinWidth="190">
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <TextBlock Text="{Binding Message}"
+                                               TextWrapping="Wrap"
+                                               TextTrimming="CharacterEllipsis"
+                                               ToolTip="{Binding Message}" />
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+                        <DataGridTemplateColumn Header="Output" Width="1.8*" MinWidth="190">
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <TextBlock Text="{Binding Output}"
+                                               Style="{StaticResource TinyMutedText}"
+                                               TextTrimming="CharacterEllipsis"
+                                               ToolTip="{Binding Output}" />
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+                        <DataGridTemplateColumn Header="" Width="76">
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <Button Content="Open"
+                                            Style="{StaticResource SmallButton}"
+                                            Command="{Binding DataContext.OpenItemOutputCommand, RelativeSource={RelativeSource AncestorType=DataGrid}}"
+                                            CommandParameter="{Binding}" />
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
                     </DataGrid.Columns>
                 </DataGrid>
             </Grid>
@@ -79,61 +177,102 @@
             <Border Grid.Column="1" Style="{StaticResource Panel}">
                 <ScrollViewer VerticalScrollBarVisibility="Auto">
                     <StackPanel>
-                        <TextBlock Text="Settings" Style="{StaticResource SectionTitle}" />
+                        <TextBlock Text="Engine status" Style="{StaticResource SectionTitle}" />
+                        <UniformGrid Columns="2" Margin="0,0,0,4" DataContext="{Binding EngineStatus}">
+                            <Border Style="{StaticResource EngineCard}">
+                                <StackPanel>
+                                    <TextBlock Text="Microsoft Word" FontWeight="SemiBold" />
+                                    <TextBlock Text="{Binding WordStatus}" Style="{StaticResource StatusValueText}" Margin="0,4,0,0" />
+                                </StackPanel>
+                            </Border>
+                            <Border Style="{StaticResource EngineCard}" Margin="0,0,0,8">
+                                <StackPanel>
+                                    <TextBlock Text="PowerPoint" FontWeight="SemiBold" />
+                                    <TextBlock Text="{Binding PowerPointStatus}" Style="{StaticResource StatusValueText}" Margin="0,4,0,0" />
+                                </StackPanel>
+                            </Border>
+                            <Border Style="{StaticResource EngineCard}">
+                                <StackPanel>
+                                    <TextBlock Text="LibreOffice" FontWeight="SemiBold" />
+                                    <TextBlock Text="{Binding LibreOfficeStatus}" Style="{StaticResource StatusValueText}" Margin="0,4,0,0" />
+                                </StackPanel>
+                            </Border>
+                            <Border Style="{StaticResource EngineCard}" Margin="0,0,0,8">
+                                <StackPanel>
+                                    <TextBlock Text="PDF renderer" FontWeight="SemiBold" />
+                                    <TextBlock Text="{Binding PdfRendererStatus}" Style="{StaticResource StatusValueText}" Margin="0,4,0,0" />
+                                </StackPanel>
+                            </Border>
+                        </UniformGrid>
 
-                        <TextBlock Text="Output folder" Style="{StaticResource FieldLabel}" />
-                        <Grid>
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="*" />
-                                <ColumnDefinition Width="Auto" />
-                            </Grid.ColumnDefinitions>
-                            <TextBox Grid.Column="0" Text="{Binding OutputFolder, UpdateSourceTrigger=PropertyChanged}" />
-                            <Button Grid.Column="1" Content="Choose" Command="{Binding ChooseOutputFolderCommand}" Margin="8,0,0,0" />
-                        </Grid>
+                        <Border Style="{StaticResource SettingsGroup}">
+                            <StackPanel DataContext="{Binding EngineStatus}">
+                                <TextBlock Text="Setup guidance" Style="{StaticResource SectionTitle}" />
+                                <TextBlock Text="{Binding Guidance}" TextWrapping="Wrap" />
+                                <TextBlock Text="{Binding LibreOfficePath}"
+                                           Style="{StaticResource TinyMutedText}"
+                                           TextWrapping="Wrap"
+                                           Margin="0,8,0,0" />
+                            </StackPanel>
+                        </Border>
 
-                        <TextBlock Text="Target" Style="{StaticResource FieldLabel}" />
-                        <ComboBox ItemsSource="{Binding Targets}" SelectedItem="{Binding SelectedTarget}" />
+                        <Border Style="{StaticResource SettingsGroup}">
+                            <StackPanel>
+                                <TextBlock Text="Output" Style="{StaticResource SectionTitle}" />
+                                <TextBlock Text="Folder" Style="{StaticResource FieldLabel}" />
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*" />
+                                        <ColumnDefinition Width="Auto" />
+                                    </Grid.ColumnDefinitions>
+                                    <TextBox Grid.Column="0" Text="{Binding OutputFolder, UpdateSourceTrigger=PropertyChanged}" />
+                                    <Button Grid.Column="1" Content="Choose" Command="{Binding ChooseOutputFolderCommand}" Margin="8,0,0,0" />
+                                </Grid>
+                            </StackPanel>
+                        </Border>
 
-                        <TextBlock Text="Engine" Style="{StaticResource FieldLabel}" />
-                        <ComboBox ItemsSource="{Binding Engines}" SelectedItem="{Binding SelectedEngine}" />
+                        <Border Style="{StaticResource SettingsGroup}">
+                            <StackPanel>
+                                <TextBlock Text="Conversion" Style="{StaticResource SectionTitle}" />
+                                <TextBlock Text="Target" Style="{StaticResource FieldLabel}" />
+                                <ComboBox ItemsSource="{Binding Targets}" SelectedItem="{Binding SelectedTarget}" />
+                                <TextBlock Text="Engine" Style="{StaticResource FieldLabel}" />
+                                <ComboBox ItemsSource="{Binding Engines}" SelectedItem="{Binding SelectedEngine}" />
+                                <TextBlock Text="{Binding SelectedEngineGuidance}"
+                                           Style="{StaticResource TinyMutedText}"
+                                           TextWrapping="Wrap"
+                                           Margin="0,8,0,0" />
+                            </StackPanel>
+                        </Border>
 
-                        <TextBlock Text="Image format" Style="{StaticResource FieldLabel}" />
-                        <ComboBox ItemsSource="{Binding ImageFormats}" SelectedItem="{Binding SelectedImageFormat}" />
+                        <Border Style="{StaticResource SettingsGroup}">
+                            <StackPanel>
+                                <TextBlock Text="Images" Style="{StaticResource SectionTitle}" />
+                                <TextBlock Text="Format" Style="{StaticResource FieldLabel}" />
+                                <ComboBox ItemsSource="{Binding ImageFormats}" SelectedItem="{Binding SelectedImageFormat}" />
+                                <TextBlock Text="DPI" Style="{StaticResource FieldLabel}" />
+                                <TextBox Text="{Binding Dpi, UpdateSourceTrigger=PropertyChanged}" />
+                                <TextBlock Text="72-600 DPI. Default 200. High DPI may use more memory."
+                                           Style="{StaticResource TinyMutedText}"
+                                           TextWrapping="Wrap"
+                                           Margin="0,6,0,0" />
+                                <CheckBox Content="Keep intermediate PDF for images-only runs"
+                                          IsChecked="{Binding KeepIntermediatePdf}" />
+                            </StackPanel>
+                        </Border>
 
-                        <TextBlock Text="DPI" Style="{StaticResource FieldLabel}" />
-                        <TextBox Text="{Binding Dpi, UpdateSourceTrigger=PropertyChanged}" />
-
-                        <CheckBox Content="Keep intermediate PDF" IsChecked="{Binding KeepIntermediatePdf}" Margin="0,12,0,16" />
-
-                        <Separator />
-                        <TextBlock Text="Engine setup" Style="{StaticResource SectionTitle}" />
-                        <Grid DataContext="{Binding EngineStatus}">
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="*" />
-                                <ColumnDefinition Width="Auto" />
-                            </Grid.ColumnDefinitions>
-                            <Grid.RowDefinitions>
-                                <RowDefinition Height="Auto" />
-                                <RowDefinition Height="Auto" />
-                                <RowDefinition Height="Auto" />
-                                <RowDefinition Height="Auto" />
-                                <RowDefinition Height="Auto" />
-                            </Grid.RowDefinitions>
-                            <TextBlock Grid.Row="0" Text="Word" />
-                            <TextBlock Grid.Row="0" Grid.Column="1" Text="{Binding WordStatus}" Style="{StaticResource StatusText}" />
-                            <TextBlock Grid.Row="1" Text="PowerPoint" />
-                            <TextBlock Grid.Row="1" Grid.Column="1" Text="{Binding PowerPointStatus}" Style="{StaticResource StatusText}" />
-                            <TextBlock Grid.Row="2" Text="LibreOffice" />
-                            <TextBlock Grid.Row="2" Grid.Column="1" Text="{Binding LibreOfficeStatus}" Style="{StaticResource StatusText}" />
-                            <TextBlock Grid.Row="3" Grid.ColumnSpan="2" Text="{Binding LibreOfficePath}" Style="{StaticResource MutedText}" TextWrapping="Wrap" />
-                            <TextBlock Grid.Row="4" Grid.ColumnSpan="2" Text="{Binding Guidance}" TextWrapping="Wrap" Margin="0,10,0,0" />
-                        </Grid>
-
-                        <StackPanel Orientation="Horizontal" Margin="0,12,0,0">
-                            <Button Content="Recheck" Command="{Binding RecheckEnginesCommand}" />
-                            <Button Content="Choose soffice" Command="{Binding ChooseLibreOfficeCommand}" />
-                        </StackPanel>
-                        <Button Content="Open LibreOffice download" Command="{Binding OpenLibreOfficeDownloadCommand}" />
+                        <Border Style="{StaticResource SettingsGroup}" Margin="0">
+                            <StackPanel>
+                                <TextBlock Text="Engines" Style="{StaticResource SectionTitle}" />
+                                <WrapPanel>
+                                    <Button Content="Recheck" Command="{Binding RecheckEnginesCommand}" Margin="0,0,6,6" />
+                                    <Button Content="Choose soffice" Command="{Binding ChooseLibreOfficeCommand}" Margin="0,0,6,6" />
+                                </WrapPanel>
+                                <Button Content="Open official LibreOffice download"
+                                        Command="{Binding OpenLibreOfficeDownloadCommand}"
+                                        Margin="0,4,0,0" />
+                            </StackPanel>
+                        </Border>
                     </StackPanel>
                 </ScrollViewer>
             </Border>
@@ -145,18 +284,38 @@
                     <RowDefinition Height="Auto" />
                     <RowDefinition Height="*" />
                 </Grid.RowDefinitions>
-                <TextBlock Text="Log" Style="{StaticResource SectionTitle}" />
-                <ListBox Grid.Row="1" ItemsSource="{Binding LogLines}" BorderThickness="0" Background="Transparent" />
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="Auto" />
+                    </Grid.ColumnDefinitions>
+                    <TextBlock Text="Log" Style="{StaticResource SectionTitle}" />
+                    <Button Grid.Column="1"
+                            Content="Clear Log"
+                            Style="{StaticResource SmallButton}"
+                            Command="{Binding ClearLogCommand}" />
+                </Grid>
+                <ListBox Grid.Row="1"
+                         ItemsSource="{Binding LogLines}"
+                         Style="{StaticResource LogListBox}" />
             </Grid>
         </Border>
 
-        <DockPanel Grid.Row="3" Margin="0,14,0,0">
-            <TextBlock DockPanel.Dock="Left" Text="{Binding SummaryText}" VerticalAlignment="Center" Style="{StaticResource MutedText}" />
-            <StackPanel DockPanel.Dock="Right" Orientation="Horizontal" HorizontalAlignment="Right">
-                <Button Content="Start Queue" Command="{Binding StartCommand}" Style="{StaticResource PrimaryButton}" />
-                <Button Content="Cancel" Command="{Binding CancelCommand}" />
-                <Button Content="Open Output Folder" Command="{Binding OpenOutputFolderCommand}" />
-            </StackPanel>
-        </DockPanel>
+        <Border Grid.Row="3" Style="{StaticResource Panel}" Margin="0,14,0,0" Padding="12">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+                <TextBlock Text="{Binding SummaryText}"
+                           VerticalAlignment="Center"
+                           Style="{StaticResource MutedText}" />
+                <WrapPanel Grid.Column="1" HorizontalAlignment="Right">
+                    <Button Content="Start Queue" Command="{Binding StartCommand}" Style="{StaticResource PrimaryButton}" />
+                    <Button Content="Cancel" Command="{Binding CancelCommand}" Style="{StaticResource DangerButton}" />
+                    <Button Content="Open Output" Command="{Binding OpenOutputFolderCommand}" />
+                </WrapPanel>
+            </Grid>
+        </Border>
     </Grid>
 </Window>

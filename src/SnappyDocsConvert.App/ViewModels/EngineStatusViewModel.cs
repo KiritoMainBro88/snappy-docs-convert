@@ -5,6 +5,7 @@ public sealed class EngineStatusViewModel : ObservableObject
     private string _wordStatus = "Checking";
     private string _powerPointStatus = "Checking";
     private string _libreOfficeStatus = "Checking";
+    private string _pdfRendererStatus = "Available";
     private string _libreOfficePath = "";
     private string _guidance = "Recheck engines before running document conversions.";
 
@@ -24,6 +25,12 @@ public sealed class EngineStatusViewModel : ObservableObject
     {
         get => _libreOfficeStatus;
         set => SetProperty(ref _libreOfficeStatus, value);
+    }
+
+    public string PdfRendererStatus
+    {
+        get => _pdfRendererStatus;
+        set => SetProperty(ref _pdfRendererStatus, value);
     }
 
     public string LibreOfficePath

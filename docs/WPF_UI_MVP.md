@@ -1,6 +1,6 @@
 # WPF UI MVP
 
-Phase 6A adds the first runnable Windows desktop app.
+Phase 6A adds the first runnable Windows desktop app. Phase 6C polishes the MVP into a cleaner desktop utility without changing engine behavior.
 
 ## Run
 
@@ -33,6 +33,8 @@ The smoke script verifies restore, build, tests, publish output, app executable 
 
 ## UI Capabilities
 
+- Header with app name, local converter subtitle, and local-only/no-upload badge.
+- Engine status cards for Word, PowerPoint, LibreOffice, and PDF renderer.
 - Add files.
 - Add folders recursively.
 - Drag/drop files and folders.
@@ -47,19 +49,32 @@ The smoke script verifies restore, build, tests, publish output, app executable 
 - Start/cancel batch conversion.
 - See per-file status and compact logs.
 - Open output folder.
+- Open individual output location from a queue row after conversion.
+- Clear compact log.
 - Recheck engine setup.
 - Choose `soffice.com` / `soffice.exe` for current session.
 - Open official LibreOffice download page.
 
 ## Limitations
 
-- UI MVP, not final polish.
+- Dev MVP, not beta/release build.
 - No installer yet.
 - No telemetry, cloud upload, or remote conversion.
 - LibreOffice smoke still depends on installed LibreOffice.
 - PowerPoint real smoke still waits for a safe fixture.
 - `--self-check` verifies service wiring and engine availability, not full conversion E2E.
 - Unit tests are not full UI automation.
+- Automated GUI interaction tests are not implemented.
+
+## Manual GUI QA
+
+Use:
+
+```powershell
+dotnet run --project src\SnappyDocsConvert.App
+```
+
+Then follow `docs/GUI_QA_CHECKLIST.md`. Do not claim manual GUI pass unless those steps were actually run. Evidence-based non-UI QA is documented in `docs/QA_E2E_GATE.md`.
 
 ## QA Truth Policy
 

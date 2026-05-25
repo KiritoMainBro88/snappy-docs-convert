@@ -25,6 +25,7 @@ public sealed class MainWindowViewModel : ObservableObject
     private bool _isRunning;
     private string? _customLibreOfficePath;
     private string _summaryText = "Ready. Add files or folders.";
+    private string _selectedEngineGuidance = "Auto uses Microsoft Office when available, then LibreOffice fallback. No cloud upload.";
     private CancellationTokenSource? _runCancellation;
 
     public MainWindowViewModel(AppServiceFactory serviceFactory)
@@ -43,6 +44,8 @@ public sealed class MainWindowViewModel : ObservableObject
         StartCommand = new AsyncRelayCommand(StartAsync, () => !IsRunning);
         CancelCommand = new RelayCommand(Cancel, () => IsRunning);
         OpenOutputFolderCommand = new RelayCommand(OpenOutputFolder);
+        OpenItemOutputCommand = new RelayCommand<QueueItemViewModel>(OpenItemOutput, item => !IsRunning && item is not null && !string.IsNullOrWhiteSpace(item.Output));
+        ClearLogCommand = new RelayCommand(ClearLog, () => LogLines.Count > 0);
         RecheckEnginesCommand = new AsyncRelayCommand(RecheckEnginesAsync);
         ChooseLibreOfficeCommand = new AsyncRelayCommand(ChooseLibreOfficeAsync, () => !IsRunning);
         OpenLibreOfficeDownloadCommand = new RelayCommand(OpenLibreOfficeDownload);
@@ -78,6 +81,10 @@ public sealed class MainWindowViewModel : ObservableObject
 
     public RelayCommand OpenOutputFolderCommand { get; }
 
+    public RelayCommand<QueueItemViewModel> OpenItemOutputCommand { get; }
+
+    public RelayCommand ClearLogCommand { get; }
+
     public AsyncRelayCommand RecheckEnginesCommand { get; }
 
     public AsyncRelayCommand ChooseLibreOfficeCommand { get; }
@@ -111,7 +118,13 @@ public sealed class MainWindowViewModel : ObservableObject
     public BatchConversionEnginePreference SelectedEngine
     {
         get => _selectedEngine;
-        set => SetProperty(ref _selectedEngine, value);
+        set
+        {
+            if (SetProperty(ref _selectedEngine, value))
+            {
+                RefreshSelectedEngineGuidance();
+            }
+        }
     }
 
     public ImageOutputFormat SelectedImageFormat
@@ -148,6 +161,12 @@ public sealed class MainWindowViewModel : ObservableObject
     {
         get => _summaryText;
         set => SetProperty(ref _summaryText, value);
+    }
+
+    public string SelectedEngineGuidance
+    {
+        get => _selectedEngineGuidance;
+        set => SetProperty(ref _selectedEngineGuidance, value);
     }
 
     public void AddPaths(IEnumerable<string> paths)
@@ -336,6 +355,47 @@ public sealed class MainWindowViewModel : ObservableObject
         });
     }
 
+    private void OpenItemOutput(QueueItemViewModel? item)
+    {
+        if (item is null || string.IsNullOrWhiteSpace(item.Output))
+        {
+            Log("Open item output blocked: no output yet.");
+            return;
+        }
+
+        var firstPath = item.Output.Split(';', StringSplitOptions.RemoveEmptyEntries)
+            .Select(path => path.Trim())
+            .FirstOrDefault();
+        if (string.IsNullOrWhiteSpace(firstPath))
+        {
+            Log("Open item output blocked: output path is empty.");
+            return;
+        }
+
+        if (Directory.Exists(firstPath))
+        {
+            Process.Start(new ProcessStartInfo(firstPath) { UseShellExecute = true });
+            return;
+        }
+
+        if (File.Exists(firstPath))
+        {
+            Process.Start(new ProcessStartInfo("explorer.exe", $"/select,\"{firstPath}\"")
+            {
+                UseShellExecute = true
+            });
+            return;
+        }
+
+        Log($"Open item output blocked: path not found for {item.FileName}.");
+    }
+
+    private void ClearLog()
+    {
+        LogLines.Clear();
+        ClearLogCommand.RaiseCanExecuteChanged();
+    }
+
     private async Task RecheckEnginesAsync()
     {
         try
@@ -360,12 +420,14 @@ public sealed class MainWindowViewModel : ObservableObject
                 .GetStatusAsync(mode, _customLibreOfficePath, CancellationToken.None)
                 .ConfigureAwait(true);
 
-            EngineStatus.WordStatus = office.WordAvailable ? "Yes" : "No";
-            EngineStatus.PowerPointStatus = office.PowerPointAvailable ? "Yes" : "No";
-            EngineStatus.LibreOfficeStatus = libre.IsAvailable ? "Yes" : "No";
+            EngineStatus.WordStatus = office.WordAvailable ? "Available" : "Missing";
+            EngineStatus.PowerPointStatus = office.PowerPointAvailable ? "Available" : "Missing";
+            EngineStatus.LibreOfficeStatus = libre.IsAvailable ? "Available" : "Missing";
+            EngineStatus.PdfRendererStatus = "Available";
             EngineStatus.LibreOfficePath = libre.ExecutablePath ?? libre.Reason ?? "No LibreOffice path detected.";
             EngineStatus.Guidance = setup.BlockingReason
                 ?? string.Join(" ", setup.Recommendations.Select(recommendation => recommendation.Message));
+            RefreshSelectedEngineGuidance();
             Log("Engine status checked.");
         }
         catch (Exception ex)
@@ -432,11 +494,28 @@ public sealed class MainWindowViewModel : ObservableObject
         item.Output = result.OutputPdfPath
             ?? result.ImageOutputDirectory
             ?? string.Join("; ", result.ImageFiles.Take(2));
+        OpenItemOutputCommand.RaiseCanExecuteChanged();
 
         if (!string.IsNullOrWhiteSpace(result.ErrorMessage))
         {
             Log($"{item.FileName}: {result.ErrorMessage}");
         }
+    }
+
+    private void RefreshSelectedEngineGuidance()
+    {
+        SelectedEngineGuidance = SelectedEngine switch
+        {
+            BatchConversionEnginePreference.MicrosoftOffice =>
+                EngineStatus.WordStatus == "Available" || EngineStatus.PowerPointStatus == "Available"
+                    ? "Microsoft Office mode uses installed Word/PowerPoint. Files needing a missing Office app will fail clearly."
+                    : "Microsoft Office mode selected, but Word/PowerPoint are missing. Use Auto or LibreOffice after setup.",
+            BatchConversionEnginePreference.LibreOffice =>
+                EngineStatus.LibreOfficeStatus == "Available"
+                    ? "LibreOffice mode uses detected soffice for supported Office/OpenDocument files."
+                    : "LibreOffice mode needs soffice.com or soffice.exe. Choose path or install LibreOffice from official site.",
+            _ => "Auto mode uses Microsoft Office first for DOC/PPT when available, then LibreOffice fallback. PDF rendering is local."
+        };
     }
 
     private void Log(string message)
@@ -446,6 +525,8 @@ public sealed class MainWindowViewModel : ObservableObject
         {
             LogLines.RemoveAt(0);
         }
+
+        ClearLogCommand.RaiseCanExecuteChanged();
     }
 
     private void RaiseCommandStates()
@@ -458,5 +539,7 @@ public sealed class MainWindowViewModel : ObservableObject
         StartCommand.RaiseCanExecuteChanged();
         CancelCommand.RaiseCanExecuteChanged();
         ChooseLibreOfficeCommand.RaiseCanExecuteChanged();
+        OpenItemOutputCommand.RaiseCanExecuteChanged();
+        ClearLogCommand.RaiseCanExecuteChanged();
     }
 }
