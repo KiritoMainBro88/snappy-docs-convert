@@ -2,7 +2,7 @@
 
 Snappy Docs Convert is planned as a fast local document conversion app for Windows-first workflows.
 
-Current phase: Phase 6A WPF UI MVP. This branch contains a small .NET core library, local LibreOffice document-to-PDF conversion, Microsoft Office availability detection, guarded Office COM PDF export, Office smoke validation, core dependency guidance, PDF page image export, a core batch pipeline, and a runnable Windows WPF app. Installer work is still a later phase.
+Current phase: Phase 6B evidence-based E2E QA gate. This branch contains a small .NET core library, local LibreOffice document-to-PDF conversion, Microsoft Office availability detection, guarded Office COM PDF export, Office smoke validation, core dependency guidance, PDF page image export, a core batch pipeline, a runnable Windows WPF app, and a local E2E QA harness. Installer work is still a later phase.
 
 ## Final Goal
 
@@ -123,6 +123,16 @@ Phase 6A adds the first runnable desktop UI:
 
 See `docs/WPF_UI_MVP.md`.
 
+## Evidence-Based E2E QA
+
+Phase 6B adds a local QA gate that builds, tests, self-checks, publishes the app, and verifies real generated conversion outputs:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File .\scripts\qa-e2e.ps1
+```
+
+The script writes generated evidence under `docs\qa-output\current\`, which is ignored by git. Pass means the command ran and output files/results were verified. Skip means a local dependency such as LibreOffice is missing. Unit tests are not treated as full E2E proof. See `docs/QA_E2E_GATE.md`.
+
 To pack a small AI-friendly context bundle:
 
 ```powershell
@@ -133,4 +143,4 @@ The packed output is written to `docs/ai-context/repomix-output.md` and is ignor
 
 ## Next Phase Summary
 
-The next recommended implementation phase is Phase 6B: evidence-based E2E QA gate. Wait for owner approval before starting it.
+The next recommended implementation phase is Phase 6C UI polish or Phase 7 packaging. Wait for owner approval before starting it.

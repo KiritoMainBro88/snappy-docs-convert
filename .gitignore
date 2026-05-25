@@ -21,6 +21,7 @@ obj
 TestResults
 coverage
 docs/ai-context/**
+docs/qa-output/**
 *.local
 
 # Wrangler / Cloudflare

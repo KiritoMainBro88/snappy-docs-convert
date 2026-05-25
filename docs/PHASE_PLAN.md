@@ -64,9 +64,15 @@
 
 ## Phase 6B: Evidence-Based E2E QA Gate
 
-- Run app self-check and smoke scripts.
-- Add safe fixture-driven E2E evidence for PDF input and installed local engines.
-- Record exact pass/fail evidence before packaging.
+- Implemented: add `scripts/qa-e2e.ps1`.
+- Implemented: add `SnappyDocsConvert.QaHarness` for non-UI E2E checks through real core services.
+- Implemented: verify build, tests, app self-check, and publish exe.
+- Implemented: generate local PDF/RTF inputs under ignored QA output.
+- Implemented: verify PDF to PNG/JPEG image output files.
+- Implemented: verify Word RTF to PDF and Word RTF to PDF+Images when Word is installed.
+- Implemented: verify batch partial failure continues after one missing file.
+- Implemented: report LibreOffice missing as skipped/honest guidance, not pass.
+- Not implemented: automated WPF GUI interaction, installer validation, or PowerPoint fixture smoke.
 
 ## Phase 6C: WPF UI Polish
 
