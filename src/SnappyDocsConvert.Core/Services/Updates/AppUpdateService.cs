@@ -138,6 +138,14 @@ public sealed class AppUpdateService
             : $"https://api.github.com/repos/{Owner}/{Repository}/releases";
 
         using var response = await _httpClient.GetAsync(url, cancellationToken).ConfigureAwait(false);
+
+        // A repo with no published release returns 404 on /releases/latest. That is not an error -
+        // it simply means "no update available". Surface it as an empty candidate list.
+        if (response.StatusCode == System.Net.HttpStatusCode.NotFound)
+        {
+            return Array.Empty<GitHubReleaseDto>();
+        }
+
         response.EnsureSuccessStatusCode();
         await using var stream = await response.Content.ReadAsStreamAsync(cancellationToken).ConfigureAwait(false);
 

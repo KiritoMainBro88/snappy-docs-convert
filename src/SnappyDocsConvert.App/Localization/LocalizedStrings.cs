@@ -30,7 +30,7 @@ public static class LocalizedStrings
         ["RemoveSelected"] = "Remove Selected",
         ["ClearQueue"] = "Clear Queue",
         ["DropTitle"] = "Drop files or folders here",
-        ["SupportedFormats"] = "Supported: PDF, DOC, DOCX, RTF, ODT, PPT, PPTX, ODP",
+        ["SupportedFormats"] = "Supported: PDF, DOC, DOCX, RTF, ODT, PPT, PPTX, ODP, XLS, XLSX, CSV, ODS",
         ["EmptyQueue"] = "No files yet. Add files, add a folder, or drag content here.",
         ["Output"] = "Output",
         ["OutputFolder"] = "Output folder",
@@ -141,6 +141,14 @@ public static class LocalizedStrings
         ["ToolExtract"] = "Extract Pages",
         ["ToolRotate"] = "Rotate Pages",
         ["ToolImagesToPdf"] = "Images to PDF",
+        ["ToolCompress"] = "Compress PDF",
+        ["ToolWatermark"] = "Watermark PDF",
+        ["ToolEncrypt"] = "Encrypt PDF",
+        ["ToolPdfToWord"] = "PDF to Word",
+        ["ToolOcr"] = "OCR to text",
+        ["OcrEngineMissing"] = "PaddleOCR not configured. Set its path in Settings.",
+        ["PdfToolWatermarkText"] = "Watermark text",
+        ["PdfToolPassword"] = "Password",
         ["Rotation90"] = "90 degrees",
         ["Rotation180"] = "180 degrees",
         ["Rotation270"] = "270 degrees",
@@ -160,7 +168,11 @@ public static class LocalizedStrings
         ["UnsupportedSkipped"] = "unsupported or missing path(s) skipped. See Rejected files.",
         ["OutputFolderMissing"] = "Output folder does not exist yet.",
         ["PdfToolNoInputs"] = "Add PDF/image inputs first.",
-        ["PdfToolChooseOutput"] = "Choose output folder first."
+        ["PdfToolChooseOutput"] = "Choose output folder first.",
+        ["EnableEngineFallback"] = "Auto fallback to the other engine on failure",
+        ["FallbackAttempt"] = "{0}: {1} failed ({2}); retrying with {3}.",
+        ["FallbackSuccess"] = "{0}: {1} produced the PDF.",
+        ["BothEnginesFailed"] = "{0}: both engines failed."
     };
 
     private static readonly IReadOnlyDictionary<string, string> Vietnamese = new Dictionary<string, string>
@@ -191,7 +203,7 @@ public static class LocalizedStrings
         ["RemoveSelected"] = "Xóa mục chọn",
         ["ClearQueue"] = "Xóa hàng đợi",
         ["DropTitle"] = "Kéo thả tệp hoặc thư mục vào đây",
-        ["SupportedFormats"] = "Hỗ trợ: PDF, DOC, DOCX, RTF, ODT, PPT, PPTX, ODP",
+        ["SupportedFormats"] = "Hỗ trợ: PDF, DOC, DOCX, RTF, ODT, PPT, PPTX, ODP, XLS, XLSX, CSV, ODS",
         ["EmptyQueue"] = "Chưa có tệp. Thêm tệp, thêm thư mục, hoặc kéo thả vào đây.",
         ["Output"] = "Đầu ra",
         ["OutputFolder"] = "Thư mục xuất",
@@ -302,6 +314,14 @@ public static class LocalizedStrings
         ["ToolExtract"] = "Trích trang",
         ["ToolRotate"] = "Xoay trang",
         ["ToolImagesToPdf"] = "Ảnh sang PDF",
+        ["ToolCompress"] = "Nén PDF",
+        ["ToolWatermark"] = "Đóng dấu PDF",
+        ["ToolEncrypt"] = "Mã hóa PDF",
+        ["ToolPdfToWord"] = "PDF sang Word",
+        ["ToolOcr"] = "OCR sang văn bản",
+        ["OcrEngineMissing"] = "Chưa cấu hình PaddleOCR. Đặt đường dẫn trong Cài đặt.",
+        ["PdfToolWatermarkText"] = "Nội dung dấu mờ",
+        ["PdfToolPassword"] = "Mật khẩu",
         ["Rotation90"] = "90 độ",
         ["Rotation180"] = "180 độ",
         ["Rotation270"] = "270 độ",
@@ -321,7 +341,11 @@ public static class LocalizedStrings
         ["UnsupportedSkipped"] = "đường dẫn không hỗ trợ hoặc bị thiếu đã bị bỏ qua. Xem Tệp bị bỏ qua.",
         ["OutputFolderMissing"] = "Thư mục xuất chưa tồn tại.",
         ["PdfToolNoInputs"] = "Hãy thêm PDF/ảnh đầu vào trước.",
-        ["PdfToolChooseOutput"] = "Hãy chọn thư mục xuất trước."
+        ["PdfToolChooseOutput"] = "Hãy chọn thư mục xuất trước.",
+        ["EnableEngineFallback"] = "Tự động chuyển sang bộ chuyển đổi khác khi lỗi",
+        ["FallbackAttempt"] = "{0}: {1} thất bại ({2}); đang thử lại với {3}.",
+        ["FallbackSuccess"] = "{0}: {1} đã tạo PDF.",
+        ["BothEnginesFailed"] = "{0}: cả hai bộ chuyển đổi đều thất bại."
     };
 
     public static string Get(Language language, string key)

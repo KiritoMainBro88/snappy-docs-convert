@@ -5,7 +5,7 @@ namespace SnappyDocsConvert.App.Services;
 public sealed class FilePickerService
 {
     private const string InputFilter =
-        "Supported documents|*.pdf;*.doc;*.docx;*.rtf;*.odt;*.ppt;*.pptx;*.odp|All files|*.*";
+        "Supported documents|*.pdf;*.doc;*.docx;*.rtf;*.odt;*.ppt;*.pptx;*.odp;*.xls;*.xlsx;*.csv;*.ods|All files|*.*";
 
     private const string PdfToolFilter =
         "PDF and image files|*.pdf;*.png;*.jpg;*.jpeg;*.webp|All files|*.*";

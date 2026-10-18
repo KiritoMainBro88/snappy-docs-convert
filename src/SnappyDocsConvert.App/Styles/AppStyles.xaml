@@ -19,7 +19,7 @@
         <Setter Property="Control.Template">
             <Setter.Value>
                 <ControlTemplate>
-                    <Rectangle Stroke="{StaticResource AccentBrush}"
+                    <Rectangle Stroke="{DynamicResource AccentBrush}"
                                StrokeThickness="2"
                                StrokeDashArray="1 2"
                                SnapsToDevicePixels="True" />
@@ -32,23 +32,23 @@
         <Setter Property="Margin" Value="6,0,0,0" />
         <Setter Property="Padding" Value="12,8" />
         <Setter Property="MinHeight" Value="34" />
-        <Setter Property="BorderBrush" Value="{StaticResource BorderBrushSoft}" />
-        <Setter Property="Background" Value="{StaticResource PanelBrush}" />
-        <Setter Property="Foreground" Value="{StaticResource AppForegroundBrush}" />
+        <Setter Property="BorderBrush" Value="{DynamicResource BorderBrushSoft}" />
+        <Setter Property="Background" Value="{DynamicResource PanelBrush}" />
+        <Setter Property="Foreground" Value="{DynamicResource AppForegroundBrush}" />
         <Setter Property="FocusVisualStyle" Value="{StaticResource FocusVisual}" />
         <Setter Property="Cursor" Value="Hand" />
     </Style>
 
     <Style x:Key="PrimaryButton" TargetType="Button" BasedOn="{StaticResource {x:Type Button}}">
         <Setter Property="Foreground" Value="White" />
-        <Setter Property="Background" Value="{StaticResource AccentBrush}" />
-        <Setter Property="BorderBrush" Value="{StaticResource AccentBrush}" />
+        <Setter Property="Background" Value="{DynamicResource AccentBrush}" />
+        <Setter Property="BorderBrush" Value="{DynamicResource AccentBrush}" />
         <Setter Property="FontWeight" Value="SemiBold" />
     </Style>
 
     <Style x:Key="DangerButton" TargetType="Button" BasedOn="{StaticResource {x:Type Button}}">
-        <Setter Property="Foreground" Value="{StaticResource ErrorBrush}" />
-        <Setter Property="Background" Value="{StaticResource ErrorSoftBrush}" />
+        <Setter Property="Foreground" Value="{DynamicResource ErrorBrush}" />
+        <Setter Property="Background" Value="{DynamicResource ErrorSoftBrush}" />
         <Setter Property="BorderBrush" Value="#F4B7B2" />
     </Style>
 
@@ -63,36 +63,35 @@
         <Setter Property="Padding" Value="12,10" />
         <Setter Property="HorizontalContentAlignment" Value="Left" />
         <Setter Property="FontWeight" Value="SemiBold" />
-        <Setter Property="Background" Value="{StaticResource SoftPanelBrush}" />
+        <Setter Property="Background" Value="{DynamicResource SoftPanelBrush}" />
     </Style>
 
     <Style TargetType="TextBox">
         <Setter Property="Padding" Value="9,7" />
         <Setter Property="MinHeight" Value="34" />
-        <Setter Property="BorderBrush" Value="{StaticResource BorderBrushSoft}" />
-        <Setter Property="Background" Value="{StaticResource PanelBrush}" />
-        <Setter Property="Foreground" Value="{StaticResource AppForegroundBrush}" />
-        <Setter Property="Foreground" Value="{StaticResource AppForegroundBrush}" />
+        <Setter Property="BorderBrush" Value="{DynamicResource BorderBrushSoft}" />
+        <Setter Property="Background" Value="{DynamicResource PanelBrush}" />
+        <Setter Property="Foreground" Value="{DynamicResource AppForegroundBrush}" />
         <Setter Property="FocusVisualStyle" Value="{StaticResource FocusVisual}" />
     </Style>
 
     <Style TargetType="ComboBox">
         <Setter Property="Padding" Value="8,5" />
         <Setter Property="MinHeight" Value="34" />
-        <Setter Property="Foreground" Value="{StaticResource AppForegroundBrush}" />
-        <Setter Property="Background" Value="{StaticResource PanelBrush}" />
+        <Setter Property="Foreground" Value="{DynamicResource AppForegroundBrush}" />
+        <Setter Property="Background" Value="{DynamicResource PanelBrush}" />
         <Setter Property="FocusVisualStyle" Value="{StaticResource FocusVisual}" />
     </Style>
 
     <Style TargetType="CheckBox">
         <Setter Property="Margin" Value="0,10,0,0" />
-        <Setter Property="Foreground" Value="{StaticResource AppForegroundBrush}" />
+        <Setter Property="Foreground" Value="{DynamicResource AppForegroundBrush}" />
         <Setter Property="FocusVisualStyle" Value="{StaticResource FocusVisual}" />
     </Style>
 
     <Style x:Key="Panel" TargetType="Border">
-        <Setter Property="Background" Value="{StaticResource PanelBrush}" />
-        <Setter Property="BorderBrush" Value="{StaticResource BorderBrushSoft}" />
+        <Setter Property="Background" Value="{DynamicResource PanelBrush}" />
+        <Setter Property="BorderBrush" Value="{DynamicResource BorderBrushSoft}" />
         <Setter Property="BorderThickness" Value="1" />
         <Setter Property="CornerRadius" Value="8" />
         <Setter Property="Padding" Value="14" />
@@ -100,11 +99,11 @@
 
     <Style x:Key="SidebarPanel" TargetType="Border" BasedOn="{StaticResource Panel}">
         <Setter Property="Padding" Value="12" />
-        <Setter Property="Background" Value="#F9FAFB" />
+        <Setter Property="Background" Value="{DynamicResource SoftPanelBrush}" />
     </Style>
 
     <Style x:Key="SettingsGroup" TargetType="Border" BasedOn="{StaticResource Panel}">
-        <Setter Property="Background" Value="{StaticResource SoftPanelBrush}" />
+        <Setter Property="Background" Value="{DynamicResource SoftPanelBrush}" />
         <Setter Property="Padding" Value="12" />
         <Setter Property="Margin" Value="0,0,0,12" />
     </Style>
@@ -112,24 +111,24 @@
     <Style x:Key="EngineCard" TargetType="Border" BasedOn="{StaticResource Panel}">
         <Setter Property="Padding" Value="10" />
         <Setter Property="Margin" Value="0,0,8,8" />
-        <Setter Property="Background" Value="{StaticResource SoftPanelBrush}" />
+        <Setter Property="Background" Value="{DynamicResource SoftPanelBrush}" />
     </Style>
 
     <Style x:Key="ToolCard" TargetType="Border" BasedOn="{StaticResource Panel}">
         <Setter Property="Padding" Value="14" />
         <Setter Property="Margin" Value="0,0,10,10" />
-        <Setter Property="Background" Value="{StaticResource SoftPanelBrush}" />
+        <Setter Property="Background" Value="{DynamicResource SoftPanelBrush}" />
     </Style>
 
     <Style x:Key="DropZone" TargetType="Border" BasedOn="{StaticResource Panel}">
         <Setter Property="BorderThickness" Value="1.5" />
-        <Setter Property="BorderBrush" Value="{StaticResource AccentBrush}" />
-        <Setter Property="Background" Value="{StaticResource AccentSoftBrush}" />
+        <Setter Property="BorderBrush" Value="{DynamicResource AccentBrush}" />
+        <Setter Property="Background" Value="{DynamicResource AccentSoftBrush}" />
         <Setter Property="Padding" Value="18" />
     </Style>
 
     <Style x:Key="PrivacyBadge" TargetType="Border">
-        <Setter Property="Background" Value="{StaticResource SuccessSoftBrush}" />
+        <Setter Property="Background" Value="{DynamicResource SuccessSoftBrush}" />
         <Setter Property="BorderBrush" Value="#ABEFC6" />
         <Setter Property="BorderThickness" Value="1" />
         <Setter Property="CornerRadius" Value="12" />
@@ -138,7 +137,7 @@
     </Style>
 
     <Style x:Key="AlertPanel" TargetType="Border" BasedOn="{StaticResource Panel}">
-        <Setter Property="Background" Value="{StaticResource WarningSoftBrush}" />
+        <Setter Property="Background" Value="{DynamicResource WarningSoftBrush}" />
         <Setter Property="BorderBrush" Value="#FEDF89" />
         <Setter Property="Padding" Value="12" />
         <Setter Property="Margin" Value="0,0,0,12" />
@@ -150,24 +149,32 @@
     </Style>
 
     <Style x:Key="TitleText" TargetType="TextBlock">
+        <Setter Property="Foreground" Value="{DynamicResource AppForegroundBrush}" />
         <Setter Property="FontSize" Value="30" />
         <Setter Property="FontWeight" Value="SemiBold" />
     </Style>
 
     <Style x:Key="SubtitleText" TargetType="TextBlock">
-        <Setter Property="Foreground" Value="{StaticResource MutedBrush}" />
+        <Setter Property="Foreground" Value="{DynamicResource MutedBrush}" />
         <Setter Property="FontSize" Value="13" />
         <Setter Property="Margin" Value="0,3,0,0" />
     </Style>
 
     <Style x:Key="SectionTitle" TargetType="TextBlock">
+        <Setter Property="Foreground" Value="{DynamicResource AppForegroundBrush}" />
         <Setter Property="FontSize" Value="15" />
         <Setter Property="FontWeight" Value="SemiBold" />
         <Setter Property="Margin" Value="0,0,0,10" />
     </Style>
 
     <Style x:Key="MutedText" TargetType="TextBlock">
-        <Setter Property="Foreground" Value="{StaticResource MutedBrush}" />
+        <Setter Property="Foreground" Value="{DynamicResource MutedBrush}" />
+    </Style>
+
+    <!-- Default text colour follows the theme so inline TextBlocks (incl. inside templated controls)
+         flip in dark mode instead of staying dark-on-dark. -->
+    <Style TargetType="TextBlock">
+        <Setter Property="Foreground" Value="{DynamicResource AppForegroundBrush}" />
     </Style>
 
     <Style x:Key="TinyMutedText" TargetType="TextBlock" BasedOn="{StaticResource MutedText}">
@@ -175,6 +182,7 @@
     </Style>
 
     <Style x:Key="FieldLabel" TargetType="TextBlock">
+        <Setter Property="Foreground" Value="{DynamicResource AppForegroundBrush}" />
         <Setter Property="Margin" Value="0,10,0,4" />
         <Setter Property="FontWeight" Value="SemiBold" />
         <Setter Property="FontSize" Value="12" />
@@ -182,25 +190,25 @@
 
     <Style x:Key="StatusValueText" TargetType="TextBlock">
         <Setter Property="FontWeight" Value="SemiBold" />
-        <Setter Property="Foreground" Value="{StaticResource MutedBrush}" />
+        <Setter Property="Foreground" Value="{DynamicResource MutedBrush}" />
         <Style.Triggers>
             <DataTrigger Binding="{Binding Text, RelativeSource={RelativeSource Self}}" Value="Available">
-                <Setter Property="Foreground" Value="{StaticResource SuccessBrush}" />
+                <Setter Property="Foreground" Value="{DynamicResource SuccessBrush}" />
             </DataTrigger>
             <DataTrigger Binding="{Binding Text, RelativeSource={RelativeSource Self}}" Value="Có sẵn">
-                <Setter Property="Foreground" Value="{StaticResource SuccessBrush}" />
+                <Setter Property="Foreground" Value="{DynamicResource SuccessBrush}" />
             </DataTrigger>
             <DataTrigger Binding="{Binding Text, RelativeSource={RelativeSource Self}}" Value="Missing">
-                <Setter Property="Foreground" Value="{StaticResource ErrorBrush}" />
+                <Setter Property="Foreground" Value="{DynamicResource ErrorBrush}" />
             </DataTrigger>
             <DataTrigger Binding="{Binding Text, RelativeSource={RelativeSource Self}}" Value="Thiếu">
-                <Setter Property="Foreground" Value="{StaticResource ErrorBrush}" />
+                <Setter Property="Foreground" Value="{DynamicResource ErrorBrush}" />
             </DataTrigger>
             <DataTrigger Binding="{Binding Text, RelativeSource={RelativeSource Self}}" Value="Checking">
-                <Setter Property="Foreground" Value="{StaticResource WarningBrush}" />
+                <Setter Property="Foreground" Value="{DynamicResource WarningBrush}" />
             </DataTrigger>
             <DataTrigger Binding="{Binding Text, RelativeSource={RelativeSource Self}}" Value="Đang kiểm tra">
-                <Setter Property="Foreground" Value="{StaticResource WarningBrush}" />
+                <Setter Property="Foreground" Value="{DynamicResource WarningBrush}" />
             </DataTrigger>
         </Style.Triggers>
     </Style>
@@ -208,7 +216,7 @@
     <Style x:Key="LogoInitials" TargetType="TextBlock">
         <Setter Property="FontSize" Value="14" />
         <Setter Property="FontWeight" Value="SemiBold" />
-        <Setter Property="Foreground" Value="{StaticResource AccentBrush}" />
+        <Setter Property="Foreground" Value="{DynamicResource AccentBrush}" />
         <Setter Property="HorizontalAlignment" Value="Center" />
         <Setter Property="VerticalAlignment" Value="Center" />
         <Setter Property="Visibility" Value="Collapsed" />
@@ -227,23 +235,23 @@
         <Setter Property="Padding" Value="8,3" />
         <Setter Property="HorizontalAlignment" Value="Left" />
         <Setter Property="Background" Value="#F2F4F7" />
-        <Setter Property="BorderBrush" Value="{StaticResource BorderBrushSoft}" />
+        <Setter Property="BorderBrush" Value="{DynamicResource BorderBrushSoft}" />
         <Setter Property="BorderThickness" Value="1" />
         <Style.Triggers>
             <DataTrigger Binding="{Binding Status}" Value="Succeeded">
-                <Setter Property="Background" Value="{StaticResource SuccessSoftBrush}" />
+                <Setter Property="Background" Value="{DynamicResource SuccessSoftBrush}" />
                 <Setter Property="BorderBrush" Value="#ABEFC6" />
             </DataTrigger>
             <DataTrigger Binding="{Binding Status}" Value="Failed">
-                <Setter Property="Background" Value="{StaticResource ErrorSoftBrush}" />
+                <Setter Property="Background" Value="{DynamicResource ErrorSoftBrush}" />
                 <Setter Property="BorderBrush" Value="#F4B7B2" />
             </DataTrigger>
             <DataTrigger Binding="{Binding Status}" Value="Cancelled">
-                <Setter Property="Background" Value="{StaticResource WarningSoftBrush}" />
+                <Setter Property="Background" Value="{DynamicResource WarningSoftBrush}" />
                 <Setter Property="BorderBrush" Value="#FEDF89" />
             </DataTrigger>
             <DataTrigger Binding="{Binding Status}" Value="Running">
-                <Setter Property="Background" Value="{StaticResource AccentSoftBrush}" />
+                <Setter Property="Background" Value="{DynamicResource AccentSoftBrush}" />
                 <Setter Property="BorderBrush" Value="#BFDBFE" />
             </DataTrigger>
         </Style.Triggers>
@@ -252,47 +260,76 @@
     <Style x:Key="StatusPillText" TargetType="TextBlock">
         <Setter Property="FontSize" Value="12" />
         <Setter Property="FontWeight" Value="SemiBold" />
-        <Setter Property="Foreground" Value="{StaticResource MutedBrush}" />
+        <Setter Property="Foreground" Value="{DynamicResource MutedBrush}" />
         <Style.Triggers>
             <DataTrigger Binding="{Binding Status}" Value="Succeeded">
-                <Setter Property="Foreground" Value="{StaticResource SuccessBrush}" />
+                <Setter Property="Foreground" Value="{DynamicResource SuccessBrush}" />
             </DataTrigger>
             <DataTrigger Binding="{Binding Status}" Value="Failed">
-                <Setter Property="Foreground" Value="{StaticResource ErrorBrush}" />
+                <Setter Property="Foreground" Value="{DynamicResource ErrorBrush}" />
             </DataTrigger>
             <DataTrigger Binding="{Binding Status}" Value="Cancelled">
-                <Setter Property="Foreground" Value="{StaticResource WarningBrush}" />
+                <Setter Property="Foreground" Value="{DynamicResource WarningBrush}" />
             </DataTrigger>
             <DataTrigger Binding="{Binding Status}" Value="Running">
-                <Setter Property="Foreground" Value="{StaticResource AccentBrush}" />
+                <Setter Property="Foreground" Value="{DynamicResource AccentBrush}" />
             </DataTrigger>
         </Style.Triggers>
     </Style>
 
     <Style TargetType="DataGrid">
-        <Setter Property="Background" Value="{StaticResource PanelBrush}" />
-        <Setter Property="BorderBrush" Value="{StaticResource BorderBrushSoft}" />
+        <Setter Property="Background" Value="{DynamicResource PanelBrush}" />
+        <Setter Property="BorderBrush" Value="{DynamicResource BorderBrushSoft}" />
         <Setter Property="BorderThickness" Value="1" />
-        <Setter Property="RowBackground" Value="{StaticResource PanelBrush}" />
-        <Setter Property="AlternatingRowBackground" Value="{StaticResource SoftPanelBrush}" />
-        <Setter Property="HorizontalGridLinesBrush" Value="{StaticResource BorderBrushSoft}" />
-        <Setter Property="VerticalGridLinesBrush" Value="{StaticResource BorderBrushSoft}" />
+        <Setter Property="RowBackground" Value="{DynamicResource PanelBrush}" />
+        <Setter Property="AlternatingRowBackground" Value="{DynamicResource SoftPanelBrush}" />
+        <Setter Property="HorizontalGridLinesBrush" Value="{DynamicResource BorderBrushSoft}" />
+        <Setter Property="VerticalGridLinesBrush" Value="{DynamicResource BorderBrushSoft}" />
         <Setter Property="HorizontalScrollBarVisibility" Value="Auto" />
         <Setter Property="VerticalScrollBarVisibility" Value="Auto" />
     </Style>
 
     <Style TargetType="DataGridColumnHeader">
-        <Setter Property="Background" Value="{StaticResource SoftPanelBrush}" />
-        <Setter Property="Foreground" Value="{StaticResource AppForegroundBrush}" />
+        <Setter Property="Background" Value="{DynamicResource SoftPanelBrush}" />
+        <Setter Property="Foreground" Value="{DynamicResource AppForegroundBrush}" />
         <Setter Property="FontWeight" Value="SemiBold" />
         <Setter Property="Padding" Value="8,8" />
-        <Setter Property="BorderBrush" Value="{StaticResource BorderBrushSoft}" />
+        <Setter Property="BorderBrush" Value="{DynamicResource BorderBrushSoft}" />
     </Style>
 
     <Style TargetType="DataGridCell">
         <Setter Property="Padding" Value="8,6" />
         <Setter Property="BorderThickness" Value="0" />
         <Setter Property="FocusVisualStyle" Value="{StaticResource FocusVisual}" />
+    </Style>
+
+    <!-- Page host: fade + slight upward slide when a page becomes visible. Pure XAML, GPU-cheap
+         (opacity + TranslateTransform), runs on every machine; no extra cost when idle. -->
+    <Style x:Key="PageHost" TargetType="Grid">
+        <Setter Property="RenderTransformOrigin" Value="0.5,0" />
+        <Setter Property="RenderTransform">
+            <Setter.Value>
+                <TranslateTransform />
+            </Setter.Value>
+        </Setter>
+        <Style.Triggers>
+            <Trigger Property="Visibility" Value="Visible">
+                <Trigger.EnterActions>
+                    <BeginStoryboard>
+                        <Storyboard>
+                            <DoubleAnimation Storyboard.TargetProperty="Opacity"
+                                             From="0" To="1" Duration="0:0:0.18" />
+                            <DoubleAnimation Storyboard.TargetProperty="(UIElement.RenderTransform).(TranslateTransform.Y)"
+                                             From="10" To="0" Duration="0:0:0.22">
+                                <DoubleAnimation.EasingFunction>
+                                    <CubicEase EasingMode="EaseOut" />
+                                </DoubleAnimation.EasingFunction>
+                            </DoubleAnimation>
+                        </Storyboard>
+                    </BeginStoryboard>
+                </Trigger.EnterActions>
+            </Trigger>
+        </Style.Triggers>
     </Style>
 
     <Style x:Key="LogListBox" TargetType="ListBox">

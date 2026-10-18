@@ -83,6 +83,22 @@ public sealed class AppUpdateServiceTests
     }
 
     [Fact]
+    public async Task Stable_channel_treats_404_as_no_update()
+    {
+        var service = new AppUpdateService(new HttpClient(new FakeHandler(_ =>
+            new HttpResponseMessage(HttpStatusCode.NotFound)
+            {
+                Content = new StringContent("Not Found", Encoding.UTF8, "application/json")
+            })));
+
+        var result = await service.CheckAsync("v0.1.0-beta.3", UpdateChannel.Stable, CancellationToken.None);
+
+        Assert.True(result.Success);
+        Assert.False(result.UpdateAvailable);
+        Assert.Null(result.ErrorMessage);
+    }
+
+    [Fact]
     public async Task No_newer_version_returns_no_update()
     {
         var service = new AppUpdateService(new HttpClient(new FakeHandler(_ => Json("""

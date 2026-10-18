@@ -6,8 +6,8 @@
         MinWidth="1180"
         Height="820"
         Width="1360"
-        Background="{StaticResource AppBackgroundBrush}"
-        Foreground="{StaticResource AppForegroundBrush}"
+        Background="{DynamicResource AppBackgroundBrush}"
+        Foreground="{DynamicResource AppForegroundBrush}"
         AllowDrop="True"
         Drop="Window_Drop"
         DragOver="Window_DragOver">
@@ -33,7 +33,7 @@
                 <Border Width="52"
                         Height="52"
                         CornerRadius="12"
-                        Background="{StaticResource AccentSoftBrush}"
+                        Background="{DynamicResource AccentSoftBrush}"
                         BorderBrush="#BFDBFE"
                         BorderThickness="1">
                     <Grid>
@@ -58,7 +58,7 @@
                         <TextBlock Text="{Binding Loc[AppName]}" Style="{StaticResource TitleText}" FontSize="24" />
                         <Border Style="{StaticResource PrivacyBadge}" Margin="14,2,0,0">
                             <TextBlock Text="{Binding Loc[PrivacyBadge]}"
-                                       Foreground="{StaticResource SuccessBrush}"
+                                       Foreground="{DynamicResource SuccessBrush}"
                                        FontWeight="SemiBold"
                                        FontSize="12" />
                         </Border>
@@ -97,7 +97,7 @@
 
         <Grid Grid.Row="1" Grid.Column="1">
             <Grid.Style>
-                <Style TargetType="Grid">
+                <Style TargetType="Grid" BasedOn="{StaticResource PageHost}">
                     <Setter Property="Visibility" Value="Collapsed" />
                     <Style.Triggers>
                         <DataTrigger Binding="{Binding SelectedPage}" Value="Convert">
@@ -114,7 +114,7 @@
             <StackPanel Grid.Row="0">
                 <Border Style="{StaticResource AlertPanel}">
                     <StackPanel>
-                        <TextBlock Text="{Binding Loc[Alert]}" FontWeight="SemiBold" Foreground="{StaticResource WarningBrush}" />
+                        <TextBlock Text="{Binding Loc[Alert]}" FontWeight="SemiBold" Foreground="{DynamicResource WarningBrush}" />
                         <TextBlock Text="{Binding AlertText}" TextWrapping="Wrap" Margin="0,4,0,0" />
                         <ItemsControl ItemsSource="{Binding RejectedPaths}" Margin="0,6,0,0" />
                     </StackPanel>
@@ -132,14 +132,14 @@
                         <Border Width="54"
                                 Height="54"
                                 CornerRadius="27"
-                                Background="{StaticResource PanelBrush}"
+                                Background="{DynamicResource PanelBrush}"
                                 BorderBrush="#BFDBFE"
                                 BorderThickness="1"
                                 VerticalAlignment="Center">
                             <TextBlock Text="+"
                                        FontSize="30"
                                        FontWeight="SemiBold"
-                                       Foreground="{StaticResource AccentBrush}"
+                                       Foreground="{DynamicResource AccentBrush}"
                                        HorizontalAlignment="Center"
                                        VerticalAlignment="Center" />
                         </Border>
@@ -195,6 +195,7 @@
                                        Style="{StaticResource TinyMutedText}"
                                        TextWrapping="Wrap"
                                        Margin="0,8,0,0" />
+                            <CheckBox Content="{Binding Loc[EnableEngineFallback]}" IsChecked="{Binding EnableEngineFallback}" Margin="0,8,0,0" />
                         </StackPanel>
 
                         <StackPanel Grid.Column="2">
@@ -309,7 +310,7 @@
 
         <Grid Grid.Row="1" Grid.Column="1">
             <Grid.Style>
-                <Style TargetType="Grid">
+                <Style TargetType="Grid" BasedOn="{StaticResource PageHost}">
                     <Setter Property="Visibility" Value="Collapsed" />
                     <Style.Triggers>
                         <DataTrigger Binding="{Binding SelectedPage}" Value="Settings">
@@ -403,7 +404,7 @@
 
         <Grid Grid.Row="1" Grid.Column="1">
             <Grid.Style>
-                <Style TargetType="Grid">
+                <Style TargetType="Grid" BasedOn="{StaticResource PageHost}">
                     <Setter Property="Visibility" Value="Collapsed" />
                     <Style.Triggers>
                         <DataTrigger Binding="{Binding SelectedPage}" Value="PdfTools">
@@ -419,7 +420,7 @@
 
             <Border Grid.Row="0" Style="{StaticResource AlertPanel}">
                 <StackPanel>
-                    <TextBlock Text="{Binding Loc[Alert]}" FontWeight="SemiBold" Foreground="{StaticResource WarningBrush}" />
+                    <TextBlock Text="{Binding Loc[Alert]}" FontWeight="SemiBold" Foreground="{DynamicResource WarningBrush}" />
                     <TextBlock Text="{Binding AlertText}" TextWrapping="Wrap" Margin="0,4,0,0" />
                     <ItemsControl ItemsSource="{Binding RejectedPaths}" Margin="0,6,0,0" />
                 </StackPanel>
@@ -463,8 +464,8 @@
                                 <TextBlock Text="{Binding Loc[Inputs]}" Style="{StaticResource FieldLabel}" />
                                 <ListBox ItemsSource="{Binding PdfToolInputs}"
                                          MinHeight="138"
-                                         BorderBrush="{StaticResource BorderBrushSoft}"
-                                         Background="{StaticResource PanelBrush}" />
+                                         BorderBrush="{DynamicResource BorderBrushSoft}"
+                                         Background="{DynamicResource PanelBrush}" />
                                 <WrapPanel Margin="0,10,0,0">
                                     <Button Content="{Binding Loc[AddPdfToolInputs]}" Command="{Binding AddPdfToolFilesCommand}" Style="{StaticResource PrimaryButton}" />
                                     <Button Content="{Binding Loc[ClearInputs]}" Command="{Binding ClearPdfToolInputsCommand}" />
@@ -510,6 +511,36 @@
                                               SelectedValue="{Binding SelectedPdfRotationAngle}" />
                                 </StackPanel>
 
+                                <StackPanel>
+                                    <StackPanel.Style>
+                                        <Style TargetType="StackPanel">
+                                            <Setter Property="Visibility" Value="Visible" />
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding IsPdfToolWatermarkVisible}" Value="False">
+                                                    <Setter Property="Visibility" Value="Collapsed" />
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </StackPanel.Style>
+                                    <TextBlock Text="{Binding Loc[PdfToolWatermarkText]}" Style="{StaticResource FieldLabel}" />
+                                    <TextBox Text="{Binding PdfToolWatermarkText, UpdateSourceTrigger=PropertyChanged}" />
+                                </StackPanel>
+
+                                <StackPanel>
+                                    <StackPanel.Style>
+                                        <Style TargetType="StackPanel">
+                                            <Setter Property="Visibility" Value="Visible" />
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding IsPdfToolPasswordVisible}" Value="False">
+                                                    <Setter Property="Visibility" Value="Collapsed" />
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </StackPanel.Style>
+                                    <TextBlock Text="{Binding Loc[PdfToolPassword]}" Style="{StaticResource FieldLabel}" />
+                                    <TextBox Text="{Binding PdfToolPassword, UpdateSourceTrigger=PropertyChanged}" />
+                                </StackPanel>
+
                                 <Button Content="{Binding Loc[StartTool]}" Command="{Binding RunPdfToolCommand}" Style="{StaticResource PrimaryButton}" Margin="0,18,0,0" />
                                 <Border Style="{StaticResource SettingsGroup}" Margin="0,14,0,0">
                                     <StackPanel>
@@ -533,7 +564,7 @@
 
         <Grid Grid.Row="1" Grid.Column="1">
             <Grid.Style>
-                <Style TargetType="Grid">
+                <Style TargetType="Grid" BasedOn="{StaticResource PageHost}">
                     <Setter Property="Visibility" Value="Collapsed" />
                     <Style.Triggers>
                         <DataTrigger Binding="{Binding SelectedPage}" Value="Engines">
@@ -591,7 +622,7 @@
 
         <Grid Grid.Row="1" Grid.Column="1">
             <Grid.Style>
-                <Style TargetType="Grid">
+                <Style TargetType="Grid" BasedOn="{StaticResource PageHost}">
                     <Setter Property="Visibility" Value="Collapsed" />
                     <Style.Triggers>
                         <DataTrigger Binding="{Binding SelectedPage}" Value="Logs">
@@ -624,7 +655,7 @@
 
         <Grid Grid.Row="1" Grid.Column="1">
             <Grid.Style>
-                <Style TargetType="Grid">
+                <Style TargetType="Grid" BasedOn="{StaticResource PageHost}">
                     <Setter Property="Visibility" Value="Collapsed" />
                     <Style.Triggers>
                         <DataTrigger Binding="{Binding SelectedPage}" Value="Help">
@@ -651,7 +682,7 @@
                     <ColumnDefinition Width="Auto" />
                 </Grid.ColumnDefinitions>
                 <TextBlock Text="{Binding SummaryText}" VerticalAlignment="Center" Style="{StaticResource MutedText}" />
-                <TextBlock Grid.Column="1" Text="{Binding Loc[PrivacyBadge]}" VerticalAlignment="Center" Foreground="{StaticResource SuccessBrush}" FontWeight="SemiBold" />
+                <TextBlock Grid.Column="1" Text="{Binding Loc[PrivacyBadge]}" VerticalAlignment="Center" Foreground="{DynamicResource SuccessBrush}" FontWeight="SemiBold" />
             </Grid>
         </Border>
     </Grid>

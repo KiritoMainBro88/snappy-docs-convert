@@ -35,6 +35,14 @@ public sealed class AppSettingsServiceTests
     }
 
     [Fact]
+    public void EnableEngineFallback_defaults_to_true()
+    {
+        var settings = new AppSettingsData();
+
+        Assert.True(settings.EnableEngineFallback);
+    }
+
+    [Fact]
     public void Invalid_enum_values_are_normalized()
     {
         var settings = new AppSettingsData

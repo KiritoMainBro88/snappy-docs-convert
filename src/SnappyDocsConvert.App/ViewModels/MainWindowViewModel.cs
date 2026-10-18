@@ -7,6 +7,7 @@ using SnappyDocsConvert.App.Services;
 using SnappyDocsConvert.Core.Models;
 using SnappyDocsConvert.Core.Models.Updates;
 using SnappyDocsConvert.Core.Services.Batch;
+using SnappyDocsConvert.Core.Services.Office;
 using SnappyDocsConvert.Core.Services.Updates;
 
 namespace SnappyDocsConvert.App.ViewModels;
@@ -28,7 +29,6 @@ public sealed class MainWindowViewModel : ObservableObject
     private readonly FilePickerService _filePicker;
     private readonly FolderPickerService _folderPicker;
     private readonly IBatchInputScanner _inputScanner;
-    private readonly UiBatchRunner _batchRunner;
     private readonly AppServiceFactory _serviceFactory;
     private readonly AppSettingsService _settingsService;
     private readonly ThemeService _themeService;
@@ -42,6 +42,7 @@ public sealed class MainWindowViewModel : ObservableObject
     private ImageOutputFormat _selectedImageFormat = ImageOutputFormat.Png;
     private int _dpi = 200;
     private bool _keepIntermediatePdf;
+    private bool _enableEngineFallback = true;
     private bool _isRunning;
     private string? _customLibreOfficePath;
     private string _summaryText;
@@ -50,6 +51,8 @@ public sealed class MainWindowViewModel : ObservableObject
     private PdfRotationAngle _selectedPdfRotationAngle = PdfRotationAngle.Degrees90;
     private string _pdfToolPageRanges = "";
     private string _pdfToolOutputFileName = "";
+    private string _pdfToolWatermarkText = "";
+    private string _pdfToolPassword = "";
     private string _pdfToolStatus = "";
     private string _alertText = "";
     private AppPage _selectedPage = AppPage.Convert;
@@ -80,11 +83,11 @@ public sealed class MainWindowViewModel : ObservableObject
         _selectedLanguagePreference = _settings.Language;
         _selectedThemePreference = _settings.Theme;
         _selectedUpdateChannel = _settings.UpdateChannel;
+        _enableEngineFallback = _settings.EnableEngineFallback;
         ApplyPersistedAppearance();
         _filePicker = serviceFactory.CreateFilePickerService();
         _folderPicker = serviceFactory.CreateFolderPickerService();
         _inputScanner = serviceFactory.CreateBatchInputScanner();
-        _batchRunner = serviceFactory.CreateBatchRunner();
         _summaryText = Loc["Ready"];
         _pdfToolStatus = Loc["PdfToolsReady"];
 
@@ -287,6 +290,20 @@ public sealed class MainWindowViewModel : ObservableObject
         set => SetProperty(ref _keepIntermediatePdf, value);
     }
 
+    public bool EnableEngineFallback
+    {
+        get => _enableEngineFallback;
+        set
+        {
+            if (SetProperty(ref _enableEngineFallback, value))
+            {
+                _settings.EnableEngineFallback = value;
+                _settingsService.Save(_settings);
+                Log($"Auto engine fallback set: {value}.");
+            }
+        }
+    }
+
     public bool IsRunning
     {
         get => _isRunning;
@@ -323,6 +340,8 @@ public sealed class MainWindowViewModel : ObservableObject
             {
                 OnPropertyChanged(nameof(IsPdfToolPageRangeVisible));
                 OnPropertyChanged(nameof(IsPdfToolRotationVisible));
+                OnPropertyChanged(nameof(IsPdfToolWatermarkVisible));
+                OnPropertyChanged(nameof(IsPdfToolPasswordVisible));
             }
         }
     }
@@ -343,6 +362,18 @@ public sealed class MainWindowViewModel : ObservableObject
     {
         get => _pdfToolOutputFileName;
         set => SetProperty(ref _pdfToolOutputFileName, value);
+    }
+
+    public string PdfToolWatermarkText
+    {
+        get => _pdfToolWatermarkText;
+        set => SetProperty(ref _pdfToolWatermarkText, value);
+    }
+
+    public string PdfToolPassword
+    {
+        get => _pdfToolPassword;
+        set => SetProperty(ref _pdfToolPassword, value);
     }
 
     public string PdfToolStatus
@@ -460,6 +491,10 @@ public sealed class MainWindowViewModel : ObservableObject
         SelectedPdfToolOperation is PdfToolOperation.ExtractPages or PdfToolOperation.RotatePages;
 
     public bool IsPdfToolRotationVisible => SelectedPdfToolOperation == PdfToolOperation.RotatePages;
+
+    public bool IsPdfToolWatermarkVisible => SelectedPdfToolOperation == PdfToolOperation.Watermark;
+
+    public bool IsPdfToolPasswordVisible => SelectedPdfToolOperation == PdfToolOperation.Encrypt;
 
     public void AddPaths(IEnumerable<string> paths)
     {
@@ -614,14 +649,16 @@ public sealed class MainWindowViewModel : ObservableObject
                     Dpi = Dpi,
                     JpegQuality = 90,
                     KeepIntermediatePdf = KeepIntermediatePdf,
+                    EnableEngineFallback = EnableEngineFallback,
                     LibreOfficeExecutablePath = _customLibreOfficePath,
                     OverwritePolicy = OverwritePolicy.AutoRename
                 });
 
             var token = _runCancellation.Token;
             var progress = new Progress<BatchConversionProgress>(UpdateProgress);
+            var batchRunner = _serviceFactory.CreateBatchRunner();
             var result = await Task.Run(
-                    () => _batchRunner.RunAsync(job, progress, token),
+                    () => batchRunner.RunAsync(job, progress, token),
                     token)
                 .ConfigureAwait(true);
 
@@ -741,6 +778,102 @@ public sealed class MainWindowViewModel : ObservableObject
         try
         {
             Directory.CreateDirectory(OutputFolder);
+            Log($"PDF tool started: {SelectedPdfToolOperation}.");
+            AlertText = "";
+            var token = _runCancellation.Token;
+
+            // PDF -> Word is a reverse conversion handled by Word COM, not the PdfSharp tool service.
+            if (SelectedPdfToolOperation == PdfToolOperation.OcrToText)
+            {
+                var ocr = _serviceFactory.CreateOcrService(_settings.PaddleOcrPath);
+                if (ocr is null)
+                {
+                    PdfToolStatus = Loc["OcrEngineMissing"];
+                    ShowAlert(PdfToolStatus);
+                    Log("OCR blocked: PaddleOCR path not configured.");
+                    return;
+                }
+
+                var outputs = new List<string>();
+                var failures = new List<string>();
+                foreach (var path in PdfToolInputs.ToArray())
+                {
+                    token.ThrowIfCancellationRequested();
+                    var ocrResult = await Task.Run(
+                            () => ocr.RecognizeAsync(path, OutputFolder, Dpi, token),
+                            token)
+                        .ConfigureAwait(true);
+                    if (!ocrResult.Success)
+                    {
+                        // One file's failure must not discard the rest of the batch: keep going and
+                        // report per-file outcomes in the final summary.
+                        failures.Add($"{Path.GetFileName(path)}: {ocrResult.ErrorMessage ?? "OCR failed."}");
+                        Log($"OCR failed: {failures[^1]}");
+                        continue;
+                    }
+
+                    outputs.Add(ocrResult.OutputTextPath);
+                }
+
+                if (failures.Count > 0)
+                {
+                    if (outputs.Count == 0)
+                    {
+                        PdfToolStatus = $"OCR failed for all {failures.Count} input(s). {failures[0]}";
+                        ShowAlert(PdfToolStatus);
+                        Log(PdfToolStatus);
+                        return;
+                    }
+
+                    PdfToolStatus = $"OCR done with {failures.Count} failure(s): {outputs.Count}/{PdfToolInputs.Count} text file(s) written. Failed: {string.Join(" | ", failures)}";
+                    ShowAlert(PdfToolStatus);
+                    Log(PdfToolStatus);
+                    return;
+                }
+
+                PdfToolStatus = $"OCR done. {outputs.Count} text file(s). First: {outputs.FirstOrDefault() ?? OutputFolder}";
+                Log(PdfToolStatus);
+                return;
+            }
+
+            if (SelectedPdfToolOperation == PdfToolOperation.PdfToWord)
+            {
+                var converter = _serviceFactory.CreatePdfToDocumentConverter();
+                try
+                {
+                    var outputs = new List<string>();
+                    foreach (var pdf in PdfToolInputs.ToArray())
+                    {
+                        token.ThrowIfCancellationRequested();
+                        var conv = await Task.Run(
+                                () => converter.ConvertToDocxAsync(pdf, OutputFolder, token),
+                                token)
+                            .ConfigureAwait(true);
+                        if (!conv.Success)
+                        {
+                            PdfToolStatus = conv.ErrorMessage ?? "PDF to Word failed.";
+                            ShowAlert(PdfToolStatus);
+                            Log($"PDF to Word failed: {PdfToolStatus}");
+                            return;
+                        }
+
+                        if (!string.IsNullOrWhiteSpace(conv.OutputPdfPath))
+                        {
+                            outputs.Add(conv.OutputPdfPath);
+                        }
+                    }
+
+                    PdfToolStatus = $"PDF to Word done. {outputs.Count} file(s). First: {outputs.FirstOrDefault() ?? OutputFolder}";
+                    Log(PdfToolStatus);
+                }
+                finally
+                {
+                    converter.DisposeSessionIfOwned();
+                }
+
+                return;
+            }
+
             var request = new PdfToolRequest
             {
                 Operation = SelectedPdfToolOperation,
@@ -752,13 +885,16 @@ public sealed class MainWindowViewModel : ObservableObject
                 PageRanges = string.IsNullOrWhiteSpace(PdfToolPageRanges)
                     ? null
                     : PdfToolPageRanges,
-                RotationAngle = SelectedPdfRotationAngle
+                RotationAngle = SelectedPdfRotationAngle,
+                WatermarkText = string.IsNullOrWhiteSpace(PdfToolWatermarkText)
+                    ? null
+                    : PdfToolWatermarkText,
+                UserPassword = string.IsNullOrEmpty(PdfToolPassword)
+                    ? null
+                    : PdfToolPassword
             };
 
-            Log($"PDF tool started: {SelectedPdfToolOperation}.");
-            AlertText = "";
             var service = _serviceFactory.CreatePdfToolService();
-            var token = _runCancellation.Token;
             var result = await Task.Run(
                     () => service.RunAsync(request, token),
                     token)
@@ -977,11 +1113,36 @@ public sealed class MainWindowViewModel : ObservableObject
             ?? string.Join("; ", result.ImageFiles.Take(2));
         OpenItemOutputCommand.RaiseCanExecuteChanged();
 
+        if (result.Fallback is { } fallback)
+        {
+            var fileName = item.FileName;
+            var primaryEngineName = EngineName(fallback.PrimaryEngine);
+            var fallbackEngineName = EngineName(fallback.FallbackEngine);
+
+            Log(string.Format(
+                Loc["FallbackAttempt"],
+                fileName,
+                primaryEngineName,
+                fallback.PrimaryFailureReason,
+                fallbackEngineName));
+
+            Log(fallback.FallbackSucceeded
+                ? string.Format(Loc["FallbackSuccess"], fileName, fallbackEngineName)
+                : string.Format(Loc["BothEnginesFailed"], fileName));
+        }
+
         if (!string.IsNullOrWhiteSpace(result.ErrorMessage))
         {
             Log($"{item.FileName}: {result.ErrorMessage}");
         }
     }
+
+    private string EngineName(ConversionEngineKind engine) => engine switch
+    {
+        ConversionEngineKind.MicrosoftOffice => Loc["EngineMicrosoftOffice"],
+        ConversionEngineKind.LibreOffice => Loc["EngineLibreOffice"],
+        _ => engine.ToString()
+    };
 
     private void RefreshSelectedEngineGuidance()
     {
@@ -1266,6 +1427,11 @@ public sealed class MainWindowViewModel : ObservableObject
         PdfToolOperation.ExtractPages => Loc["ToolExtract"],
         PdfToolOperation.RotatePages => Loc["ToolRotate"],
         PdfToolOperation.ImagesToPdf => Loc["ToolImagesToPdf"],
+        PdfToolOperation.Compress => Loc["ToolCompress"],
+        PdfToolOperation.Watermark => Loc["ToolWatermark"],
+        PdfToolOperation.Encrypt => Loc["ToolEncrypt"],
+        PdfToolOperation.PdfToWord => Loc["ToolPdfToWord"],
+        PdfToolOperation.OcrToText => Loc["ToolOcr"],
         _ => operation.ToString()
     };
 
@@ -1296,9 +1462,19 @@ public sealed class MainWindowViewModel : ObservableObject
         }
 
         var extension = Path.GetExtension(path);
-        return SelectedPdfToolOperation == PdfToolOperation.ImagesToPdf
-            ? PdfToolImageExtensions.Contains(extension)
-            : PdfToolPdfExtensions.Contains(extension);
+        if (SelectedPdfToolOperation == PdfToolOperation.ImagesToPdf)
+        {
+            return PdfToolImageExtensions.Contains(extension);
+        }
+
+        // OCR accepts both PDF and image inputs.
+        if (SelectedPdfToolOperation == PdfToolOperation.OcrToText)
+        {
+            return PdfToolPdfExtensions.Contains(extension)
+                || PdfToolImageExtensions.Contains(extension);
+        }
+
+        return PdfToolPdfExtensions.Contains(extension);
     }
 
     private void AddRejectedPath(string path, string reason)
