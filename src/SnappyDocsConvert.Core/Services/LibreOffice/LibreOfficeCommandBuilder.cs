@@ -12,7 +12,11 @@ public sealed class LibreOfficeCommandBuilder
         ".odt",
         ".ppt",
         ".pptx",
-        ".odp"
+        ".odp",
+        ".xls",
+        ".xlsx",
+        ".csv",
+        ".ods"
     };
 
     public bool IsSupportedInput(string inputPath)
@@ -25,6 +29,7 @@ public sealed class LibreOfficeCommandBuilder
         {
             ".doc" or ".docx" or ".rtf" or ".odt" => ConversionFileKind.WordDocument,
             ".ppt" or ".pptx" or ".odp" => ConversionFileKind.Presentation,
+            ".xls" or ".xlsx" or ".csv" or ".ods" => ConversionFileKind.Spreadsheet,
             ".pdf" => ConversionFileKind.Pdf,
             _ => ConversionFileKind.Unsupported
         };

@@ -7,4 +7,6 @@ public sealed record OfficeAvailability(
     bool CanConvertPowerPointPresentations,
     IReadOnlyList<string> Reasons,
     IReadOnlyList<EngineSetupRecommendation> Recommendations,
-    string? VersionSummary);
+    string? VersionSummary,
+    bool ExcelAvailable = false,
+    bool CanConvertExcelWorkbooks = false);

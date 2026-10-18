@@ -20,5 +20,7 @@ public sealed record BatchConversionItemResult
 
     public BatchOutputItemPlan? OutputPlan { get; init; }
 
+    public BatchFallbackInfo? Fallback { get; init; }
+
     public TimeSpan Duration { get; init; }
 }

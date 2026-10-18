@@ -8,4 +8,9 @@ public interface IConversionEngineSelector
         string inputPath,
         BatchConversionOptions options,
         CancellationToken cancellationToken);
+
+    Task<BatchEngineEligibilityResult> GetEligibleEnginesAsync(
+        string inputPath,
+        BatchConversionOptions options,
+        CancellationToken cancellationToken);
 }

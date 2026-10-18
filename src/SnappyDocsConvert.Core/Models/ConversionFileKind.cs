@@ -5,5 +5,6 @@ public enum ConversionFileKind
     Unsupported = 0,
     WordDocument = 1,
     Presentation = 2,
-    Pdf = 3
+    Pdf = 3,
+    Spreadsheet = 4
 }

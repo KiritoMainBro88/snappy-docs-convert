@@ -14,7 +14,11 @@ public sealed class BatchInputScanner : IBatchInputScanner
             ".odt",
             ".ppt",
             ".pptx",
-            ".odp"
+            ".odp",
+            ".xls",
+            ".xlsx",
+            ".csv",
+            ".ods"
         };
 
     public BatchInputScanResult Scan(IEnumerable<string> paths)

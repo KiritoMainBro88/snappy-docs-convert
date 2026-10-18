@@ -24,6 +24,8 @@ public sealed record BatchConversionOptions
 
     public int MaxImageRenderJobs { get; init; } = 1;
 
+    public bool EnableEngineFallback { get; init; } = true;
+
     public IntermediatePdfPolicy IntermediatePdfPolicy =>
         KeepIntermediatePdf ? IntermediatePdfPolicy.Keep : IntermediatePdfPolicy.DeleteWhenImagesOnly;
 }

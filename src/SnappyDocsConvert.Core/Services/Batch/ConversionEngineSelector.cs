@@ -18,6 +18,13 @@ public sealed class ConversionEngineSelector : IConversionEngineSelector
         ".pptx"
     };
 
+    private static readonly HashSet<string> OfficeExcelExtensions = new(StringComparer.OrdinalIgnoreCase)
+    {
+        ".xls",
+        ".xlsx",
+        ".csv"
+    };
+
     private static readonly HashSet<string> LibreOfficeExtensions = new(StringComparer.OrdinalIgnoreCase)
     {
         ".doc",
@@ -26,7 +33,11 @@ public sealed class ConversionEngineSelector : IConversionEngineSelector
         ".odt",
         ".ppt",
         ".pptx",
-        ".odp"
+        ".odp",
+        ".xls",
+        ".xlsx",
+        ".csv",
+        ".ods"
     };
 
     private readonly IMicrosoftOfficeAvailabilityProvider _officeAvailabilityProvider;
@@ -79,7 +90,7 @@ public sealed class ConversionEngineSelector : IConversionEngineSelector
         BatchConversionOptions options,
         CancellationToken cancellationToken)
     {
-        if (extension is ".odt" or ".odp")
+        if (extension is ".odt" or ".odp" or ".ods")
         {
             return await SelectForcedLibreOfficeAsync(extension, options, cancellationToken).ConfigureAwait(false);
         }
@@ -94,6 +105,11 @@ public sealed class ConversionEngineSelector : IConversionEngineSelector
         }
 
         if (OfficePowerPointExtensions.Contains(extension) && officeAvailability.CanConvertPowerPointPresentations)
+        {
+            return BatchEngineSelectionResult.Selected(ConversionEngineKind.MicrosoftOffice);
+        }
+
+        if (OfficeExcelExtensions.Contains(extension) && officeAvailability.CanConvertExcelWorkbooks)
         {
             return BatchEngineSelectionResult.Selected(ConversionEngineKind.MicrosoftOffice);
         }
@@ -117,7 +133,9 @@ public sealed class ConversionEngineSelector : IConversionEngineSelector
         string extension,
         CancellationToken cancellationToken)
     {
-        if (!OfficeWordExtensions.Contains(extension) && !OfficePowerPointExtensions.Contains(extension))
+        if (!OfficeWordExtensions.Contains(extension)
+            && !OfficePowerPointExtensions.Contains(extension)
+            && !OfficeExcelExtensions.Contains(extension))
         {
             return BatchEngineSelectionResult.Failed(
                 $"Microsoft Office engine does not support '{extension}' in this phase.");
@@ -133,6 +151,11 @@ public sealed class ConversionEngineSelector : IConversionEngineSelector
         }
 
         if (OfficePowerPointExtensions.Contains(extension) && availability.CanConvertPowerPointPresentations)
+        {
+            return BatchEngineSelectionResult.Selected(ConversionEngineKind.MicrosoftOffice);
+        }
+
+        if (OfficeExcelExtensions.Contains(extension) && availability.CanConvertExcelWorkbooks)
         {
             return BatchEngineSelectionResult.Selected(ConversionEngineKind.MicrosoftOffice);
         }
@@ -170,8 +193,102 @@ public sealed class ConversionEngineSelector : IConversionEngineSelector
                 new[] { availability.Reason ?? "Install LibreOffice or choose soffice.com." });
     }
 
+    public async Task<BatchEngineEligibilityResult> GetEligibleEnginesAsync(
+        string inputPath,
+        BatchConversionOptions options,
+        CancellationToken cancellationToken)
+    {
+        var extension = Path.GetExtension(inputPath);
+
+        // No engine is needed for PDF inputs, and unsupported extensions have no eligible engine.
+        if (string.Equals(extension, ".pdf", StringComparison.OrdinalIgnoreCase)
+            || !IsSupportedDocumentExtension(extension))
+        {
+            return BatchEngineEligibilityResult.Empty;
+        }
+
+        var officeEligible = await IsOfficeEligibleAsync(extension, cancellationToken).ConfigureAwait(false);
+        var libreOfficeEligible = await IsLibreOfficeEligibleAsync(extension, options, cancellationToken)
+            .ConfigureAwait(false);
+
+        // Preference encodes the ordering so the first element is the natural primary and any later
+        // element is a candidate fallback. LibreOffice goes first only when explicitly forced.
+        var officeFirst = options.EnginePreference != BatchConversionEnginePreference.LibreOffice;
+
+        var ordered = new List<ConversionEngineKind>(2);
+        if (officeFirst)
+        {
+            if (officeEligible)
+            {
+                ordered.Add(ConversionEngineKind.MicrosoftOffice);
+            }
+
+            if (libreOfficeEligible)
+            {
+                ordered.Add(ConversionEngineKind.LibreOffice);
+            }
+        }
+        else
+        {
+            if (libreOfficeEligible)
+            {
+                ordered.Add(ConversionEngineKind.LibreOffice);
+            }
+
+            if (officeEligible)
+            {
+                ordered.Add(ConversionEngineKind.MicrosoftOffice);
+            }
+        }
+
+        return BatchEngineEligibilityResult.From(ordered);
+    }
+
+    private async Task<bool> IsOfficeEligibleAsync(string extension, CancellationToken cancellationToken)
+    {
+        var isWord = OfficeWordExtensions.Contains(extension);
+        var isPowerPoint = OfficePowerPointExtensions.Contains(extension);
+        var isExcel = OfficeExcelExtensions.Contains(extension);
+        if (!isWord && !isPowerPoint && !isExcel)
+        {
+            return false;
+        }
+
+        var availability = await _officeAvailabilityProvider
+            .GetOfficeAvailabilityAsync(cancellationToken)
+            .ConfigureAwait(false);
+
+        return (isWord && availability.CanConvertWordDocuments)
+            || (isPowerPoint && availability.CanConvertPowerPointPresentations)
+            || (isExcel && availability.CanConvertExcelWorkbooks);
+    }
+
+    private async Task<bool> IsLibreOfficeEligibleAsync(
+        string extension,
+        BatchConversionOptions options,
+        CancellationToken cancellationToken)
+    {
+        if (!LibreOfficeExtensions.Contains(extension))
+        {
+            return false;
+        }
+
+        var availability = await _libreOfficeLocator
+            .LocateAsync(
+                new LibreOfficeOptions
+                {
+                    ExecutablePath = options.LibreOfficeExecutablePath,
+                    ProbeVersion = false
+                },
+                cancellationToken)
+            .ConfigureAwait(false);
+
+        return availability.IsAvailable;
+    }
+
     private static bool IsSupportedDocumentExtension(string extension)
         => LibreOfficeExtensions.Contains(extension)
             || OfficeWordExtensions.Contains(extension)
-            || OfficePowerPointExtensions.Contains(extension);
+            || OfficePowerPointExtensions.Contains(extension)
+            || OfficeExcelExtensions.Contains(extension);
 }

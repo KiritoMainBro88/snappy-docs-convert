@@ -17,7 +17,23 @@ public sealed class BatchConversionPipeline : IBatchConversionPipeline
         ".odt",
         ".ppt",
         ".pptx",
-        ".odp"
+        ".odp",
+        ".xls",
+        ".xlsx",
+        ".csv",
+        ".ods"
+    };
+
+    // A per-file failure where retrying with the other engine could plausibly succeed
+    // (Requirement 2.2). Explicitly excludes Cancelled, MissingInput, UnsupportedInput,
+    // and OutputCollision, which are non-recoverable and never trigger fallback.
+    private static readonly HashSet<ConversionStatus> RecoverableFailures = new()
+    {
+        ConversionStatus.Failed,
+        ConversionStatus.ProcessFailed,
+        ConversionStatus.TimedOut,
+        ConversionStatus.OutputMissing,
+        ConversionStatus.EngineUnavailable
     };
 
     private readonly IBatchOutputPlanner _outputPlanner;
@@ -69,7 +85,7 @@ public sealed class BatchConversionPipeline : IBatchConversionPipeline
 
             Report(progress, job, item, index, BatchConversionItemStatus.Running, "Running");
 
-            var result = await ProcessItemAsync(job, item, cancellationToken).ConfigureAwait(false);
+            var result = await ProcessItemAsync(job, item, progress, index, cancellationToken).ConfigureAwait(false);
             results.Add(result);
 
             Report(progress, job, item, index, result.Status, result.ErrorMessage ?? result.Status.ToString());
@@ -91,6 +107,8 @@ public sealed class BatchConversionPipeline : IBatchConversionPipeline
     private async Task<BatchConversionItemResult> ProcessItemAsync(
         BatchConversionJob job,
         BatchConversionItem item,
+        IProgress<BatchConversionProgress>? progress,
+        int index,
         CancellationToken cancellationToken)
     {
         var stopwatch = Stopwatch.StartNew();
@@ -128,6 +146,7 @@ public sealed class BatchConversionPipeline : IBatchConversionPipeline
             string? sourcePdfPath;
             string? outputPdfPath = null;
             ConversionEngineKind? documentEngine = null;
+            BatchFallbackInfo? fallbackInfo = null;
 
             if (isPdfInput)
             {
@@ -160,16 +179,29 @@ public sealed class BatchConversionPipeline : IBatchConversionPipeline
                         plan);
                 }
 
-                documentEngine = selection.EngineKind.Value;
+                var primaryEngine = selection.EngineKind.Value;
                 tempDirectory = CreateTempDirectory();
-                var conversion = await ConvertDocumentAsync(
-                    documentEngine.Value,
+
+                var attempt = await RunWithFallbackAsync(
+                    primaryEngine,
                     inputPath,
                     tempDirectory,
-                    job.Options,
+                    job,
+                    item,
+                    index,
+                    progress,
+                    warnings,
                     cancellationToken).ConfigureAwait(false);
 
-                warnings.AddRange(conversion.Warnings);
+                documentEngine = attempt.EngineUsed;
+                fallbackInfo = attempt.Fallback;
+
+                if (attempt.Cancelled)
+                {
+                    return Cancelled(inputPath, stopwatch.Elapsed, warnings);
+                }
+
+                var conversion = attempt.Result;
                 if (!conversion.Success || string.IsNullOrWhiteSpace(conversion.OutputPdfPath))
                 {
                     return Failed(
@@ -178,7 +210,8 @@ public sealed class BatchConversionPipeline : IBatchConversionPipeline
                         stopwatch.Elapsed,
                         warnings,
                         plan,
-                        documentEngine);
+                        documentEngine,
+                        fallback: fallbackInfo);
                 }
 
                 if (!File.Exists(conversion.OutputPdfPath) || new FileInfo(conversion.OutputPdfPath).Length <= 0)
@@ -189,7 +222,8 @@ public sealed class BatchConversionPipeline : IBatchConversionPipeline
                         stopwatch.Elapsed,
                         warnings,
                         plan,
-                        documentEngine);
+                        documentEngine,
+                        fallback: fallbackInfo);
                 }
 
                 sourcePdfPath = conversion.OutputPdfPath;
@@ -233,7 +267,8 @@ public sealed class BatchConversionPipeline : IBatchConversionPipeline
                         documentEngine,
                         outputPdfPath,
                         renderResult.OutputDirectory,
-                        renderResult.OutputFiles);
+                        renderResult.OutputFiles,
+                        fallbackInfo);
                 }
 
                 return Succeeded(
@@ -244,7 +279,8 @@ public sealed class BatchConversionPipeline : IBatchConversionPipeline
                     documentEngine,
                     outputPdfPath,
                     renderResult.OutputDirectory,
-                    renderResult.OutputFiles);
+                    renderResult.OutputFiles,
+                    fallbackInfo);
             }
 
             return Succeeded(
@@ -255,7 +291,8 @@ public sealed class BatchConversionPipeline : IBatchConversionPipeline
                 documentEngine,
                 outputPdfPath,
                 null,
-                Array.Empty<string>());
+                Array.Empty<string>(),
+                fallbackInfo);
         }
         catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested)
         {
@@ -280,6 +317,154 @@ public sealed class BatchConversionPipeline : IBatchConversionPipeline
             }
         }
     }
+
+    /// <summary>
+    /// Runs the primary engine into a per-attempt <c>temp/primary</c> subdirectory and, on a
+    /// recoverable failure with fallback enabled and a distinct eligible alternate engine, retries
+    /// the same file once with that alternate into <c>temp/fallback</c> using the same
+    /// <see cref="CancellationToken"/>. Returns the chosen <see cref="ConversionResult"/>, the engine
+    /// used (or last attempted), a cancellation flag, and optional fallback metadata. Appends neutral
+    /// English fallback warnings to <paramref name="warnings"/> and emits a fallback-attempt progress
+    /// report before the fallback runs.
+    /// </summary>
+    private async Task<FallbackAttempt> RunWithFallbackAsync(
+        ConversionEngineKind primaryEngine,
+        string inputPath,
+        string tempRoot,
+        BatchConversionJob job,
+        BatchConversionItem item,
+        int index,
+        IProgress<BatchConversionProgress>? progress,
+        List<string> warnings,
+        CancellationToken cancellationToken)
+    {
+        // 1. Run the primary engine into its own subdirectory so a partial primary output can never
+        //    be mistaken for a fallback success.
+        var primaryDirectory = Path.Combine(tempRoot, "primary");
+        Directory.CreateDirectory(primaryDirectory);
+        var primary = await ConvertDocumentAsync(
+            primaryEngine,
+            inputPath,
+            primaryDirectory,
+            job.Options,
+            cancellationToken).ConfigureAwait(false);
+        warnings.AddRange(primary.Warnings);
+
+        // 2. Cancellation by the primary is never recoverable (Req 2.1).
+        if (primary.Status == ConversionStatus.Cancelled)
+        {
+            return FallbackAttempt.CancelledAttempt(primaryEngine);
+        }
+
+        // 3. Primary success with a usable PDF short-circuits before any fallback (Req 1.3).
+        if (HasUsablePdf(primary))
+        {
+            return FallbackAttempt.From(primary, primaryEngine);
+        }
+
+        // 4. Non-recoverable failures are reported as-is without fallback (Req 2.2, 2.3, 2.4).
+        if (!IsRecoverable(primary))
+        {
+            return FallbackAttempt.From(primary, primaryEngine);
+        }
+
+        // 5. Honour the fallback setting (Req 4.4).
+        if (!job.Options.EnableEngineFallback)
+        {
+            return FallbackAttempt.From(primary, primaryEngine);
+        }
+
+        // 6. Choose the first distinct eligible alternate engine (Req 3.3, 3.4).
+        var eligibility = await _engineSelector
+            .GetEligibleEnginesAsync(inputPath, job.Options, cancellationToken)
+            .ConfigureAwait(false);
+        ConversionEngineKind? fallbackEngine = null;
+        foreach (var kind in eligibility.EligibleEngines)
+        {
+            if (kind != primaryEngine)
+            {
+                fallbackEngine = kind;
+                break;
+            }
+        }
+
+        if (fallbackEngine is null)
+        {
+            // No eligible alternate: report the primary failure unchanged (Req 3.3).
+            return FallbackAttempt.From(primary, primaryEngine);
+        }
+
+        // 7. Honour cancellation requested before the fallback attempt begins (Req 6.1).
+        if (cancellationToken.IsCancellationRequested)
+        {
+            return FallbackAttempt.CancelledAttempt(primaryEngine);
+        }
+
+        // 8. Record the fallback attempt and surface it to the live UI (Req 5.1, 5.4).
+        var primaryReason = primary.ErrorMessage ?? "Document conversion failed.";
+        warnings.Add(
+            $"Fallback: {primaryEngine} failed ({primaryReason}); retrying with {fallbackEngine.Value}.");
+        Report(
+            progress,
+            job,
+            item,
+            index,
+            BatchConversionItemStatus.Running,
+            $"Fallback: {primaryEngine} failed; retrying with {fallbackEngine.Value}.");
+
+        // Run the fallback into its own subdirectory with the SAME cancellation token (Req 6.2, 7.1).
+        var fallbackDirectory = Path.Combine(tempRoot, "fallback");
+        Directory.CreateDirectory(fallbackDirectory);
+        var fallback = await ConvertDocumentAsync(
+            fallbackEngine.Value,
+            inputPath,
+            fallbackDirectory,
+            job.Options,
+            cancellationToken).ConfigureAwait(false);
+        warnings.AddRange(fallback.Warnings);
+
+        // 9. Cancellation during the fallback is surfaced as Cancelled, not a failure (Req 6.3).
+        if (fallback.Status == ConversionStatus.Cancelled)
+        {
+            return FallbackAttempt.CancelledAttempt(fallbackEngine.Value);
+        }
+
+        // 10. Fallback success: use the fallback PDF and engine (Req 1.2, 5.2).
+        if (HasUsablePdf(fallback))
+        {
+            warnings.Add($"Fallback: {fallbackEngine.Value} produced the PDF.");
+            var successInfo = new BatchFallbackInfo
+            {
+                PrimaryEngine = primaryEngine,
+                PrimaryFailureReason = primaryReason,
+                FallbackEngine = fallbackEngine.Value,
+                FallbackSucceeded = true
+            };
+            return FallbackAttempt.From(fallback, fallbackEngine.Value, successInfo);
+        }
+
+        // 11. Both engines failed: retain the PRIMARY failure reason as authoritative (Req 5.3).
+        warnings.Add("Fallback: both engines failed.");
+        var fallbackReason = fallback.ErrorMessage ?? "Document conversion failed.";
+        warnings.Add($"Fallback: {fallbackEngine.Value} also failed ({fallbackReason}).");
+        var failureInfo = new BatchFallbackInfo
+        {
+            PrimaryEngine = primaryEngine,
+            PrimaryFailureReason = primaryReason,
+            FallbackEngine = fallbackEngine.Value,
+            FallbackSucceeded = false
+        };
+        // Retain the primary reason as the authoritative ErrorMessage; DocumentEngine reflects the
+        // last engine attempted (the fallback) per Req 5.5.
+        var retained = primary with { EngineKind = fallbackEngine.Value };
+        return FallbackAttempt.From(retained, fallbackEngine.Value, failureInfo);
+    }
+
+    private static bool IsRecoverable(ConversionResult result)
+        => !result.Success && RecoverableFailures.Contains(result.Status);
+
+    private static bool HasUsablePdf(ConversionResult result)
+        => result.Success && !string.IsNullOrWhiteSpace(result.OutputPdfPath);
 
     private async Task<ConversionResult> ConvertDocumentAsync(
         ConversionEngineKind engineKind,
@@ -412,7 +597,8 @@ public sealed class BatchConversionPipeline : IBatchConversionPipeline
         ConversionEngineKind? documentEngine,
         string? outputPdfPath,
         string? imageOutputDirectory,
-        IReadOnlyList<string> imageFiles)
+        IReadOnlyList<string> imageFiles,
+        BatchFallbackInfo? fallback = null)
         => new()
         {
             InputPath = inputPath,
@@ -423,6 +609,20 @@ public sealed class BatchConversionPipeline : IBatchConversionPipeline
             ImageFiles = imageFiles,
             Warnings = warnings,
             OutputPlan = plan,
+            Fallback = fallback,
+            Duration = duration
+        };
+
+    private static BatchConversionItemResult Cancelled(
+        string inputPath,
+        TimeSpan duration,
+        IReadOnlyList<string> warnings)
+        => new()
+        {
+            InputPath = inputPath,
+            Status = BatchConversionItemStatus.Cancelled,
+            ErrorMessage = "Batch conversion was cancelled.",
+            Warnings = warnings,
             Duration = duration
         };
 
@@ -451,7 +651,8 @@ public sealed class BatchConversionPipeline : IBatchConversionPipeline
         ConversionEngineKind? documentEngine = null,
         string? outputPdfPath = null,
         string? imageOutputDirectory = null,
-        IReadOnlyList<string>? imageFiles = null)
+        IReadOnlyList<string>? imageFiles = null,
+        BatchFallbackInfo? fallback = null)
         => new()
         {
             InputPath = inputPath,
@@ -463,6 +664,7 @@ public sealed class BatchConversionPipeline : IBatchConversionPipeline
             ErrorMessage = errorMessage,
             Warnings = warnings,
             OutputPlan = plan,
+            Fallback = fallback,
             Duration = duration
         };
 
@@ -507,4 +709,34 @@ public sealed class BatchConversionPipeline : IBatchConversionPipeline
     }
 
     private sealed record CopyPdfResult(string Path, bool Skipped);
+
+    /// <summary>
+    /// Outcome of <see cref="RunWithFallbackAsync"/>: the chosen conversion result, the engine that
+    /// produced it (or the last engine attempted), whether the attempt ended in cancellation, and
+    /// optional structured fallback metadata when a fallback was attempted.
+    /// </summary>
+    private sealed record FallbackAttempt(
+        ConversionResult Result,
+        ConversionEngineKind EngineUsed,
+        bool Cancelled,
+        BatchFallbackInfo? Fallback)
+    {
+        public static FallbackAttempt From(
+            ConversionResult result,
+            ConversionEngineKind engineUsed,
+            BatchFallbackInfo? fallback = null)
+            => new(result, engineUsed, false, fallback);
+
+        public static FallbackAttempt CancelledAttempt(ConversionEngineKind engineUsed)
+            => new(CancelledResult(engineUsed), engineUsed, true, null);
+
+        private static ConversionResult CancelledResult(ConversionEngineKind engineUsed)
+            => new()
+            {
+                Success = false,
+                Status = ConversionStatus.Cancelled,
+                InputPath = string.Empty,
+                EngineKind = engineUsed
+            };
+    }
 }
