@@ -4,6 +4,12 @@
     <Application.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
+                <!-- Theme palette first: ThemeService swaps this entry at runtime. -->
+                <ResourceDictionary Source="Styles/Theme.Light.xaml" />
+                <ResourceDictionary Source="Styles/Tokens.Core.xaml" />
+                <ResourceDictionary Source="Styles/Controls.Buttons.xaml" />
+                <ResourceDictionary Source="Styles/Controls.Forms.xaml" />
+                <ResourceDictionary Source="Styles/Controls.DataGrid.xaml" />
                 <ResourceDictionary Source="Styles/AppStyles.xaml" />
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>

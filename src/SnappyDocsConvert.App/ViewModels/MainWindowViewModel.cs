@@ -505,10 +505,27 @@ public sealed class MainWindowViewModel : ObservableObject
             return;
         }
 
-        var scan = _inputScanner.Scan(paths);
+        // Drop paths that are already queued with a log line only: drag-drop can reach this
+        // method through routed events from both the drop zone and the window, and re-adding
+        // the same paths must never pollute the rejected list or raise a false alert.
         var existing = Queue
             .Select(item => item.InputPath)
             .ToHashSet(StringComparer.OrdinalIgnoreCase);
+        var incoming = new List<string>();
+        foreach (var rawPath in paths.Where(path => !string.IsNullOrWhiteSpace(path)))
+        {
+            var fullPath = Path.GetFullPath(rawPath);
+            if (existing.Add(fullPath))
+            {
+                incoming.Add(fullPath);
+            }
+            else
+            {
+                Log($"Duplicate re-add ignored: {fullPath}");
+            }
+        }
+
+        var scan = _inputScanner.Scan(incoming);
         var added = 0;
 
         foreach (var filePath in scan.AcceptedFiles)
@@ -715,7 +732,8 @@ public sealed class MainWindowViewModel : ObservableObject
 
             if (!existing.Add(fullPath))
             {
-                AddRejectedPath(fullPath, "Duplicate ignored");
+                // Duplicate within this call or an already-added input: log only. The rejected
+                // list is reserved for inputs that are not valid for the chosen operation.
                 Log($"PDF tool duplicate ignored: {fullPath}");
                 continue;
             }

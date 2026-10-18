@@ -1,3 +1,4 @@
+using System.IO;
 using System.Runtime.InteropServices;
 using System.Windows;
 using System.Windows.Interop;
@@ -5,31 +6,101 @@ using System.Windows.Media;
 
 namespace SnappyDocsConvert.App.Services;
 
+/// <summary>
+/// Theme service: swaps the semantic palette (Styles/Theme.Light.xaml vs Theme.Dark.xaml)
+/// as a merged dictionary so every DynamicResource resolves consistently, then keeps the
+/// native title bar in sync via DWM immersive dark mode. Local-only.
+/// </summary>
 public sealed class ThemeService
 {
+    private static readonly Uri LightSource = new("pack://application:,,,/Styles/Theme.Light.xaml");
+    private static readonly Uri DarkSource = new("pack://application:,,,/Styles/Theme.Dark.xaml");
+
     public AppThemePreference EffectiveTheme { get; private set; } = AppThemePreference.Light;
 
     public void Apply(AppThemePreference preference)
     {
         EffectiveTheme = AppSettingsService.ResolveTheme(preference);
         var dark = EffectiveTheme == AppThemePreference.Dark;
-
-        SetBrush("AppBackgroundBrush", dark ? "#0D1117" : "#F6F7F9");
-        SetBrush("AppForegroundBrush", dark ? "#F4F7FB" : "#101828");
-        SetBrush("PanelBrush", dark ? "#111827" : "#FFFFFF");
-        SetBrush("SoftPanelBrush", dark ? "#172033" : "#FAFBFC");
-        SetBrush("BorderBrushSoft", dark ? "#334155" : "#D0D5DD");
-        SetBrush("AccentBrush", dark ? "#66A3FF" : "#1D4ED8");
-        SetBrush("AccentSoftBrush", dark ? "#122849" : "#EFF6FF");
-        SetBrush("MutedBrush", dark ? "#AAB6C6" : "#667085");
-        SetBrush("SuccessBrush", dark ? "#61D394" : "#027A48");
-        SetBrush("SuccessSoftBrush", dark ? "#0F2D23" : "#ECFDF3");
-        SetBrush("WarningBrush", dark ? "#FFC66D" : "#B54708");
-        SetBrush("WarningSoftBrush", dark ? "#33240F" : "#FFFAEB");
-        SetBrush("ErrorBrush", dark ? "#FF9A93" : "#B42318");
-        SetBrush("ErrorSoftBrush", dark ? "#341817" : "#FEF3F2");
-
+        SwapPalette(dark ? DarkSource : LightSource);
         ApplyTitleBar(dark);
+        TraceApply(dark);
+    }
+
+    private static void TraceApply(bool dark)
+    {
+        try
+        {
+            if (Application.Current is null)
+            {
+                return;
+            }
+
+            var line = $"{DateTime.Now:yyyy-MM-ddTHH:mm:ss.fff} themeApply dark={dark} effective={dark} " +
+                       $"mergedCount={Application.Current.Resources.MergedDictionaries.Count} " +
+                       $"bg={Application.Current.Resources["AppBackgroundBrush"]}";
+            File.AppendAllText(
+                Path.Combine(
+                    Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
+                    "kmb-file-tools", "logs", "theme.log"),
+                line + Environment.NewLine);
+        }
+        catch
+        {
+            // Diagnostics only; never break theme application.
+        }
+    }
+
+    /// <summary>Replaces the palette dictionary in its existing merged-dictionary slot so the
+    /// lookup order is untouched and exactly one palette stays in the tree.</summary>
+    private static void SwapPalette(Uri source)
+    {
+        if (Application.Current is null)
+        {
+            return;
+        }
+
+        var resources = Application.Current.Resources.MergedDictionaries;
+        var index = PaletteIndex(resources, "Theme.Light.xaml");
+        if (index < 0)
+        {
+            index = PaletteIndex(resources, "Theme.Dark.xaml");
+        }
+
+        if (index >= 0)
+        {
+            var target = source == DarkSource ? "Theme.Dark.xaml" : "Theme.Light.xaml";
+            if ((resources[index].Source?.OriginalString ?? "").EndsWith(target, StringComparison.OrdinalIgnoreCase))
+            {
+                return;
+            }
+        }
+
+        var replacement = new ResourceDictionary { Source = source };
+        if (index >= 0)
+        {
+            resources[index] = replacement;
+        }
+        else
+        {
+            resources.Insert(0, replacement);
+        }
+    }
+
+    private static int PaletteIndex(System.Collections.ObjectModel.Collection<ResourceDictionary> resources, string fileName)
+    {
+        for (var i = 0; i < resources.Count; i++)
+        {
+            var name = resources[i].Source?.OriginalString.Split('/', '\\') is { Length: > 0 } parts
+                ? parts[^1]
+                : "";
+            if (string.Equals(name, fileName, StringComparison.OrdinalIgnoreCase))
+            {
+                return i;
+            }
+        }
+
+        return -1;
     }
 
     private static void ApplyTitleBar(bool dark)
@@ -97,22 +168,4 @@ public sealed class ThemeService
 
     [DllImport("dwmapi.dll", PreserveSig = true)]
     private static extern int DwmSetWindowAttribute(IntPtr hwnd, int attr, ref int attrValue, int attrSize);
-
-    private static void SetBrush(string key, string color)
-    {
-        if (Application.Current.Resources[key] is SolidColorBrush brush)
-        {
-            if (brush.IsFrozen)
-            {
-                Application.Current.Resources[key] = new SolidColorBrush((Color)ColorConverter.ConvertFromString(color));
-                return;
-            }
-
-            brush.Color = (Color)ColorConverter.ConvertFromString(color);
-        }
-        else
-        {
-            Application.Current.Resources[key] = new SolidColorBrush((Color)ColorConverter.ConvertFromString(color));
-        }
-    }
 }

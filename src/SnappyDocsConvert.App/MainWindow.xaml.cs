@@ -1,4 +1,5 @@
 using System.Windows;
+using System.Windows.Input;
 using SnappyDocsConvert.App.ViewModels;
 
 namespace SnappyDocsConvert.App;
@@ -16,10 +17,23 @@ public partial class MainWindow : Window
             ? DragDropEffects.Copy
             : DragDropEffects.None;
         e.Handled = true;
+
+        UpdateDropZoneHighlight(e);
+    }
+
+    private void Window_DragLeave(object sender, DragEventArgs e)
+    {
+        //(drags bubble Leave from children; re-evaluate bounds so in-zone feedback never flickers)
+        UpdateDropZoneHighlight(e);
     }
 
     private void Window_Drop(object sender, DragEventArgs e)
     {
+        // Single drop router: marking the event handled means the DropZoneBorder/other
+        // ancestors can no longer run a second Drop pass for the same payload.
+        e.Handled = true;
+        SetDropZoneHighlight(false);
+
         if (DataContext is not MainWindowViewModel viewModel ||
             !e.Data.GetDataPresent(DataFormats.FileDrop))
         {
@@ -38,4 +52,76 @@ public partial class MainWindow : Window
             }
         }
     }
+
+    private void DropZone_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
+    {
+        // The zone itself opens the file picker; clicks that land on real buttons inside
+        // (Add files / Add folder) are handled by those buttons and must not double-open.
+        if (e.OriginalSource is DependencyObject source && FindAncestorButton(source) is not null)
+        {
+            return;
+        }
+
+        if (DataContext is MainWindowViewModel viewModel)
+        {
+            viewModel.AddFilesCommand.Execute(null);
+        }
+    }
+
+    private static System.Windows.Controls.Button? FindAncestorButton(DependencyObject start)
+    {
+        var current = start;
+        while (current is not null)
+        {
+            if (current is System.Windows.Controls.Button button)
+            {
+                return button;
+            }
+
+            current = System.Windows.Media.VisualTreeHelper.GetParent(current);
+        }
+
+        return null;
+    }
+
+    private void UpdateDropZoneHighlight(DragEventArgs e)
+    {
+        if (DropZoneBorder is null)
+        {
+            return;
+        }
+
+        var position = e.GetPosition(DropZoneBorder);
+        var inside = position.X >= 0 && position.Y >= 0 &&
+                     position.X <= DropZoneBorder.ActualWidth &&
+                     position.Y <= DropZoneBorder.ActualHeight;
+        SetDropZoneHighlight(inside);
+    }
+
+    private void SetDropZoneHighlight(bool active)
+    {
+        if (DropZoneBorder is null)
+        {
+            return;
+        }
+
+        // Pure view-side feedback tokenized through theme resources: accent fill/border while a
+        // drag hovers the zone, standard tokens when not.
+        var background = FindBrush(active ? "AccentBrush" : "AccentSoftBrush");
+        var border = FindBrush(active ? "FocusRingBrush" : "AccentBrush");
+        if (background is not null)
+        {
+            DropZoneBorder.Background = background;
+        }
+
+        if (border is not null)
+        {
+            DropZoneBorder.BorderBrush = border;
+        }
+
+        DropZoneBorder.BorderThickness = new Thickness(active ? 2 : 1.5);
+    }
+
+    private static System.Windows.Media.Brush? FindBrush(string key)
+        => Application.Current?.TryFindResource(key) as System.Windows.Media.Brush;
 }

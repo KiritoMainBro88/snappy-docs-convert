@@ -1,0 +1,41 @@
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <!-- DARK THEME. Same keys as Theme.Light.xaml. Verified pairs for legibility. -->
+    <SolidColorBrush x:Key="AppBackgroundBrush" Color="#0D1117" />
+    <SolidColorBrush x:Key="AppForegroundBrush" Color="#F4F7FB" />
+    <SolidColorBrush x:Key="TextSecondaryBrush" Color="#C6D0DD" />
+
+    <SolidColorBrush x:Key="PanelBrush" Color="#111827" />
+    <SolidColorBrush x:Key="SoftPanelBrush" Color="#151E2D" />
+    <SolidColorBrush x:Key="SurfaceHoverBrush" Color="#1B2637" />
+    <SolidColorBrush x:Key="SurfacePressedBrush" Color="#212D41" />
+    <SolidColorBrush x:Key="PillIdleBrush" Color="#1B2637" />
+
+    <SolidColorBrush x:Key="BorderBrushSoft" Color="#334155" />
+    <SolidColorBrush x:Key="BorderBrushStrong" Color="#475569" />
+    <SolidColorBrush x:Key="SoftAccentStrokeBrush" Color="#2A4A7A" />
+
+    <SolidColorBrush x:Key="AccentBrush" Color="#66A3FF" />
+    <SolidColorBrush x:Key="AccentHoverBrush" Color="#85B5FF" />
+    <SolidColorBrush x:Key="AccentPressedBrush" Color="#4E8BEF" />
+    <SolidColorBrush x:Key="AccentOnBrush" Color="#0D1117" />
+    <SolidColorBrush x:Key="AccentSoftBrush" Color="#122849" />
+    <SolidColorBrush x:Key="FocusRingBrush" Color="#85B5FF" />
+
+    <SolidColorBrush x:Key="MutedBrush" Color="#9AA7B8" />
+
+    <SolidColorBrush x:Key="SuccessBrush" Color="#4CC38A" />
+    <SolidColorBrush x:Key="SuccessSoftBrush" Color="#0E2A1D" />
+    <SolidColorBrush x:Key="SuccessStrokeBrush" Color="#1F4D35" />
+
+    <SolidColorBrush x:Key="WarningBrush" Color="#D9A03F" />
+    <SolidColorBrush x:Key="WarningSoftBrush" Color="#2E2410" />
+    <SolidColorBrush x:Key="WarningStrokeBrush" Color="#5C4A1E" />
+
+    <SolidColorBrush x:Key="ErrorBrush" Color="#EB6A5A" />
+    <SolidColorBrush x:Key="ErrorSoftBrush" Color="#2C1512" />
+    <SolidColorBrush x:Key="ErrorStrokeBrush" Color="#5E2C27" />
+
+    <SolidColorBrush x:Key="LogBackgroundBrush" Color="#0B1220" />
+    <SolidColorBrush x:Key="LogForegroundBrush" Color="#DCE3EC" />
+</ResourceDictionary>
