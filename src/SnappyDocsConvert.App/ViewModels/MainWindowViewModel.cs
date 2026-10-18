@@ -319,6 +319,18 @@ public sealed class MainWindowViewModel : ObservableObject
 
     public bool IsNotRunning => !IsRunning;
 
+    // File-granularity overall progress for the convert queue, 0-100. Computed in
+    // UpdateProgress: a Running report counts its file as NOT completed, a terminal report
+    // counts it as completed. There is no per-file intra-file progress anywhere in the
+    // pipeline, so this deliberately never displays intermediate smoothness.
+    private double _overallPercent;
+
+    public double OverallPercent
+    {
+        get => _overallPercent;
+        private set => SetProperty(ref _overallPercent, value);
+    }
+
     public string SummaryText
     {
         get => _summaryText;
@@ -639,6 +651,7 @@ public sealed class MainWindowViewModel : ObservableObject
         IsRunning = true;
         _runCancellation = new CancellationTokenSource();
         SummaryText = Loc["Running"];
+        OverallPercent = 0;
 
         foreach (var item in Queue)
         {
@@ -1107,6 +1120,17 @@ public sealed class MainWindowViewModel : ObservableObject
         item.Status = progress.Status.ToString();
         item.Message = progress.Message ?? "";
         SummaryText = $"{progress.CurrentItemIndex + 1}/{progress.TotalItems}: {item.FileName}";
+
+        // Honest file-level percent: Running means the file has not finished yet, so only
+        // terminal reports advance the completed count. (Pipeline raises one Running and one
+        // terminal report per item; PercentComplete on the payload is index-based and
+        // overcounts while a file is still running, which is why it is not read directly.)
+        var completed = progress.Status == BatchConversionItemStatus.Running
+            ? progress.CurrentItemIndex
+            : progress.CurrentItemIndex + 1;
+        OverallPercent = progress.TotalItems == 0
+            ? 0
+            : Math.Clamp(completed * 100.0 / progress.TotalItems, 0, 100);
     }
 
     private void ApplyResult(BatchConversionItemResult result)

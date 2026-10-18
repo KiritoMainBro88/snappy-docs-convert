@@ -828,9 +828,22 @@
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="*" />
                     <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="Auto" />
                 </Grid.ColumnDefinitions>
                 <TextBlock Text="{Binding SummaryText}" VerticalAlignment="Center" Style="{StaticResource MutedText}" />
-                <TextBlock Grid.Column="1" Text="{Binding Loc[PrivacyBadge]}" VerticalAlignment="Center" Foreground="{DynamicResource SuccessBrush}" FontWeight="SemiBold" />
+                <!-- File-granularity progress: advances only when a file completes, never
+                     mid-file, matching what the pipeline actually reports. -->
+                <ProgressBar
+                    Grid.Column="1"
+                    Width="140"
+                    Height="6"
+                    Margin="0,0,14,0"
+                    Minimum="0"
+                    Maximum="100"
+                    Value="{Binding OverallPercent, Mode=OneWay}"
+                    VerticalAlignment="Center"
+                    Visibility="{Binding IsRunning, Converter={StaticResource BoolToVisibility}}" />
+                <TextBlock Grid.Column="2" Text="{Binding Loc[PrivacyBadge]}" VerticalAlignment="Center" Foreground="{DynamicResource SuccessBrush}" FontWeight="SemiBold" />
             </Grid>
         </Border>
     </Grid>
