@@ -6,6 +6,11 @@ namespace SnappyDocsConvert.App;
 
 public partial class MainWindow : Window
 {
+    // Time of the last completed OLE drop. The mouse-up that ends a drag can surface on the
+    // drop zone as a stray "click" (its button-down belonged to the drag gesture, not to the
+    // zone), and that ghost click must never open the file picker.
+    private DateTime _lastDropUtc = DateTime.MinValue;
+
     public MainWindow()
     {
         InitializeComponent();
@@ -33,6 +38,7 @@ public partial class MainWindow : Window
         // ancestors can no longer run a second Drop pass for the same payload.
         e.Handled = true;
         SetDropZoneHighlight(false);
+        _lastDropUtc = DateTime.UtcNow;
 
         if (DataContext is not MainWindowViewModel viewModel ||
             !e.Data.GetDataPresent(DataFormats.FileDrop))
@@ -58,6 +64,14 @@ public partial class MainWindow : Window
         // The zone itself opens the file picker; clicks that land on real buttons inside
         // (Add files / Add folder) are handled by those buttons and must not double-open.
         if (e.OriginalSource is DependencyObject source && FindAncestorButton(source) is not null)
+        {
+            return;
+        }
+
+        // Suppress the ghost click that follows an OLE drop: the mouse-up which released a
+        // drag can be routed to the zone right after the Drop event and would otherwise
+        // open the picker for every successful drag (observed with the real-drag probe).
+        if ((DateTime.UtcNow - _lastDropUtc).TotalMilliseconds < 500)
         {
             return;
         }
