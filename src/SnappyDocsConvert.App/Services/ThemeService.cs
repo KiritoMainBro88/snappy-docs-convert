@@ -13,8 +13,15 @@ namespace SnappyDocsConvert.App.Services;
 /// </summary>
 public sealed class ThemeService
 {
-    private static readonly Uri LightSource = new("pack://application:,,,/Styles/Theme.Light.xaml");
-    private static readonly Uri DarkSource = new("pack://application:,,,/Styles/Theme.Dark.xaml");
+    // Pack URIs are NOT built in a static initializer or as an argument before the
+    // null-Application guard: constructing them requires the WPF pack scheme, which only
+    // exists once an Application is running. Tests (and any non-WPF host) construct the
+    // view model, which calls Apply, so URI building stays behind the guard below.
+    private const string LightThemeFile = "Styles/Theme.Light.xaml";
+    private const string DarkThemeFile = "Styles/Theme.Dark.xaml";
+
+    private static Uri BuildSourceUri(bool dark) => new(
+        $"pack://application:,,,/{(dark ? DarkThemeFile : LightThemeFile)}");
 
     public AppThemePreference EffectiveTheme { get; private set; } = AppThemePreference.Light;
 
@@ -22,7 +29,7 @@ public sealed class ThemeService
     {
         EffectiveTheme = AppSettingsService.ResolveTheme(preference);
         var dark = EffectiveTheme == AppThemePreference.Dark;
-        SwapPalette(dark ? DarkSource : LightSource);
+        SwapPalette(dark);
         ApplyTitleBar(dark);
         TraceApply(dark);
     }
@@ -53,13 +60,14 @@ public sealed class ThemeService
 
     /// <summary>Replaces the palette dictionary in its existing merged-dictionary slot so the
     /// lookup order is untouched and exactly one palette stays in the tree.</summary>
-    private static void SwapPalette(Uri source)
+    private static void SwapPalette(bool dark)
     {
         if (Application.Current is null)
         {
             return;
         }
 
+        var source = BuildSourceUri(dark);
         var resources = Application.Current.Resources.MergedDictionaries;
         var index = PaletteIndex(resources, "Theme.Light.xaml");
         if (index < 0)
@@ -67,9 +75,9 @@ public sealed class ThemeService
             index = PaletteIndex(resources, "Theme.Dark.xaml");
         }
 
+        var target = dark ? "Theme.Dark.xaml" : "Theme.Light.xaml";
         if (index >= 0)
         {
-            var target = source == DarkSource ? "Theme.Dark.xaml" : "Theme.Light.xaml";
             if ((resources[index].Source?.OriginalString ?? "").EndsWith(target, StringComparison.OrdinalIgnoreCase))
             {
                 return;
