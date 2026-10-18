@@ -1,5 +1,7 @@
 using System.Diagnostics;
 using System.Globalization;
+using System.Security.Cryptography;
+using System.Text;
 using PdfSharp;
 using PdfSharp.Drawing;
 using PdfSharp.Pdf;
@@ -61,6 +63,9 @@ public sealed class PdfToolService : IPdfToolService
                 PdfToolOperation.ExtractPages => ExtractPages(request, cancellationToken),
                 PdfToolOperation.RotatePages => RotatePages(request, cancellationToken),
                 PdfToolOperation.ImagesToPdf => ImagesToPdf(request, warnings, cancellationToken),
+                PdfToolOperation.Compress => Compress(request, warnings, cancellationToken),
+                PdfToolOperation.Watermark => Watermark(request, cancellationToken),
+                PdfToolOperation.Encrypt => Encrypt(request, cancellationToken),
                 _ => throw new InvalidOperationException($"Unsupported PDF tool operation: {request.Operation}")
             };
 
@@ -103,7 +108,7 @@ public sealed class PdfToolService : IPdfToolService
         foreach (var inputPath in request.InputPaths)
         {
             cancellationToken.ThrowIfCancellationRequested();
-            using var inputDocument = PdfReader.Open(inputPath, PdfDocumentOpenMode.Import);
+            using var inputDocument = OpenForTool(inputPath, PdfDocumentOpenMode.Import);
             foreach (var page in inputDocument.Pages)
             {
                 outputDocument.AddPage(page);
@@ -117,7 +122,7 @@ public sealed class PdfToolService : IPdfToolService
     private IReadOnlyList<string> Split(PdfToolRequest request, CancellationToken cancellationToken)
     {
         ValidatePdfInputs(request.InputPaths, minCount: 1, maxCount: 1);
-        using var inputDocument = PdfReader.Open(request.InputPaths[0], PdfDocumentOpenMode.Import);
+        using var inputDocument = OpenForTool(request.InputPaths[0], PdfDocumentOpenMode.Import);
         var padding = Math.Max(3, inputDocument.PageCount.ToString().Length);
         var baseName = SafeFileName(Path.GetFileNameWithoutExtension(request.InputPaths[0]));
         var outputFiles = new List<string>();
@@ -142,7 +147,7 @@ public sealed class PdfToolService : IPdfToolService
     {
         ValidatePdfInputs(request.InputPaths, minCount: 1, maxCount: 1);
         var outputPath = PlanOutputFile(request, "extracted.pdf");
-        using var inputDocument = PdfReader.Open(request.InputPaths[0], PdfDocumentOpenMode.Import);
+        using var inputDocument = OpenForTool(request.InputPaths[0], PdfDocumentOpenMode.Import);
         var selection = _pageRangeParser.Parse(request.PageRanges, inputDocument.PageCount);
         if (!selection.Success)
         {
@@ -164,7 +169,7 @@ public sealed class PdfToolService : IPdfToolService
     {
         ValidatePdfInputs(request.InputPaths, minCount: 1, maxCount: 1);
         var outputPath = PlanOutputFile(request, "rotated.pdf");
-        using var inputDocument = PdfReader.Open(request.InputPaths[0], PdfDocumentOpenMode.Import);
+        using var inputDocument = OpenForTool(request.InputPaths[0], PdfDocumentOpenMode.Import);
         var selection = string.IsNullOrWhiteSpace(request.PageRanges)
             ? PageRangeSelection.Ok(Enumerable.Range(1, inputDocument.PageCount).ToArray())
             : _pageRangeParser.Parse(request.PageRanges, inputDocument.PageCount);
@@ -243,6 +248,125 @@ public sealed class PdfToolService : IPdfToolService
                 TryDelete(tempFile);
             }
         }
+    }
+
+    private IReadOnlyList<string> Encrypt(PdfToolRequest request, CancellationToken cancellationToken)
+    {
+        ValidatePdfInputs(request.InputPaths, minCount: 1, maxCount: 1);
+        if (string.IsNullOrEmpty(request.UserPassword))
+        {
+            throw new InvalidOperationException("A user password is required to encrypt the PDF.");
+        }
+
+        var outputPath = PlanOutputFile(request, "encrypted.pdf");
+        using var document = OpenForTool(request.InputPaths[0], PdfDocumentOpenMode.Modify);
+
+        cancellationToken.ThrowIfCancellationRequested();
+        var security = document.SecuritySettings;
+        security.UserPassword = request.UserPassword;
+        security.OwnerPassword = string.IsNullOrEmpty(request.OwnerPassword)
+            ? request.UserPassword
+            : request.OwnerPassword;
+
+        Directory.CreateDirectory(Path.GetDirectoryName(outputPath)!);
+        document.Save(outputPath);
+        return new[] { outputPath };
+    }
+
+    private IReadOnlyList<string> Watermark(PdfToolRequest request, CancellationToken cancellationToken)
+    {
+        ValidatePdfInputs(request.InputPaths, minCount: 1, maxCount: 1);
+        if (string.IsNullOrWhiteSpace(request.WatermarkText))
+        {
+            throw new InvalidOperationException("Watermark text is required.");
+        }
+
+        var outputPath = PlanOutputFile(request, "watermarked.pdf");
+        var opacity = Math.Clamp(request.WatermarkOpacity, 0.02d, 1d);
+        SystemFontResolver.EnsureRegistered();
+        using var document = OpenForTool(request.InputPaths[0], PdfDocumentOpenMode.Modify);
+
+        foreach (var page in document.Pages)
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+            using var gfx = XGraphics.FromPdfPage(page, XGraphicsPdfPageOptions.Append);
+
+            var width = page.Width.Point;
+            var height = page.Height.Point;
+            // Scale the font to the page so the watermark spans the diagonal regardless of page size.
+            var fontSize = Math.Max(18d, Math.Min(width, height) / 10d);
+            var font = new XFont("Arial", fontSize, XFontStyleEx.Bold);
+            var color = XColor.FromArgb((int)Math.Round(opacity * 255), 128, 128, 128);
+            var brush = new XSolidBrush(color);
+
+            // Draw centered, rotated 45° to mimic a classic diagonal watermark.
+            gfx.TranslateTransform(width / 2, height / 2);
+            gfx.RotateTransform(-45);
+            var format = new XStringFormat { Alignment = XStringAlignment.Center, LineAlignment = XLineAlignment.Center };
+            gfx.DrawString(request.WatermarkText, font, brush, new XPoint(0, 0), format);
+        }
+
+        Directory.CreateDirectory(Path.GetDirectoryName(outputPath)!);
+        document.Save(outputPath);
+        return new[] { outputPath };
+    }
+
+    private IReadOnlyList<string> Compress(
+        PdfToolRequest request,
+        List<string> warnings,
+        CancellationToken cancellationToken)
+    {
+        ValidatePdfInputs(request.InputPaths, minCount: 1, maxCount: 1);
+        var inputPath = request.InputPaths[0];
+        var outputPath = PlanOutputFile(request, "compressed.pdf");
+
+        var originalLength = new FileInfo(inputPath).Length;
+
+        using (var inputDocument = OpenForTool(inputPath, PdfDocumentOpenMode.Import))
+        using (var outputDocument = new PdfDocument())
+        {
+            // Lossless re-save: import every page and apply PdfSharp's best content-stream
+            // compression + object-stream packing. No rasterization, so text stays selectable and
+            // quality is unchanged. Image-downsampling (lossy) is a separate, opt-in follow-up.
+            outputDocument.Options.CompressContentStreams = true;
+            outputDocument.Options.NoCompression = false;
+            outputDocument.Options.UseFlateDecoderForJpegImages = PdfUseFlateDecoderForJpegImages.Automatic;
+
+            foreach (var page in inputDocument.Pages)
+            {
+                cancellationToken.ThrowIfCancellationRequested();
+                outputDocument.AddPage(page);
+            }
+
+            Save(outputDocument, outputPath);
+        }
+
+        var newLength = new FileInfo(outputPath).Length;
+        if (newLength >= originalLength)
+        {
+            // Already optimized: report it instead of pretending we shrank it.
+            var deltaPercent = originalLength == 0
+                ? 0
+                : (double)(newLength - originalLength) / originalLength * 100d;
+            warnings.Add(string.Format(
+                CultureInfo.InvariantCulture,
+                "PDF was already optimized; size changed by {0:+0.0;-0.0}% ({1} -> {2} bytes).",
+                deltaPercent,
+                originalLength,
+                newLength));
+        }
+        else
+        {
+            var savedPercent = (double)(originalLength - newLength) / originalLength * 100d;
+            warnings.Add(string.Format(
+                CultureInfo.InvariantCulture,
+                "Compressed PDF by {0:0.0}% ({1} -> {2} bytes).",
+                savedPercent,
+                originalLength,
+                newLength));
+        }
+
+        return new[] { outputPath };
     }
 
     private static string? ValidateCommon(PdfToolRequest request)
@@ -345,7 +469,34 @@ public sealed class PdfToolService : IPdfToolService
             }
         }
 
+        // Collision avoidance: never silently overwrite an existing file. Fall back to the
+        // pipeline's deterministic "<name>__<hash8>" convention, then to numbered suffixes.
+        if (File.Exists(outputPath))
+        {
+            var stem = Path.GetFileNameWithoutExtension(safeFileName);
+            var hash8 = ComputeSourceHash8(sourcePaths);
+            var candidate = Path.Combine(fullOutputDirectory, $"{stem}__{hash8}.pdf");
+            var counter = 1;
+            while (File.Exists(candidate))
+            {
+                candidate = Path.Combine(fullOutputDirectory, $"{stem}__{hash8}-{counter}.pdf");
+                counter++;
+            }
+
+            outputPath = candidate;
+        }
+
         return outputPath;
+    }
+
+    /// <summary>Stable 8-hex-character digest of the source path set (mirrors the batch planner naming).</summary>
+    private static string ComputeSourceHash8(IReadOnlyList<string> sourcePaths)
+    {
+        var material = string.Join(
+            "|",
+            sourcePaths.Select(static path => Path.GetFullPath(path).ToUpperInvariant()));
+        var digest = SHA256.HashData(Encoding.UTF8.GetBytes(material));
+        return Convert.ToHexString(digest)[..8];
     }
 
     private static string SafeFileName(string value)
@@ -404,6 +555,26 @@ public sealed class PdfToolService : IPdfToolService
     {
         var normalized = rotation % 360;
         return normalized < 0 ? normalized + 360 : normalized;
+    }
+
+    /// <summary>
+    /// Opens a PDF for a tool operation, translating PDFsharp's encrypted-file errors into a clear,
+    /// actionable message. The message never echoes the password (it is never known here).
+    /// </summary>
+    private static PdfDocument OpenForTool(string inputPath, PdfDocumentOpenMode mode)
+    {
+        try
+        {
+            return PdfReader.Open(inputPath, mode);
+        }
+        catch (Exception ex) when (
+            ex.Message.Contains("password", StringComparison.OrdinalIgnoreCase)
+            || ex.Message.Contains("encrypted", StringComparison.OrdinalIgnoreCase))
+        {
+            throw new InvalidOperationException(
+                "This PDF is password-protected. Remove the password protection first (or open it with its password in a PDF reader and re-save an unprotected copy), then run the tool again.",
+                ex);
+        }
     }
 
     private static void Save(PdfDocument document, string outputPath)

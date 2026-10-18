@@ -6,5 +6,10 @@ public enum PdfToolOperation
     Split,
     ExtractPages,
     RotatePages,
-    ImagesToPdf
+    ImagesToPdf,
+    Compress,
+    Watermark,
+    Encrypt,
+    PdfToWord,
+    OcrToText
 }

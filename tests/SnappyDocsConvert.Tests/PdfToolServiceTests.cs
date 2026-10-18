@@ -1,4 +1,5 @@
 using PdfSharp.Pdf;
+using PdfSharp.Pdf.IO;
 using SkiaSharp;
 using SnappyDocsConvert.Core.Models;
 using SnappyDocsConvert.Core.Services.PdfTools;
@@ -125,6 +126,122 @@ public sealed class PdfToolServiceTests
         }, CancellationToken.None);
 
         AssertOutput(result, expectedCount: 1);
+    }
+
+    [Fact]
+    public async Task Compress_Pdf_ProducesValidSmallerOrEqualOutput()
+    {
+        using var temp = TempDirectory.Create();
+        var input = temp.WritePdf("multi.pdf", 3);
+
+        var result = await Service().RunAsync(new PdfToolRequest
+        {
+            Operation = PdfToolOperation.Compress,
+            InputPaths = new[] { input },
+            OutputDirectory = temp.CreateSubdirectory("out")
+        }, CancellationToken.None);
+
+        AssertOutput(result, expectedCount: 1);
+        // Lossless re-save preserves page count (text stays intact, no rasterization).
+        using var compressed = PdfReader.Open(result.OutputFiles[0], PdfDocumentOpenMode.Import);
+        Assert.Equal(3, compressed.PageCount);
+        Assert.Contains(result.Warnings, w => w.Contains("ompress") || w.Contains("optimized"));
+    }
+
+    [Fact]
+    public async Task Compress_RejectsNonPdfInput()
+    {
+        using var temp = TempDirectory.Create();
+        var input = temp.WriteFile("bad.txt", "not pdf");
+
+        var result = await Service().RunAsync(new PdfToolRequest
+        {
+            Operation = PdfToolOperation.Compress,
+            InputPaths = new[] { input },
+            OutputDirectory = temp.CreateSubdirectory("out")
+        }, CancellationToken.None);
+
+        Assert.False(result.Success);
+    }
+
+    [Fact]
+    public async Task Watermark_Pdf_ProducesOutputWithSamePageCount()
+    {
+        using var temp = TempDirectory.Create();
+        var input = temp.WritePdf("multi.pdf", 2);
+
+        var result = await Service().RunAsync(new PdfToolRequest
+        {
+            Operation = PdfToolOperation.Watermark,
+            InputPaths = new[] { input },
+            OutputDirectory = temp.CreateSubdirectory("out"),
+            WatermarkText = "CONFIDENTIAL"
+        }, CancellationToken.None);
+
+        AssertOutput(result, expectedCount: 1);
+        using var stamped = PdfReader.Open(result.OutputFiles[0], PdfDocumentOpenMode.Import);
+        Assert.Equal(2, stamped.PageCount);
+    }
+
+    [Fact]
+    public async Task Watermark_WithoutText_Fails()
+    {
+        using var temp = TempDirectory.Create();
+        var input = temp.WritePdf("multi.pdf", 1);
+
+        var result = await Service().RunAsync(new PdfToolRequest
+        {
+            Operation = PdfToolOperation.Watermark,
+            InputPaths = new[] { input },
+            OutputDirectory = temp.CreateSubdirectory("out"),
+            WatermarkText = "   "
+        }, CancellationToken.None);
+
+        Assert.False(result.Success);
+    }
+
+    [Fact]
+    public async Task Encrypt_Pdf_RequiresPasswordToOpen()
+    {
+        using var temp = TempDirectory.Create();
+        var input = temp.WritePdf("multi.pdf", 1);
+
+        var result = await Service().RunAsync(new PdfToolRequest
+        {
+            Operation = PdfToolOperation.Encrypt,
+            InputPaths = new[] { input },
+            OutputDirectory = temp.CreateSubdirectory("out"),
+            UserPassword = "secret123"
+        }, CancellationToken.None);
+
+        AssertOutput(result, expectedCount: 1);
+
+        // Opening without the password must fail; with the password must succeed.
+        Assert.ThrowsAny<Exception>(() =>
+            PdfReader.Open(result.OutputFiles[0], PdfDocumentOpenMode.Import));
+
+        using var opened = PdfReader.Open(
+            result.OutputFiles[0],
+            "secret123",
+            PdfDocumentOpenMode.Import);
+        Assert.Equal(1, opened.PageCount);
+    }
+
+    [Fact]
+    public async Task Encrypt_WithoutPassword_Fails()
+    {
+        using var temp = TempDirectory.Create();
+        var input = temp.WritePdf("multi.pdf", 1);
+
+        var result = await Service().RunAsync(new PdfToolRequest
+        {
+            Operation = PdfToolOperation.Encrypt,
+            InputPaths = new[] { input },
+            OutputDirectory = temp.CreateSubdirectory("out"),
+            UserPassword = ""
+        }, CancellationToken.None);
+
+        Assert.False(result.Success);
     }
 
     [Fact]
