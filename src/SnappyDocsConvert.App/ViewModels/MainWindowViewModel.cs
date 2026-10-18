@@ -51,7 +51,6 @@ public sealed class MainWindowViewModel : ObservableObject, IShellPageHost
     private bool _wordAvailable;
     private bool _powerPointAvailable;
     private bool _libreOfficeAvailable;
-    private bool _engineStatusKnown;
     private AppLanguagePreference _selectedLanguagePreference;
     private AppThemePreference _selectedThemePreference;
     private UpdateChannel _selectedUpdateChannel;
@@ -77,6 +76,7 @@ public sealed class MainWindowViewModel : ObservableObject, IShellPageHost
         _filePicker = serviceFactory.CreateFilePickerService();
         _folderPicker = serviceFactory.CreateFolderPickerService();
         _inputScanner = serviceFactory.CreateBatchInputScanner();
+        EngineStatus = new EngineStatusViewModel(Loc);
 
         // The convert page owns its queue/options/commands; the shell stays the single host
         // facade for runs, settings persistence, pickers, logs, alerts and shared engine
@@ -142,7 +142,7 @@ public sealed class MainWindowViewModel : ObservableObject, IShellPageHost
 
     public ObservableCollection<ChoiceItem<PdfRotationAngle>> PdfRotationChoices { get; } = new();
 
-    public EngineStatusViewModel EngineStatus { get; } = new();
+    public EngineStatusViewModel EngineStatus { get; private set; } = null!;
 
     public RelayCommand ClearLogCommand { get; }
 
@@ -665,7 +665,7 @@ public sealed class MainWindowViewModel : ObservableObject, IShellPageHost
     {
         try
         {
-            EngineStatus.Guidance = "Checking engines...";
+            EngineStatus.SetSetupChecking();
             var office = await _serviceFactory.CreateOfficeAvailabilityProvider()
                 .GetOfficeAvailabilityAsync(CancellationToken.None)
                 .ConfigureAwait(true);
@@ -688,11 +688,11 @@ public sealed class MainWindowViewModel : ObservableObject, IShellPageHost
             _wordAvailable = office.WordAvailable;
             _powerPointAvailable = office.PowerPointAvailable;
             _libreOfficeAvailable = libre.IsAvailable;
-            _engineStatusKnown = true;
             RefreshEngineStatusLabels();
             EngineStatus.LibreOfficePath = libre.ExecutablePath ?? libre.Reason ?? "No LibreOffice path detected.";
-            EngineStatus.Guidance = setup.BlockingReason
-                ?? string.Join(" ", setup.Recommendations.Select(recommendation => recommendation.Message));
+            EngineStatus.SetSetupResult(
+                setup.BlockingReason,
+                string.Join(" ", setup.Recommendations.Select(recommendation => recommendation.Message)));
 
             // The convert page listens to availability changes so its guidance line stays
             // current without the shell owning page state.
@@ -701,7 +701,7 @@ public sealed class MainWindowViewModel : ObservableObject, IShellPageHost
         }
         catch (Exception ex)
         {
-            EngineStatus.Guidance = $"Engine check failed: {ex.Message}";
+            EngineStatus.SetSetupFailed(ex.Message);
             Log($"Engine check failed: {ex.Message}");
         }
     }
@@ -729,20 +729,19 @@ public sealed class MainWindowViewModel : ObservableObject, IShellPageHost
 
     private void RefreshEngineStatusLabels()
     {
-        if (!_engineStatusKnown)
-        {
-            EngineStatus.WordStatus = Loc["Checking"];
-            EngineStatus.PowerPointStatus = Loc["Checking"];
-            EngineStatus.LibreOfficeStatus = Loc["Checking"];
-        }
-        else
-        {
-            EngineStatus.WordStatus = _wordAvailable ? Loc["Available"] : Loc["Missing"];
-            EngineStatus.PowerPointStatus = _powerPointAvailable ? Loc["Available"] : Loc["Missing"];
-            EngineStatus.LibreOfficeStatus = _libreOfficeAvailable ? Loc["Available"] : Loc["Missing"];
-        }
+        // Typed states are the single status source; labels are derived inside
+        // EngineStatusViewModel and re-derived automatically on language changes.
+        EngineStatus.WordState = _wordAvailable
+            ? EngineAvailabilityState.Available
+            : EngineAvailabilityState.Missing;
+        EngineStatus.PowerPointState = _powerPointAvailable
+            ? EngineAvailabilityState.Available
+            : EngineAvailabilityState.Missing;
+        EngineStatus.LibreOfficeState = _libreOfficeAvailable
+            ? EngineAvailabilityState.Available
+            : EngineAvailabilityState.Missing;
 
-        EngineStatus.PdfRendererStatus = Loc["Available"];
+        // PdfRendererState is a typed constant (bundled in-process renderer).
     }
 
     private void ApplyPersistedAppearance()

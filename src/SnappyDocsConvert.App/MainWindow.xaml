@@ -476,25 +476,25 @@
                         <Border Style="{StaticResource EngineCard}">
                             <StackPanel>
                                 <TextBlock Text="{Binding DataContext.Loc[MicrosoftWord], RelativeSource={RelativeSource AncestorType=Window}}" FontWeight="SemiBold" />
-                                <TextBlock Text="{Binding WordStatus}" Style="{StaticResource StatusValueText}" Margin="0,4,0,0" />
+                                <TextBlock Text="{Binding WordLabel}" Tag="{Binding WordState, Mode=OneWay}" Style="{StaticResource StatusValueText}" Margin="0,4,0,0" />
                             </StackPanel>
                         </Border>
                         <Border Style="{StaticResource EngineCard}">
                             <StackPanel>
                                 <TextBlock Text="{Binding DataContext.Loc[PowerPoint], RelativeSource={RelativeSource AncestorType=Window}}" FontWeight="SemiBold" />
-                                <TextBlock Text="{Binding PowerPointStatus}" Style="{StaticResource StatusValueText}" Margin="0,4,0,0" />
+                                <TextBlock Text="{Binding PowerPointLabel}" Tag="{Binding PowerPointState, Mode=OneWay}" Style="{StaticResource StatusValueText}" Margin="0,4,0,0" />
                             </StackPanel>
                         </Border>
                         <Border Style="{StaticResource EngineCard}">
                             <StackPanel>
                                 <TextBlock Text="{Binding DataContext.Loc[LibreOffice], RelativeSource={RelativeSource AncestorType=Window}}" FontWeight="SemiBold" />
-                                <TextBlock Text="{Binding LibreOfficeStatus}" Style="{StaticResource StatusValueText}" Margin="0,4,0,0" />
+                                <TextBlock Text="{Binding LibreOfficeLabel}" Tag="{Binding LibreOfficeState, Mode=OneWay}" Style="{StaticResource StatusValueText}" Margin="0,4,0,0" />
                             </StackPanel>
                         </Border>
                         <Border Style="{StaticResource EngineCard}">
                             <StackPanel>
                                 <TextBlock Text="{Binding DataContext.Loc[PdfRenderer], RelativeSource={RelativeSource AncestorType=Window}}" FontWeight="SemiBold" />
-                                <TextBlock Text="{Binding PdfRendererStatus}" Style="{StaticResource StatusValueText}" Margin="0,4,0,0" />
+                                <TextBlock Text="{Binding PdfRendererLabel}" Tag="{Binding PdfRendererState, Mode=OneWay}" Style="{StaticResource StatusValueText}" Margin="0,4,0,0" />
                             </StackPanel>
                         </Border>
                     </UniformGrid>
@@ -502,7 +502,7 @@
                     <Border Style="{StaticResource Panel}">
                         <StackPanel>
                             <TextBlock Text="{Binding Loc[SetupGuidance]}" Style="{StaticResource SectionTitle}" />
-                            <TextBlock Text="{Binding EngineStatus.Guidance}" TextWrapping="Wrap" />
+                            <TextBlock Text="{Binding EngineStatus.GuidanceText}" Tag="{Binding EngineStatus.SetupState, Mode=OneWay}" Style="{StaticResource SetupGuidanceText}" TextWrapping="Wrap" />
                             <TextBlock Text="{Binding EngineStatus.LibreOfficePath}" Style="{StaticResource TinyMutedText}" TextWrapping="Wrap" Margin="0,8,0,0" />
                             <TextBlock Text="{Binding Loc[HaveOffice]}" Margin="0,14,0,0" />
                             <TextBlock Text="{Binding Loc[NoOffice]}" Margin="0,4,0,0" />

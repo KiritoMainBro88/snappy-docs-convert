@@ -109,28 +109,36 @@
         <Setter Property="FontSize" Value="{StaticResource FontSize.Caption}" />
     </Style>
 
-    <!-- Engine status values are localized strings until S1 converts the VM to enum states;
-         colors are tokens so this stays theme-correct. -->
+    <!-- Engine status values are typed EngineAvailabilityState values carried on the
+         element's Tag; colors are theme tokens so light/dark stays consistent. -->
     <Style x:Key="StatusValueText" TargetType="TextBlock">
         <Setter Property="FontWeight" Value="SemiBold" />
         <Setter Property="Foreground" Value="{DynamicResource MutedBrush}" />
         <Style.Triggers>
-            <DataTrigger Binding="{Binding Text, RelativeSource={RelativeSource Self}}" Value="Available">
+            <DataTrigger Binding="{Binding Tag, RelativeSource={RelativeSource Self}}" Value="Available">
                 <Setter Property="Foreground" Value="{DynamicResource SuccessBrush}" />
             </DataTrigger>
-            <DataTrigger Binding="{Binding Text, RelativeSource={RelativeSource Self}}" Value="Có sẵn">
-                <Setter Property="Foreground" Value="{DynamicResource SuccessBrush}" />
-            </DataTrigger>
-            <DataTrigger Binding="{Binding Text, RelativeSource={RelativeSource Self}}" Value="Missing">
+            <DataTrigger Binding="{Binding Tag, RelativeSource={RelativeSource Self}}" Value="Missing">
                 <Setter Property="Foreground" Value="{DynamicResource ErrorBrush}" />
             </DataTrigger>
-            <DataTrigger Binding="{Binding Text, RelativeSource={RelativeSource Self}}" Value="Thiếu">
-                <Setter Property="Foreground" Value="{DynamicResource ErrorBrush}" />
-            </DataTrigger>
-            <DataTrigger Binding="{Binding Text, RelativeSource={RelativeSource Self}}" Value="Checking">
+            <DataTrigger Binding="{Binding Tag, RelativeSource={RelativeSource Self}}" Value="Checking">
                 <Setter Property="Foreground" Value="{DynamicResource WarningBrush}" />
             </DataTrigger>
-            <DataTrigger Binding="{Binding Text, RelativeSource={RelativeSource Self}}" Value="Đang kiểm tra">
+        </Style.Triggers>
+    </Style>
+
+    <!-- Setup guidance line keyed on EngineSetupState (language-independent). -->
+    <Style x:Key="SetupGuidanceText" TargetType="TextBlock">
+        <Setter Property="FontFamily" Value="{StaticResource AppFontFamily}" />
+        <Setter Property="Foreground" Value="{DynamicResource AppForegroundBrush}" />
+        <Style.Triggers>
+            <DataTrigger Binding="{Binding Tag, RelativeSource={RelativeSource Self}}" Value="Blocked">
+                <Setter Property="Foreground" Value="{DynamicResource WarningBrush}" />
+            </DataTrigger>
+            <DataTrigger Binding="{Binding Tag, RelativeSource={RelativeSource Self}}" Value="Failed">
+                <Setter Property="Foreground" Value="{DynamicResource ErrorBrush}" />
+            </DataTrigger>
+            <DataTrigger Binding="{Binding Tag, RelativeSource={RelativeSource Self}}" Value="Checking">
                 <Setter Property="Foreground" Value="{DynamicResource WarningBrush}" />
             </DataTrigger>
         </Style.Triggers>
