@@ -201,6 +201,7 @@
                 <Border x:Name="DropZoneBorder"
                         Style="{StaticResource DropZone}"
                         Cursor="Hand"
+                        PreviewMouseLeftButtonDown="DropZone_MouseLeftButtonDown"
                         MouseLeftButtonUp="DropZone_MouseLeftButtonUp"
                         AutomationProperties.Name="Ngăn kéo thả tệp — click để chọn tệp (file drop zone, click to add files)">
                     <Grid>

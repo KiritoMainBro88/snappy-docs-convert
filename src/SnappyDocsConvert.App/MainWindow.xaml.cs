@@ -6,10 +6,12 @@ namespace SnappyDocsConvert.App;
 
 public partial class MainWindow : Window
 {
-    // Time of the last completed OLE drop. The mouse-up that ends a drag can surface on the
-    // drop zone as a stray "click" (its button-down belonged to the drag gesture, not to the
-    // zone), and that ghost click must never open the file picker.
-    private DateTime _lastDropUtc = DateTime.MinValue;
+    // Set in PreviewMouseLeftButtonDown on the zone and consumed by the matching up event:
+    // a click on the zone requires the zone to have SEEN the button-down. The mouse-up that
+    // releases an OLE drag is routed here without a matching down (the down belonged to the
+    // drag source), which is what used to open the file picker ghost-click style. A real
+    // click after a drop still works because its down arrives normally.
+    private bool _zoneMouseDownSeen;
 
     public MainWindow()
     {
@@ -38,7 +40,6 @@ public partial class MainWindow : Window
         // ancestors can no longer run a second Drop pass for the same payload.
         e.Handled = true;
         SetDropZoneHighlight(false);
-        _lastDropUtc = DateTime.UtcNow;
 
         if (DataContext is not MainWindowViewModel viewModel ||
             !e.Data.GetDataPresent(DataFormats.FileDrop))
@@ -59,6 +60,12 @@ public partial class MainWindow : Window
         }
     }
 
+    private void DropZone_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+    {
+        // Only events whose down really happened on this window count as click candidates.
+        _zoneMouseDownSeen = true;
+    }
+
     private void DropZone_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
     {
         // The zone itself opens the file picker; clicks that land on real buttons inside
@@ -68,13 +75,15 @@ public partial class MainWindow : Window
             return;
         }
 
-        // Suppress the ghost click that follows an OLE drop: the mouse-up which released a
-        // drag can be routed to the zone right after the Drop event and would otherwise
-        // open the picker for every successful drag (observed with the real-drag probe).
-        if ((DateTime.UtcNow - _lastDropUtc).TotalMilliseconds < 500)
+        // Event-lifecycle ghost-click guard: the zone must have seen the matching
+        // button-down for this to be a click. The mouse-up that releases a drag is routed
+        // to the zone right after the Drop event without its own down, so this filters it
+        // regardless of how long the drag took.
+        if (!_zoneMouseDownSeen)
         {
             return;
         }
+        _zoneMouseDownSeen = false;
 
         if (DataContext is MainWindowViewModel viewModel)
         {

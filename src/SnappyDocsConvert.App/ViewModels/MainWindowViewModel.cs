@@ -319,9 +319,28 @@ public sealed class MainWindowViewModel : ObservableObject
 
     public bool IsNotRunning => !IsRunning;
 
-    // File-granularity overall progress for the convert queue, 0-100. Computed in
-    // UpdateProgress: a Running report counts its file as NOT completed, a terminal report
-    // counts it as completed. There is no per-file intra-file progress anywhere in the
+    // Pure computation exposed for regression tests: file-granularity overall progress, 0-100.
+    // A Running report means the file has NOT completed; any terminal report counts it as
+    // done. Items cancelled after a break are never reported by the pipeline, so the value
+    // simply stays below 100 until the next batch resets it.
+    public static double ComputeOverallPercent(
+        BatchConversionItemStatus status,
+        int currentItemIndex,
+        int totalItems)
+    {
+        if (totalItems <= 0)
+        {
+            return 0;
+        }
+
+        var completed = status == BatchConversionItemStatus.Running
+            ? currentItemIndex
+            : currentItemIndex + 1;
+        return Math.Clamp(completed * 100.0 / totalItems, 0, 100);
+    }
+
+    // File-granularity overall progress for the convert queue, 0-100, fed by live pipeline
+    // reports in UpdateProgress. There is no per-file intra-file progress anywhere in the
     // pipeline, so this deliberately never displays intermediate smoothness.
     private double _overallPercent;
 
@@ -1123,14 +1142,9 @@ public sealed class MainWindowViewModel : ObservableObject
 
         // Honest file-level percent: Running means the file has not finished yet, so only
         // terminal reports advance the completed count. (Pipeline raises one Running and one
-        // terminal report per item; PercentComplete on the payload is index-based and
+        // terminal report per item; the payload's own PercentComplete is index-based and
         // overcounts while a file is still running, which is why it is not read directly.)
-        var completed = progress.Status == BatchConversionItemStatus.Running
-            ? progress.CurrentItemIndex
-            : progress.CurrentItemIndex + 1;
-        OverallPercent = progress.TotalItems == 0
-            ? 0
-            : Math.Clamp(completed * 100.0 / progress.TotalItems, 0, 100);
+        OverallPercent = ComputeOverallPercent(progress.Status, progress.CurrentItemIndex, progress.TotalItems);
     }
 
     private void ApplyResult(BatchConversionItemResult result)

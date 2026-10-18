@@ -68,7 +68,7 @@ public sealed class MainWindowViewModelQueueTests : IDisposable
         viewModel.AddPaths(new[] { rtf });
 
         Assert.Equal(queuedAfterFirst, viewModel.Queue.Count);
-        Assert.Equal(1, viewModel.Queue.Count);
+        Assert.Single(viewModel.Queue);
         Assert.Empty(viewModel.RejectedPaths);
         Assert.Equal("", viewModel.AlertText);
         Assert.Contains(viewModel.LogLines, line => line.Contains("Duplicate re-add ignored", StringComparison.Ordinal));
@@ -99,8 +99,8 @@ public sealed class MainWindowViewModelQueueTests : IDisposable
 
         viewModel.AddPaths(new[] { txt });
 
-        Assert.Equal(0, viewModel.Queue.Count);
-        Assert.Equal(1, viewModel.RejectedPaths.Count);
+        Assert.Empty(viewModel.Queue);
+        Assert.Single(viewModel.RejectedPaths);
         Assert.NotEqual("", viewModel.AlertText);
         Assert.Contains(viewModel.LogLines, line => line.Contains("Unsupported or missing path skipped", StringComparison.Ordinal));
     }
@@ -114,8 +114,8 @@ public sealed class MainWindowViewModelQueueTests : IDisposable
 
         viewModel.AddPaths(new[] { docx, txt });
 
-        Assert.Equal(1, viewModel.Queue.Count);
-        Assert.Equal(1, viewModel.RejectedPaths.Count);
+        Assert.Single(viewModel.Queue);
+        Assert.Single(viewModel.RejectedPaths);
     }
 
     [Fact]
