@@ -1,0 +1,274 @@
+<UserControl x:Class="SnappyDocsConvert.App.Views.ConvertPageView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:v="clr-namespace:SnappyDocsConvert.App.Validation">
+    <!-- Convert page markup moved verbatim from MainWindow.xaml (S1 STEP 4): the page view
+         model owns these members with the same names, so every binding path is unchanged.
+         The shared alert strip (AlertText / RejectedPaths) stays on the shell in the window
+         above this control. -->
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+
+        <StackPanel>
+            <Border x:Name="DropZoneBorder"
+                    Style="{StaticResource DropZone}"
+                    Cursor="Hand"
+                    PreviewMouseLeftButtonDown="DropZone_MouseLeftButtonDown"
+                    MouseLeftButtonUp="DropZone_MouseLeftButtonUp"
+                    AutomationProperties.Name="Ngăn kéo thả tệp — click để chọn tệp (file drop zone, click to add files)">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="Auto" />
+                    </Grid.ColumnDefinitions>
+                    <Border Width="54"
+                            Height="54"
+                            CornerRadius="27"
+                            Background="{DynamicResource PanelBrush}"
+                            BorderBrush="{DynamicResource SoftAccentStrokeBrush}"
+                            BorderThickness="1"
+                            VerticalAlignment="Center">
+                        <TextBlock Text="&#xE710;"
+                                   FontFamily="{StaticResource SymbolFontFamily}"
+                                   FontSize="18"
+                                   Foreground="{DynamicResource AccentBrush}"
+                                   HorizontalAlignment="Center"
+                                   VerticalAlignment="Center" />
+                    </Border>
+                    <StackPanel Grid.Column="1" Margin="16,0,0,0" VerticalAlignment="Center">
+                        <TextBlock Text="{Binding Loc[DropTitle]}" FontSize="19" FontWeight="SemiBold" />
+                        <TextBlock Text="{Binding Loc[SupportedFormats]}" Style="{StaticResource MutedText}" Margin="0,4,0,0" />
+                        <TextBlock Text="{Binding Loc[EmptyQueue]}" Style="{StaticResource TinyMutedText}" Margin="0,8,0,0" />
+                    </StackPanel>
+                    <WrapPanel Grid.Column="2" VerticalAlignment="Center" HorizontalAlignment="Right">
+                        <Button Content="{Binding Loc[AddFiles]}" Command="{Binding AddFilesCommand}" Style="{StaticResource PrimaryButton}" />
+                        <Button Content="{Binding Loc[AddFolder]}" Command="{Binding AddFolderCommand}" />
+                    </WrapPanel>
+                </Grid>
+            </Border>
+
+            <Border Style="{StaticResource Panel}" Margin="0,12,0,12">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="1.35*" />
+                        <ColumnDefinition Width="1.2*" />
+                        <ColumnDefinition Width="1.1*" />
+                    </Grid.ColumnDefinitions>
+
+                    <StackPanel Grid.Column="0" Margin="0,0,14,0">
+                        <TextBlock Text="{Binding Loc[Output]}" Style="{StaticResource SectionTitle}" />
+                        <TextBlock Text="{Binding Loc[OutputFolder]}" Style="{StaticResource FieldLabel}" />
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="Auto" />
+                            </Grid.ColumnDefinitions>
+                            <TextBox Text="{Binding OutputFolder, UpdateSourceTrigger=PropertyChanged}" />
+                            <Button Grid.Column="1"
+                                    Content="{Binding Loc[Choose]}"
+                                    Command="{Binding ChooseOutputFolderCommand}"
+                                    Margin="8,0,0,0" />
+                        </Grid>
+                    </StackPanel>
+
+                    <StackPanel Grid.Column="1" Margin="0,0,14,0">
+                        <TextBlock Text="{Binding Loc[Conversion]}" Style="{StaticResource SectionTitle}" />
+                        <TextBlock Text="{Binding Loc[Target]}" Style="{StaticResource FieldLabel}" />
+                        <ComboBox ItemsSource="{Binding TargetChoices}"
+                                  DisplayMemberPath="Label"
+                                  SelectedValuePath="Value"
+                                  SelectedValue="{Binding SelectedTarget}" />
+                        <TextBlock Text="{Binding Loc[Engine]}" Style="{StaticResource FieldLabel}" />
+                        <ComboBox ItemsSource="{Binding EngineChoices}"
+                                  DisplayMemberPath="Label"
+                                  SelectedValuePath="Value"
+                                  SelectedValue="{Binding SelectedEngine}" />
+                        <TextBlock Text="{Binding SelectedEngineGuidance}"
+                                   Style="{StaticResource TinyMutedText}"
+                                   TextWrapping="Wrap"
+                                   Margin="0,8,0,0" />
+                        <StackPanel Orientation="Horizontal" Margin="0,8,0,0">
+                            <ToggleButton Style="{StaticResource ToggleSwitch}"
+                                          IsChecked="{Binding EnableEngineFallback}"
+                                          AutomationProperties.Name="{Binding Loc[EnableEngineFallback]}" />
+                            <TextBlock Text="{Binding Loc[EnableEngineFallback]}"
+                                       Margin="10,0,0,0"
+                                       VerticalAlignment="Center"
+                                       FontSize="{StaticResource FontSize.Small}" />
+                        </StackPanel>
+                    </StackPanel>
+
+                    <StackPanel Grid.Column="2">
+                        <TextBlock Text="{Binding Loc[Images]}" Style="{StaticResource SectionTitle}" />
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="92" />
+                            </Grid.ColumnDefinitions>
+                            <StackPanel Grid.Column="0" Margin="0,0,8,0">
+                                <TextBlock Text="{Binding Loc[ImageFormat]}" Style="{StaticResource FieldLabel}" />
+                                <ComboBox ItemsSource="{Binding ImageFormatChoices}"
+                                          DisplayMemberPath="Label"
+                                          SelectedValuePath="Value"
+                                          SelectedValue="{Binding SelectedImageFormat}" />
+                            </StackPanel>
+                            <StackPanel Grid.Column="1">
+                                <TextBlock Text="{Binding Loc[Dpi]}" Style="{StaticResource FieldLabel}" />
+                                <TextBox ToolTip="{Binding Loc[DpiHelp]}">
+                                    <TextBox.Text>
+                                        <Binding Path="Dpi" UpdateSourceTrigger="PropertyChanged">
+                                            <Binding.ValidationRules>
+                                                <v:DpiRangeValidationRule />
+                                            </Binding.ValidationRules>
+                                        </Binding>
+                                    </TextBox.Text>
+                                </TextBox>
+                            </StackPanel>
+                        </Grid>
+                        <CheckBox Content="{Binding Loc[KeepIntermediate]}" IsChecked="{Binding KeepIntermediatePdf}" />
+                        <TextBlock Text="{Binding Loc[DpiHelp]}" Style="{StaticResource TinyMutedText}" TextWrapping="Wrap" Margin="0,8,0,0" />
+                    </StackPanel>
+                </Grid>
+            </Border>
+        </StackPanel>
+
+        <Grid Grid.Row="1">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="*" />
+                <RowDefinition Height="Auto" />
+            </Grid.RowDefinitions>
+
+            <DataGrid Grid.Row="0"
+                      ItemsSource="{Binding Queue}"
+                      SelectedItem="{Binding SelectedQueueItem}"
+                      AutoGenerateColumns="False"
+                      CanUserAddRows="False"
+                      IsReadOnly="True"
+                      HeadersVisibility="Column"
+                      GridLinesVisibility="Horizontal"
+                      AlternationCount="2"
+                      RowHeaderWidth="0">
+                <DataGrid.Columns>
+                    <DataGridTemplateColumn Width="2.1*" MinWidth="190">
+                        <DataGridTemplateColumn.HeaderTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding DataContext.Loc[File], RelativeSource={RelativeSource AncestorType=DataGrid}}"
+                                           Style="{StaticResource MutedText}"
+                                           FontWeight="SemiBold" />
+                            </DataTemplate>
+                        </DataGridTemplateColumn.HeaderTemplate>
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <StackPanel>
+                                    <TextBlock Text="{Binding FileName}" FontWeight="SemiBold" TextTrimming="CharacterEllipsis" ToolTip="{Binding InputPath}" />
+                                    <TextBlock Text="{Binding InputPath}" Style="{StaticResource TinyMutedText}" TextTrimming="CharacterEllipsis" ToolTip="{Binding InputPath}" />
+                                </StackPanel>
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn>
+                    <DataGridTextColumn Binding="{Binding Type}" Width="70">
+                        <DataGridTextColumn.HeaderTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding DataContext.Loc[Type], RelativeSource={RelativeSource AncestorType=DataGrid}}"
+                                           Style="{StaticResource MutedText}"
+                                           FontWeight="SemiBold" />
+                            </DataTemplate>
+                        </DataGridTextColumn.HeaderTemplate>
+                    </DataGridTextColumn>
+                    <DataGridTextColumn Binding="{Binding Target}" Width="110">
+                        <DataGridTextColumn.HeaderTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding DataContext.Loc[QueueTarget], RelativeSource={RelativeSource AncestorType=DataGrid}}"
+                                           Style="{StaticResource MutedText}"
+                                           FontWeight="SemiBold" />
+                            </DataTemplate>
+                        </DataGridTextColumn.HeaderTemplate>
+                    </DataGridTextColumn>
+                    <DataGridTextColumn Binding="{Binding Engine}" Width="120">
+                        <DataGridTextColumn.HeaderTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding DataContext.Loc[Engine], RelativeSource={RelativeSource AncestorType=DataGrid}}"
+                                           Style="{StaticResource MutedText}"
+                                           FontWeight="SemiBold" />
+                            </DataTemplate>
+                        </DataGridTextColumn.HeaderTemplate>
+                    </DataGridTextColumn>
+                    <DataGridTemplateColumn Width="112">
+                        <DataGridTemplateColumn.HeaderTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding DataContext.Loc[Status], RelativeSource={RelativeSource AncestorType=DataGrid}}"
+                                           Style="{StaticResource MutedText}"
+                                           FontWeight="SemiBold" />
+                            </DataTemplate>
+                        </DataGridTemplateColumn.HeaderTemplate>
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <Border Style="{StaticResource StatusPillBorder}">
+                                    <TextBlock Text="{Binding Status}" Style="{StaticResource StatusPillText}" />
+                                </Border>
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn>
+                    <DataGridTemplateColumn Width="1.7*" MinWidth="160">
+                        <DataGridTemplateColumn.HeaderTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding DataContext.Loc[Message], RelativeSource={RelativeSource AncestorType=DataGrid}}"
+                                           Style="{StaticResource MutedText}"
+                                           FontWeight="SemiBold" />
+                            </DataTemplate>
+                        </DataGridTemplateColumn.HeaderTemplate>
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding Message}" TextWrapping="Wrap" TextTrimming="CharacterEllipsis" ToolTip="{Binding Message}" />
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn>
+                    <DataGridTemplateColumn Width="1.6*" MinWidth="160">
+                        <DataGridTemplateColumn.HeaderTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding DataContext.Loc[Output], RelativeSource={RelativeSource AncestorType=DataGrid}}"
+                                           Style="{StaticResource MutedText}"
+                                           FontWeight="SemiBold" />
+                            </DataTemplate>
+                        </DataGridTemplateColumn.HeaderTemplate>
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding Output}" Style="{StaticResource TinyMutedText}" TextTrimming="CharacterEllipsis" ToolTip="{Binding Output}" />
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn>
+                    <DataGridTemplateColumn Header="" Width="76">
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <Button Content="{Binding DataContext.Loc[Open], RelativeSource={RelativeSource AncestorType=DataGrid}}"
+                                        Style="{StaticResource SmallButton}"
+                                        Command="{Binding DataContext.OpenItemOutputCommand, RelativeSource={RelativeSource AncestorType=DataGrid}}"
+                                        CommandParameter="{Binding}" />
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn>
+                </DataGrid.Columns>
+            </DataGrid>
+
+            <Grid Grid.Row="1" Margin="0,12,0,0">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+                <StackPanel Orientation="Horizontal">
+                    <Button Content="{Binding Loc[RemoveSelected]}" Command="{Binding RemoveSelectedCommand}" />
+                    <Button Content="{Binding Loc[ClearQueue]}" Command="{Binding ClearCommand}" />
+                </StackPanel>
+                <WrapPanel Grid.Column="1" HorizontalAlignment="Right">
+                    <Button Content="{Binding Loc[StartQueue]}" Command="{Binding StartCommand}" Style="{StaticResource PrimaryButton}" />
+                    <Button Content="{Binding Loc[Cancel]}" Command="{Binding CancelCommand}" Style="{StaticResource DangerButton}" />
+                    <Button Content="{Binding Loc[OpenOutput]}" Command="{Binding OpenOutputFolderCommand}" />
+                </WrapPanel>
+            </Grid>
+        </Grid>
+    </Grid>
+</UserControl>

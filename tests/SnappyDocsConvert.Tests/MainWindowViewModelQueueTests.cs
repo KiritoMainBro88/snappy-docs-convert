@@ -49,9 +49,9 @@ public sealed class MainWindowViewModelQueueTests : IDisposable
         var pdf = WriteFile("c.pdf", "%PDF-1.4");
         var viewModel = CreateViewModel();
 
-        viewModel.AddPaths(new[] { rtf, csv, pdf });
+        viewModel.Convert.AddPaths(new[] { rtf, csv, pdf });
 
-        Assert.Equal(3, viewModel.Queue.Count);
+        Assert.Equal(3, viewModel.Convert.Queue.Count);
         Assert.Equal(3, int.Parse(viewModel.SummaryText.Split(' ')[0], System.Globalization.CultureInfo.InvariantCulture));
         Assert.Empty(viewModel.RejectedPaths);
         Assert.Equal("", viewModel.AlertText);
@@ -63,12 +63,12 @@ public sealed class MainWindowViewModelQueueTests : IDisposable
         var rtf = WriteFile("a.rtf", "{\\rtf1}");
         var viewModel = CreateViewModel();
 
-        viewModel.AddPaths(new[] { rtf });
-        var queuedAfterFirst = viewModel.Queue.Count;
-        viewModel.AddPaths(new[] { rtf });
+        viewModel.Convert.AddPaths(new[] { rtf });
+        var queuedAfterFirst = viewModel.Convert.Queue.Count;
+        viewModel.Convert.AddPaths(new[] { rtf });
 
-        Assert.Equal(queuedAfterFirst, viewModel.Queue.Count);
-        Assert.Single(viewModel.Queue);
+        Assert.Equal(queuedAfterFirst, viewModel.Convert.Queue.Count);
+        Assert.Single(viewModel.Convert.Queue);
         Assert.Empty(viewModel.RejectedPaths);
         Assert.Equal("", viewModel.AlertText);
         Assert.Contains(viewModel.LogLines, line => line.Contains("Duplicate re-add ignored", StringComparison.Ordinal));
@@ -81,12 +81,12 @@ public sealed class MainWindowViewModelQueueTests : IDisposable
         var csv = WriteFile("b.csv", "name,size");
         var viewModel = CreateViewModel();
 
-        viewModel.AddPaths(new[] { rtf });
+        viewModel.Convert.AddPaths(new[] { rtf });
         // Second drop re-sends the queued file plus one new file: the queued one is skipped
         // silently, the new one is still added exactly once.
-        viewModel.AddPaths(new[] { rtf, csv });
+        viewModel.Convert.AddPaths(new[] { rtf, csv });
 
-        Assert.Equal(2, viewModel.Queue.Count);
+        Assert.Equal(2, viewModel.Convert.Queue.Count);
         Assert.Empty(viewModel.RejectedPaths);
         Assert.Equal("", viewModel.AlertText);
     }
@@ -97,9 +97,9 @@ public sealed class MainWindowViewModelQueueTests : IDisposable
         var txt = WriteFile("n.txt", "not supported");
         var viewModel = CreateViewModel();
 
-        viewModel.AddPaths(new[] { txt });
+        viewModel.Convert.AddPaths(new[] { txt });
 
-        Assert.Empty(viewModel.Queue);
+        Assert.Empty(viewModel.Convert.Queue);
         Assert.Single(viewModel.RejectedPaths);
         Assert.NotEqual("", viewModel.AlertText);
         Assert.Contains(viewModel.LogLines, line => line.Contains("Unsupported or missing path skipped", StringComparison.Ordinal));
@@ -112,9 +112,9 @@ public sealed class MainWindowViewModelQueueTests : IDisposable
         var txt = WriteFile("note.txt", "txt");
         var viewModel = CreateViewModel();
 
-        viewModel.AddPaths(new[] { docx, txt });
+        viewModel.Convert.AddPaths(new[] { docx, txt });
 
-        Assert.Single(viewModel.Queue);
+        Assert.Single(viewModel.Convert.Queue);
         Assert.Single(viewModel.RejectedPaths);
     }
 
@@ -131,8 +131,8 @@ public sealed class MainWindowViewModelQueueTests : IDisposable
         // Merge only accepts PDF inputs: the PNG is rejected for the operation, and the
         // repeated PDF is dropped with a log line instead of being queued twice.
         Assert.Equal(PdfToolOperation.Merge, viewModel.SelectedPdfToolOperation);
-        Assert.Equal(1, viewModel.PdfToolInputs.Count);
-        Assert.Equal(1, viewModel.RejectedPaths.Count);
+        Assert.Single(viewModel.PdfToolInputs);
+        Assert.Single(viewModel.RejectedPaths);
         Assert.Equal("1 PDF tool input(s) ready.", viewModel.PdfToolStatus);
     }
 }

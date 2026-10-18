@@ -11,7 +11,7 @@ namespace SnappyDocsConvert.Tests;
 public sealed class OverallPercentTests
 {
     private static double Percent(BatchConversionItemStatus status, int index, int total) =>
-        MainWindowViewModel.ComputeOverallPercent(status, index, total);
+        ConvertPageViewModel.ComputeOverallPercent(status, index, total);
 
     [Fact]
     public void SingleFile_RunningCountsNotCompleted_TerminalCountsCompleted()
