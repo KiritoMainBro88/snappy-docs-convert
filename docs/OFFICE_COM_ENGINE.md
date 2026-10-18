@@ -1,13 +1,17 @@
 # Microsoft Office COM Engine
 
-Phase 3A adds local Microsoft Office COM detection and guarded PDF export.
+Phase 3A adds local Microsoft Office COM detection and guarded PDF export. Phase 14 hardening adds
+per-app sessions (one Application reused across a batch), a watchdog that terminates only
+ownership-verified hung Office processes, and an AutomationSecurity save/restore envelope.
 
 ## Scope
 
 Supported inputs:
 
-- Word: `.doc`, `.docx`, `.rtf`
-- PowerPoint: `.ppt`, `.pptx`
+- Word: `.doc`, `.docx`, `.rtf` → PDF
+- PowerPoint: `.ppt`, `.pptx` → PDF
+- Excel: `.xlsx`, `.xls`, `.csv`, `.ods` → PDF (new in Phase 14)
+- Word PDF import: `.pdf` → `.docx` (known-hang on one verified Word build; see Known Issues)
 
 Out of scope:
 
@@ -78,9 +82,64 @@ Office must be installed, activated, and usable by the logged-in user for real s
 - No deletion of source files.
 - No killing unrelated user Office processes.
 
+## Phase 14 Hardening
+
+All hardening behaviors below are verified end-to-end on a real Office machine (see
+`docs/qa-output/current/logs/**` for unit/QA evidence and the Phase 14 report for the harness run).
+
+### One session per batch
+
+Batch conversion uses `OfficeComSession` with `ComOfficeAppFactory`: one `Application` per app kind
+is reused across every file, so Word/Excel/PowerPoint start once, not per file. Reuse counts are
+tracked; dispose is bounded (5 s quit grace) and cannot hang app shutdown.
+
+### Ownership proof (never kill by name)
+
+The watchdog may terminate a hung Office process only when exclusive ownership is PROVEN by two
+independent signals that converge:
+
+1. Spawn diff: exactly one new `WINWORD`/`EXCEL`/`POWERPNT` process appeared after activation.
+2. Window proof: a window of OUR Application object resolves to that same pid
+   (Word.Window.Hwnd, Excel Application.Hwnd, PowerPoint `PPTFrameClass` frame — modern PowerPoint
+   removed the late-bound `Window.HWND`).
+
+Anything ambiguous — attach, multiple candidates, unreadable start time (PID-reuse guard via
+`OfficeProcessIdentity` + `IProcessVerifier`), or a stale identity — is fail-closed: no kill AND no
+Quit. An unproven instance may be the user's and may hold unsaved work.
+
+### PowerPoint attach safety
+
+PowerPoint activation can ATTACH to a POWERPNT.EXE the user already has open. Verified behaviors:
+
+- Attach case: the user's instance is never quit, its presentations stay open, `AutomationSecurity`
+  is restored around every file, and per-file conversion still succeeds through the shared instance.
+- Spawn case: exclusive ownership is proven to the watchdog, so the session quits the instance and
+  disposes cleanly after the batch.
+
+### AutomationSecurity envelope
+
+Every file open runs inside `OfficeAutomationSecurity.RunWithForceDisabled`:
+
+- Before the open, ForceDisable (`msoAutomationSecurityForceDisable = 3`) is engaged so macros in
+  converted documents cannot execute.
+- The previous value is restored afterwards, even when the open/export fails.
+- Documented engine limitation (Microsoft): Excel 4.0 (XLM) macros are an edge case that
+  `AutomationSecurity` may not fully block; the app cannot change that behavior.
+
 ## Fallback
 
 If Office is unavailable, the app should guide users to install LibreOffice or select `soffice.com`. LibreOffice remains the fallback for `.odt`, `.odp`, and Office documents when Office is unavailable.
+
+## Known Issues
+
+- Word COM PDF import (`.pdf` → editable document) hangs deterministically on one verified
+  Windows/Word build with every Open parameter shape and without any modal window. The watchdog
+  terminates the hung process and the next file starts a fresh instance; the app never hangs, but
+  the conversion itself cannot complete on that build until Word is repaired/updated. Verify on the
+  target machine before relying on PDF → Word.
+- The "fail fast with session disabled" path (poison after UNSAFE recovery) is covered by unit
+  tests; staging it deterministically end-to-end would require hanging a possibly user-held
+  Office instance, which the project refuses to do.
 
 ## Known Limitations
 

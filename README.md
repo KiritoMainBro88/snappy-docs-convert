@@ -2,7 +2,7 @@
 
 kmb file tools is a fast local document conversion app for Windows-first workflows. Internal project/executable names still use `SnappyDocsConvert` for .NET compatibility, but public beta package filenames use `kmb-file-tools`.
 
-Current phase: Phase 13B beta.3 hotfix. This branch contains local Office/PDF conversion, PDF image export, batch conversion, PDF toolbox operations, mode-based WPF UI, persisted English/Vietnamese language settings, app light/dark/system theme, manual update center, startup crash diagnostics, GUI launch smoke, E2E QA, portable packaging, Inno Setup installer packaging, trust docs, GitHub Actions trust workflows, demo tooling, OCR Lite roadmap docs, and a frontend-only Vercel website. Silent auto-update, MSI/MSIX packaging, and code signing remain later phases.
+Current phase: Phase 14 audit hardening (beta). This branch contains local Office/PDF conversion (Word, PowerPoint, Excel, LibreOffice fallback), PDF image export, batch conversion with engine fallback, PDF toolbox operations including Compress/Watermark/Encrypt/PDF-to-Word/OCR, mode-based WPF UI, persisted English/Vietnamese language settings, app light/dark/system theme, manual update center, startup crash diagnostics, GUI launch smoke, E2E QA, portable packaging, Inno Setup installer packaging, trust docs, GitHub Actions trust workflows, demo tooling, OCR Lite roadmap docs, and a frontend-only Vercel website. Silent auto-update, MSI/MSIX packaging, and code signing remain later phases.
 
 ## Final Goal
 
@@ -80,6 +80,12 @@ The app will auto-detect common install paths or accept a manually selected `sof
 
 Phase 3A detects `Word.Application` and `PowerPoint.Application` COM ProgIDs and adds a guarded local desktop PDF export engine for `.doc`, `.docx`, `.rtf`, `.ppt`, and `.pptx`.
 
+Phase 14 hardening extends this engine:
+
+- Excel automation: `.xlsx`, `.xls`, `.csv`, and `.ods` inputs convert to PDF (verified end-to-end on real Office; one shared EXCEL instance per batch).
+- One Application instance is reused per app kind for the whole batch; the conversion watchdog terminates only Office processes this app can prove it owns, and never quits or kills a user's attached instance (PowerPoint attach verified safe).
+- Every file open saves and restores `AutomationSecurity` (macros force-disabled during conversion, prior state restored even on failure).
+
 This engine is local desktop user-session automation only. It is not for server, service, or unattended use. See `docs/OFFICE_COM_ENGINE.md`.
 
 Real Office smoke:
@@ -112,21 +118,24 @@ Phase 8A adds local PDF tools:
 - Rotate selected pages
 - Convert PNG/JPEG/WebP images to one PDF
 
-These tools run locally and do not add OCR, compression, encryption, signing, or redaction yet. See `docs/PDF_TOOLBOX.md`.
+Newer toolbox additions (Phase 14, local-only):
 
-## Planned OCR Lite
+- Compress PDF (lossless re-save)
+- Watermark PDF (diagonal text)
+- Encrypt PDF (open password; encrypted inputs fail with a clear message that never echoes passwords)
+- PDF → Word (.docx via Word automation; see the known Word PDF-import issue in `docs/OFFICE_COM_ENGINE.md`)
+- OCR to Text via a local PaddleOCR command line (path configured in settings, not bundled)
 
-OCR is planned but not shipped yet. The first OCR work should target low-end Windows machines:
+Existing output files are never silently overwritten: collisions rename to `name__hash8`, then numbered variants. See `docs/PDF_TOOLBOX.md`.
 
-- OCR Lite first, not heavy OCR.
-- Vietnamese + English first.
-- Windows OCR when available, otherwise Tesseract with `tessdata_fast`.
-- No GPU requirement.
-- No cloud OCR.
-- No large OCR model or traineddata files committed to the repo.
-- No claims for handwriting, formulas, tables, or complex layout until benchmarked.
+## OCR
 
-See `docs/OCR_RESEARCH.md`, `docs/OCR_ARCHITECTURE.md`, and `docs/OCR_LOW_END_STRATEGY.md`.
+OCR converts PDFs and images to text using a LOCAL PaddleOCR command line. The user configures the
+PaddleOCR executable path in settings; nothing is bundled, nothing is uploaded. Batch OCR keeps
+every successful `.txt` and reports per-file failures — one broken file no longer discards the
+whole run. Low-end machine considerations (lite engines, no GPU, no cloud) still apply; the
+research notes remain valid. See `docs/OCR_RESEARCH.md`, `docs/OCR_ARCHITECTURE.md`, and
+`docs/OCR_LOW_END_STRATEGY.md`.
 
 ## Batch Pipeline
 
