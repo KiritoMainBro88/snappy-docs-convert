@@ -508,14 +508,19 @@ public sealed class MainWindowViewModel : ObservableObject
         // Drop paths that are already queued with a log line only: drag-drop can reach this
         // method through routed events from both the drop zone and the window, and re-adding
         // the same paths must never pollute the rejected list or raise a false alert.
-        var existing = Queue
+        // The queue set doubles as the "seen" filter for the incoming payload itself, but it
+        // is never used to reject scanned results below: once a path survives the filter it
+        // is genuinely new (regression caught by the real-drag probe: merging the incoming
+        // paths into the queue set first made every accepted file look already queued, and
+        // drops kept producing "0 file(s) queued." with no rows and no alert).
+        var seen = Queue
             .Select(item => item.InputPath)
             .ToHashSet(StringComparer.OrdinalIgnoreCase);
         var incoming = new List<string>();
         foreach (var rawPath in paths.Where(path => !string.IsNullOrWhiteSpace(path)))
         {
             var fullPath = Path.GetFullPath(rawPath);
-            if (existing.Add(fullPath))
+            if (seen.Add(fullPath))
             {
                 incoming.Add(fullPath);
             }
@@ -525,20 +530,14 @@ public sealed class MainWindowViewModel : ObservableObject
             }
         }
 
+        // `incoming` is already free of queue duplicates and of duplicates inside one drop
+        // payload, so every scanned-accepted path is a genuinely new queue entry.
         var scan = _inputScanner.Scan(incoming);
         var added = 0;
 
         foreach (var filePath in scan.AcceptedFiles)
         {
-            if (existing.Contains(filePath))
-            {
-                AddRejectedPath(filePath, "Duplicate ignored");
-                Log($"Duplicate ignored: {filePath}");
-                continue;
-            }
-
             Queue.Add(new QueueItemViewModel(filePath, SelectedTarget, SelectedEngine));
-            existing.Add(filePath);
             added++;
         }
 
