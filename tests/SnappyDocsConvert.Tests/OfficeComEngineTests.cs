@@ -47,6 +47,55 @@ public sealed class OfficeComEngineTests
     }
 
     [Fact]
+    public async Task ConvertToPdfAsync_MapsXlsxToExcel()
+    {
+        using var temp = TempDirectory.Create();
+        var inputPath = temp.WriteFile("book.xlsx", "fake xlsx");
+        var outputDirectory = temp.CreateSubdirectory("out");
+        var runner = new FakeOfficeComRunner((_, _, output, _, _) =>
+        {
+            File.WriteAllText(output, "%PDF");
+            return Task.FromResult(OfficeComExportResult.Succeeded(TimeSpan.FromMilliseconds(1)));
+        });
+        var engine = CreateEngine(OfficeAvailabilityFor(word: false, powerPoint: false, excel: true), runner);
+
+        var result = await engine.ConvertToPdfAsync(
+            new ConversionRequest(inputPath, outputDirectory),
+            CancellationToken.None);
+
+        Assert.True(result.Success);
+        Assert.Equal(OfficeAppKind.Excel, runner.LastAppKind);
+    }
+
+    [Fact]
+    public async Task ConvertToPdfAsync_ExcelUnavailable_ReportsEngineUnavailable()
+    {
+        using var temp = TempDirectory.Create();
+        var inputPath = temp.WriteFile("book.xlsx", "fake xlsx");
+        var engine = CreateEngine(OfficeAvailabilityFor(word: true, powerPoint: true, excel: false));
+
+        var result = await engine.ConvertToPdfAsync(
+            new ConversionRequest(inputPath, temp.CreateSubdirectory("out")),
+            CancellationToken.None);
+
+        Assert.False(result.Success);
+        Assert.Equal(ConversionStatus.EngineUnavailable, result.Status);
+    }
+
+    [Fact]
+    public async Task AvailabilityProvider_ReturnsExcelAvailable_WhenExcelProgIdExists()
+    {
+        var provider = new MicrosoftOfficeAvailabilityProvider(
+            new FakeProgIdResolver(progId => progId == OfficeComProgIds.ExcelApplication ? typeof(object) : null));
+
+        var availability = await provider.GetOfficeAvailabilityAsync(CancellationToken.None);
+
+        Assert.True(availability.ExcelAvailable);
+        Assert.True(availability.CanConvertExcelWorkbooks);
+        Assert.False(availability.WordAvailable);
+    }
+
+    [Fact]
     public async Task ConvertToPdfAsync_MapsDocxToWord()
     {
         using var temp = TempDirectory.Create();
@@ -199,6 +248,56 @@ public sealed class OfficeComEngineTests
     }
 
     [Fact]
+    public async Task ConvertToPdfAsync_SurfacesResolvedInnerMessage_AsProcessFailed()
+    {
+        using var temp = TempDirectory.Create();
+        var inputPath = temp.WriteFile("slides.ppt", "fake ppt");
+        const string resolvedMessage = "PowerPoint could not export the file.";
+        var engine = CreateEngine(
+            OfficeAvailabilityFor(word: false, powerPoint: true),
+            new FakeOfficeComRunner((_, _, _, _, _) =>
+                Task.FromResult(OfficeComExportResult.Failed(resolvedMessage, TimeSpan.FromMilliseconds(1)))));
+
+        var result = await engine.ConvertToPdfAsync(
+            new ConversionRequest(inputPath, temp.CreateSubdirectory("out")),
+            CancellationToken.None);
+
+        Assert.False(result.Success);
+        Assert.Equal(ConversionStatus.ProcessFailed, result.Status);
+        Assert.Equal(resolvedMessage, result.ErrorMessage);
+        Assert.NotEqual(
+            "Exception has been thrown by the target of an invocation.",
+            result.ErrorMessage);
+    }
+
+    [Fact]
+    public async Task ConvertToPdfAsync_PassesThroughDiagnosticWarning_WithoutAlteringErrorMessage()
+    {
+        using var temp = TempDirectory.Create();
+        var inputPath = temp.WriteFile("slides.ppt", "fake ppt");
+        const string resolvedMessage = "PowerPoint could not export the file.";
+        const string diagnostic = "COMException (HRESULT 0x80004005)";
+        var failedWithWarning = new OfficeComExportResult(
+            false,
+            false,
+            TimeSpan.FromMilliseconds(1),
+            resolvedMessage,
+            new[] { diagnostic });
+        var engine = CreateEngine(
+            OfficeAvailabilityFor(word: false, powerPoint: true),
+            new FakeOfficeComRunner((_, _, _, _, _) => Task.FromResult(failedWithWarning)));
+
+        var result = await engine.ConvertToPdfAsync(
+            new ConversionRequest(inputPath, temp.CreateSubdirectory("out")),
+            CancellationToken.None);
+
+        Assert.False(result.Success);
+        Assert.Equal(ConversionStatus.ProcessFailed, result.Status);
+        Assert.Equal(resolvedMessage, result.ErrorMessage);
+        Assert.Contains(diagnostic, result.Warnings);
+    }
+
+    [Fact]
     public async Task ConvertToPdfAsync_ReturnsFailure_WhenOutputMissingAfterExport()
     {
         using var temp = TempDirectory.Create();
@@ -254,7 +353,7 @@ public sealed class OfficeComEngineTests
             new PathService(),
             new OfficeConversionOptions());
 
-    private static OfficeAvailability OfficeAvailabilityFor(bool word, bool powerPoint)
+    private static OfficeAvailability OfficeAvailabilityFor(bool word, bool powerPoint, bool excel = false)
         => new(
             word,
             powerPoint,
@@ -262,7 +361,9 @@ public sealed class OfficeComEngineTests
             powerPoint,
             Array.Empty<string>(),
             Array.Empty<EngineSetupRecommendation>(),
-            null);
+            null,
+            excel,
+            excel);
 
     private sealed class FakeProgIdResolver : IComProgIdResolver
     {

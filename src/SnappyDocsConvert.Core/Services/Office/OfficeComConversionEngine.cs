@@ -158,6 +158,7 @@ public sealed class OfficeComConversionEngine : IOfficeComConversionEngine
         {
             ".doc" or ".docx" or ".rtf" => OfficeAppKind.Word,
             ".ppt" or ".pptx" => OfficeAppKind.PowerPoint,
+            ".xls" or ".xlsx" or ".csv" => OfficeAppKind.Excel,
             _ => null
         };
 
@@ -166,6 +167,7 @@ public sealed class OfficeComConversionEngine : IOfficeComConversionEngine
         {
             OfficeAppKind.Word => availability.CanConvertWordDocuments,
             OfficeAppKind.PowerPoint => availability.CanConvertPowerPointPresentations,
+            OfficeAppKind.Excel => availability.CanConvertExcelWorkbooks,
             _ => false
         };
 
@@ -174,6 +176,7 @@ public sealed class OfficeComConversionEngine : IOfficeComConversionEngine
         {
             OfficeAppKind.Word => "Microsoft Word COM is not available for Word document export.",
             OfficeAppKind.PowerPoint => "Microsoft PowerPoint COM is not available for presentation export.",
+            OfficeAppKind.Excel => "Microsoft Excel COM is not available for workbook export.",
             _ => "Required Microsoft Office COM app is not available."
         };
 

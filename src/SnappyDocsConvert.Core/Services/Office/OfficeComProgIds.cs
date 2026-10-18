@@ -5,4 +5,6 @@ public static class OfficeComProgIds
     public const string WordApplication = "Word.Application";
 
     public const string PowerPointApplication = "PowerPoint.Application";
+
+    public const string ExcelApplication = "Excel.Application";
 }
